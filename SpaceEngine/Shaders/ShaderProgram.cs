@@ -26,7 +26,24 @@ namespace SpaceEngine.Shaders
             extractAllUniformsToDictionary(vertexFile);
             extractAllUniformsToDictionary(fragmentFile);
 
-            //uniforms.ToList().ForEach(x => Console.WriteLine(x.Key));
+        }
+        public ShaderProgram(string vertexFile, string fragmentFile, string geometryFile)
+        {
+            vertexShaderID = loadShader(vertexFile, ShaderType.VertexShader);
+            fragmentShaderID = loadShader(fragmentFile, ShaderType.FragmentShader);
+            geometryShaderID = loadShader(geometryFile, ShaderType.GeometryShader);
+            programID = GL.CreateProgram();
+            GL.AttachShader(programID, vertexShaderID);
+            GL.AttachShader(programID, fragmentShaderID);
+            GL.AttachShader(programID, geometryShaderID);
+            GL.LinkProgram(programID);
+            GL.ValidateProgram(programID);
+
+            uniforms = new Dictionary<string, int>();
+            extractAllUniformsToDictionary(vertexFile);
+            extractAllUniformsToDictionary(fragmentFile);
+            extractAllUniformsToDictionary(geometryFile);
+
         }
 
         public void loadUniformFloat(string variableName, float value)

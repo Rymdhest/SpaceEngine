@@ -1,10 +1,13 @@
 #version 330
 
-in vec3 fragColor;
+flat in vec3 fragColor;
+in vec3 fragNormal;
 out vec4 outColor;
 
-uniform float saturation;
+const vec3 sunDirection = normalize(vec3(0.5f, 1, 1));
 
 void main() {
-	outColor = vec4(fragColor*saturation, 1.0);
+	float lighting = max(dot(sunDirection, fragNormal), 0.3f);
+	outColor = vec4(fragColor*lighting, 1.0);
+	//outColor = vec4(fragNormal, 1.0);
 }

@@ -3,12 +3,14 @@ using OpenTK.Mathematics;
 using SpaceEngine.Shaders;
 using OpenTK.Graphics.OpenGL;
 using SpaceEngine.Util;
+using SpaceEngine.GameWorld;
+using System.Reflection;
 
 namespace SpaceEngine.RenderEngine
 {
     internal class MasterRenderer
     {
-        private ShaderProgram basicShader = new ShaderProgram("Vertex_Shader", "Fragment_Shader");
+        private ShaderProgram basicShader = new ShaderProgram("Vertex_Shader", "Fragment_Shader", "Geometry_Shader");
         private Matrix4 projectionMatrix;
         private float fieldOfView;
         private float near = 0.1f;
@@ -30,44 +32,40 @@ namespace SpaceEngine.RenderEngine
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(true);
+
             basicShader.bind();
-            
+            basicShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
+
         }
 
         public void finishFrame()
         {
+            GL.BindVertexArray(0);
+
             basicShader.stop();
             WindowHandler.getWindow().SwapBuffers();
         }
 
-        public void render()
+        public void render(List<ModelEntity> modelEntities)
         {
             prepareFrame();
-            float z = 0f;
-            float[] vertices = new float[] { -1.0f, -1.0f, z,
-                                             1.0f, -1.0f, z ,
-                                             0.0f, 1.0f, z };
-            float[] colors = new float[] {  1.0f, 0.0f, 0.0f,
-                                             0.0f, 1.0f, 0.0f ,
-                                             0.0f, 0.0f, 1.0f };
-            int[] indices = new int[] { 0, 1, 2 };
-            Matrix4 TransformationMatrix = Matrix4.CreateTranslation(1, 1, -2);
 
-            Model model = Loader.loadToVAO(vertices, colors, indices);
-            basicShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
-            basicShader.loadUniformMatrix4f("TransformationMatrix", TransformationMatrix);
-            basicShader.loadUniformFloat("saturation", 3f);
+            foreach (ModelEntity modelEntity in modelEntities)
+            {
+
+                basicShader.loadUniformMatrix4f("TransformationMatrix", modelEntity.createTransformationMatrix());
+                GL.BindVertexArray(modelEntity.GetModel().getVAOID());
+                GL.EnableVertexAttribArray(0);
+                GL.EnableVertexAttribArray(1);
+
+                GL.DrawElements(PrimitiveType.Triangles, modelEntity.GetModel().getVertexCount(), DrawElementsType.UnsignedInt, 0);
+                
+            }
             //GL.BindBuffer(BufferTarget.ArrayBuffer, model.getIndexBuffer());
-            GL.BindVertexArray(model.getVAOID());
-            GL.EnableVertexAttribArray(0);
-            GL.EnableVertexAttribArray(1);
-
-            GL.DrawElements(PrimitiveType.Triangles, model.getVertexCount(), DrawElementsType.UnsignedInt, 0);
-            GL.BindVertexArray(0);
             //GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             finishFrame();
         }
-        public void update()
+        public void update(float delta)
         {
 
         }

@@ -1,11 +1,16 @@
 ﻿
 
 using OpenTK.Graphics.OpenGL;
+using SpaceEngine.Modelling;
 
 namespace SpaceEngine.RenderEngine
 {
     internal class Loader
     {
+        public static Model loadToVAO(RawModel rawModel)
+        {
+            return loadToVAO(rawModel.positions, rawModel.colours, rawModel.indices);
+        }
         public static Model loadToVAO(float[] positions, float[] colors, int[] indices)
         {
             int vaoID = createVAO();

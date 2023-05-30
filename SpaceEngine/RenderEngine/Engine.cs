@@ -1,4 +1,7 @@
 ﻿using OpenTK.Windowing.Common;
+using SpaceEngine.GameWorld;
+using OpenTK.Mathematics;
+using SpaceEngine.Modelling;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -6,11 +9,16 @@ namespace SpaceEngine.RenderEngine
     {
         private MasterRenderer masterRenderer;
         private WindowHandler windowHandler;
+        private World world;
+        public static float EngineClock = 0;
 
         public Engine()
         {
             windowHandler = new WindowHandler();
             masterRenderer = new MasterRenderer();
+            world = new World();
+            Model model = Loader.loadToVAO(MeshGenerator.generateBox(new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(0.5f, 0.5f, 0.5f)));
+            world.addModelEntity(new ModelEntity(new Vector3(0f, 0f, -4f), new Vector3(0), model));
 
             WindowHandler.getWindow().Load += delegate
             {
@@ -18,7 +26,7 @@ namespace SpaceEngine.RenderEngine
             };
             WindowHandler.getWindow().UpdateFrame += delegate (FrameEventArgs eventArgs)
             {
-                update();
+                update((float)eventArgs.Time);
             };
             WindowHandler.getWindow().RenderFrame += delegate (FrameEventArgs eventArgs)
             {
@@ -37,15 +45,16 @@ namespace SpaceEngine.RenderEngine
 
         }
 
-        private void update()
+        private void update(float delta)
         {
-
-            //Console.WriteLine(eventArgs.Time);
+            EngineClock += delta;
+            world.update(delta);
+            masterRenderer.update(delta);
         }
 
         private void render()
         {
-            masterRenderer.render();
+            masterRenderer.render(world.getModelEntities());
         }
     }
 }
