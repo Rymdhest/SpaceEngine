@@ -5,6 +5,7 @@ using OpenTK.Graphics.OpenGL;
 using SpaceEngine.Util;
 using SpaceEngine.GameWorld;
 using System.Reflection;
+using OpenTK.Windowing.Common;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -15,19 +16,30 @@ namespace SpaceEngine.RenderEngine
         private float fieldOfView;
         private float near = 0.1f;
         private float far = 100f;
-        public MasterRenderer() {
+        private Vector2i resolution;
+        public MasterRenderer(Vector2i resolution) {
             fieldOfView = MyMath.PI/2f;
+            this.resolution = resolution;
             updateProjectionMatrix();
         }
         private void updateProjectionMatrix()
         {
-            int width = WindowHandler.getWindow().Size.X;
-            int height = WindowHandler.getWindow().Size.X;
-            float aspect = (float)width / (float)height;
-            projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(fieldOfView, aspect, near, far);
+
+            float aspect = (float)resolution.X / (float)resolution.Y;
+            float y_scale = (float)((1f / Math.Tan((fieldOfView / 2f))));
+            float x_scale = y_scale / aspect;
+            float frustum_length = far - near;
+            
+            projectionMatrix = Matrix4.Identity;
+            projectionMatrix.M11 = x_scale;
+            projectionMatrix.M22 = y_scale;
+            projectionMatrix.M33 = -((far + near) / frustum_length);
+            projectionMatrix.M34 = -1f;
+            projectionMatrix.M43 = -((2 * near * far) / frustum_length);
+            //projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(fieldOfView, aspect, near, far);
         }
 
-        public void prepareFrame()
+        public void prepareFrame(Camera camera)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Enable(EnableCap.DepthTest);
@@ -35,6 +47,7 @@ namespace SpaceEngine.RenderEngine
 
             basicShader.bind();
             basicShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
+            basicShader.loadUniformMatrix4f("viewMatrix", camera.createViewMatrix());
 
         }
 
@@ -46,9 +59,9 @@ namespace SpaceEngine.RenderEngine
             WindowHandler.getWindow().SwapBuffers();
         }
 
-        public void render(List<ModelEntity> modelEntities)
+        public void render(List<ModelEntity> modelEntities, Camera camera)
         {
-            prepareFrame();
+            prepareFrame(camera);
 
             foreach (ModelEntity modelEntity in modelEntities)
             {
@@ -68,6 +81,14 @@ namespace SpaceEngine.RenderEngine
         public void update(float delta)
         {
 
+        }
+        public void onResize(ResizeEventArgs eventArgs)
+        {
+            resolution.X = eventArgs.Width;
+            resolution.Y = eventArgs.Height;
+
+            GL.Viewport(0, 0, resolution.X, resolution.Y);
+            updateProjectionMatrix();
         }
     }
 }

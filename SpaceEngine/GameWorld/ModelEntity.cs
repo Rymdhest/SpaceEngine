@@ -1,7 +1,9 @@
 ﻿
 
 using OpenTK.Mathematics;
+using SpaceEngine.Core;
 using SpaceEngine.RenderEngine;
+using SpaceEngine.Util;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace SpaceEngine.GameWorld;
@@ -18,6 +20,8 @@ internal class ModelEntity : Entity
     public void update(float delta)
     {
         base.update(delta);
+        base.addRotation(new Vector3(0f, 0f, delta));
+        base.setPosition(new Vector3(MyMath.sin(Engine.EngineDeltaClock), 0f, 0f));
     }
     public Model GetModel() 
     {

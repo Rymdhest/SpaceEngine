@@ -1,6 +1,6 @@
 ﻿
 using OpenTK.Mathematics;
-using SpaceEngine.RenderEngine;
+using SpaceEngine.Core;
 using SpaceEngine.Util;
 
 namespace SpaceEngine.GameWorld
@@ -19,24 +19,44 @@ namespace SpaceEngine.GameWorld
             this.scale = scale;
         }
 
-        public void update(float delta)
+        public virtual void update(float delta)
         {
-            rotation.X += 1.14f*delta;
-            rotation.Z += 0.514f * delta;
-            position.X = MyMath.sin(Engine.EngineClock);
-            position.Y = MyMath.cos(Engine.EngineClock);
+
         }
 
         public Matrix4 createTransformationMatrix()
         {
+            return MyMath.createTransformationMatrix(position, rotation, scale);
+        }
 
-            Matrix4 matrix = Matrix4.Identity;
-            matrix = matrix * Matrix4.CreateRotationX(rotation.X);
-            matrix = matrix * Matrix4.CreateRotationY(rotation.Y);
-            matrix = matrix * Matrix4.CreateRotationZ(rotation.Z);
-            matrix = matrix * Matrix4.CreateTranslation(position);
-            matrix = matrix * Matrix4.CreateScale(scale);
-            return matrix;
+        public void setPosition(Vector3 newPos)
+        {
+            position = newPos;
+        }
+
+        public void translate(Vector3 translation)
+        {
+            position += translation;
+        }
+        public void translate(Vector4 translation)
+        {
+            translate(new Vector3(translation.X, translation.Y, translation.Z));
+        }
+        public void addRotation(Vector3 rotationAdd)
+        {
+            rotation += rotationAdd;
+        }
+        public Vector3 getPosition()
+        {
+            return position;
+        }
+        public Vector3 getRotation()
+        {
+            return rotation;
+        }
+        public float getScale()
+        {
+            return scale;
         }
     }
 }

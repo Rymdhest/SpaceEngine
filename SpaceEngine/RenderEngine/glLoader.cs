@@ -5,7 +5,7 @@ using SpaceEngine.Modelling;
 
 namespace SpaceEngine.RenderEngine
 {
-    internal class Loader
+    internal class glLoader
     {
         public static Model loadToVAO(RawModel rawModel)
         {

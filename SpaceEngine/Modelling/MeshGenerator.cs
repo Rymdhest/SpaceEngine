@@ -27,12 +27,12 @@ namespace SpaceEngine.Modelling
                 colours[i + 2] = 0.0f;
             }
 
-            int[] indices = {0,1,3, 3,1,2,
-                        0,4,1, 1,4,5,
-                        1,5,6, 2,1,6,
-                        6,7,2, 3,2,7,
-                        3,7,4, 0,3,4,
-                        6,5,7, 7,5,4};
+            int[] indices = {0,1,3, 3,1,2, //top
+                        0,4,1, 1,4,5,  //front
+                        1,5,6, 2,1,6,  // right
+                        6,7,2, 3,2,7,  //back
+                        3,7,4, 0,3,4,  //left
+                        6,5,7, 7,5,4};  //bot
 
             return new RawModel(positions, colours, indices);
         }

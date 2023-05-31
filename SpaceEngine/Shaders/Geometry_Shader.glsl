@@ -3,7 +3,7 @@ layout(triangles) in;
 layout(triangle_strip, max_vertices=3) out;
 
 in vec3 geoColor[];
-in vec3 geoPos[];
+in vec3 worldPosition[];
 
 flat out vec3 fragColor;
 out vec3 fragNormal;
@@ -40,9 +40,9 @@ void main()
 	//vec3 v2 = gl_in[1].gl_Position.xyz;
 	//vec3 v3 = gl_in[2].gl_Position.xyz;
 
-	vec3 v1 = geoPos[0];
-	vec3 v2 = geoPos[1];
-	vec3 v3 = geoPos[2];
+	vec3 v1 = worldPosition[0];
+	vec3 v2 = worldPosition[1];
+	vec3 v3 = worldPosition[2];
 
 	vec3 faceNormal = calculateFaceNormal(v1,v2,v3);
 	//faceNormal = normalize((modelViewMatrix*vec4(faceNormal, 0.0)).xyz);
@@ -52,7 +52,7 @@ void main()
     gl_Position = gl_in[i].gl_Position;
     fragColor = geoColor[i];
 	fragNormal = faceNormal;
-	pos = geoPos[i];
+	pos = worldPosition[i];
     EmitVertex();
   }
   EndPrimitive();
