@@ -5,7 +5,7 @@ layout(triangle_strip, max_vertices=3) out;
 in vec3 geoColor[];
 in vec3 worldPosition[];
 
-flat out vec3 fragColor;
+out vec3 fragColor;
 out vec3 fragNormal;
 out vec3 pos;
 

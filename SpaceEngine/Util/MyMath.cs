@@ -43,5 +43,19 @@ namespace SpaceEngine.Util
             matrix = matrix * Matrix4.CreateRotationX(rotation.X);
             return matrix;
         }
+        public static float clamp(float number, float min, float max)
+        {
+            if (number < min) return min;
+            if (number > max) return max;
+            return number;
+        }
+        public static float clamp01(float number)
+        {
+            return clamp(number, 0.0f, 1.0f);
+        }
+        public static float lerp(float amount, float left, float right)
+        {
+            return (1.0f - amount) * left + amount * right;
+        }
     }
 }

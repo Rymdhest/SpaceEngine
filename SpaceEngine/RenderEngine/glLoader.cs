@@ -9,7 +9,7 @@ namespace SpaceEngine.RenderEngine
     {
         public static Model loadToVAO(RawModel rawModel)
         {
-            return loadToVAO(rawModel.positions, rawModel.colours, rawModel.indices);
+            return loadToVAO(rawModel.positions, rawModel.colors, rawModel.indices);
         }
         public static Model loadToVAO(float[] positions, float[] colors, int[] indices)
         {

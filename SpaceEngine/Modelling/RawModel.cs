@@ -4,13 +4,13 @@ namespace SpaceEngine.Modelling
     internal class RawModel
     {
         public float[] positions;
-        public float[] colours;
+        public float[] colors;
         public int[] indices;
 
-        public RawModel(float[] positions, float[] colours, int[] indices)
+        public RawModel(float[] positions, float[] colors, int[] indices)
         {
             this.positions = positions;
-            this.colours = colours; 
+            this.colors = colors; 
             this.indices = indices;
         }
     }

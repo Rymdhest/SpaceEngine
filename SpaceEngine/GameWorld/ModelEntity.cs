@@ -20,11 +20,13 @@ internal class ModelEntity : Entity
     public void update(float delta)
     {
         base.update(delta);
-        base.addRotation(new Vector3(0f, 0f, delta));
-        base.setPosition(new Vector3(MyMath.sin(Engine.EngineDeltaClock), 0f, 0f));
     }
     public Model GetModel() 
     {
         return model; 
+    }
+    public void setModel(Model model)
+    {
+        this.model = model;
     }
 }

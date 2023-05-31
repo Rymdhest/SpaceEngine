@@ -26,11 +26,11 @@ namespace SpaceEngine.GameWorld
             }
             if (InputHandler.isKeyDown(Keys.Q))
             {
-                move(new Vector3(0f, -moveAmount, 0f));
+                translate(new Vector3(0f, -moveAmount, 0f));
             }
             if (InputHandler.isKeyDown(Keys.E))
             {
-                move(new Vector3(0f, moveAmount, 0f));
+                translate(new Vector3(0f, moveAmount, 0f));
             }
             if (InputHandler.isKeyDown(Keys.A))
             {

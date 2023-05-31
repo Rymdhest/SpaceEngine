@@ -1,5 +1,7 @@
 ﻿
 using OpenTK.Mathematics;
+using SpaceEngine.Modelling;
+
 namespace SpaceEngine.GameWorld;
 
 internal class World
@@ -9,7 +11,11 @@ internal class World
 
     public World() {
         modelEntities = new List<ModelEntity>();
-        camera = new Camera(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f));
+        camera = new Camera(new Vector3(0f, 5f, 0f), new Vector3(0f, 0f, 0f));
+
+        float size = 300f;
+        TerrainChunk terrainChunk = new TerrainChunk(new Vector3(-size*0.5f, 0f, -size*0.5f), size, 700);
+        modelEntities.Add(terrainChunk);
     }
 
     public void update(float delta)

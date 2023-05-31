@@ -1,6 +1,6 @@
 #version 330
 
-flat in vec3 fragColor;
+in vec3 fragColor;
 in vec3 fragNormal;
 out vec4 outColor;
 

@@ -4,7 +4,6 @@ using SpaceEngine.Shaders;
 using OpenTK.Graphics.OpenGL;
 using SpaceEngine.Util;
 using SpaceEngine.GameWorld;
-using System.Reflection;
 using OpenTK.Windowing.Common;
 
 namespace SpaceEngine.RenderEngine
