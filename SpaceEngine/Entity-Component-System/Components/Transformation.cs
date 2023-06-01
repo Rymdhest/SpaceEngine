@@ -1,0 +1,42 @@
+﻿
+
+using OpenTK.Mathematics;
+using SpaceEngine.Util;
+
+namespace SpaceEngine.Entity_Component_System.Components
+{
+    internal class Transformation : Component
+    {
+        public Vector3 position { get; set; }
+        public Vector3 rotation { get; set; }
+        public float scale { get; set; }
+        public Transformation(float posX = 0.0f, float posY = 0.0f, float posZ = 0.0f, 
+            float rotX = 0.0f, float rotY = 0.0f, float rotZ = 0.0f, float scale = 1.0f)
+            : this(new Vector3(posX, posY, posZ), new Vector3(rotX, rotY, rotZ), scale) { }
+        public Transformation(Vector3 position, Vector3 rotation, float scale = 1.0f) {
+            this.position = position;
+            this.rotation = rotation;
+            this.scale = scale;
+        }
+        public void translate(Vector3 translation)
+        {
+            position += translation;
+        }
+        public void translate(Vector4 translation)
+        {
+            translate(new Vector3(translation.X, translation.Y, translation.Z));
+        }
+        public void addRotation(Vector3 rotationAdd)
+        {
+            rotation += rotationAdd;
+        }
+        public void move(Vector3 direction)
+        {
+            Vector4 moveVector = new Vector4(direction.X, direction.Y, direction.Z, 1.0f);
+            Matrix4 rotationMatrix = MyMath.createRotationMatrix(rotation);
+            moveVector = rotationMatrix * moveVector;
+            translate(moveVector);
+        }
+
+    }
+}

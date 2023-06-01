@@ -1,6 +1,7 @@
 ﻿
 
 using OpenTK.Mathematics;
+using SpaceEngine.Entity_Component_System.Components;
 using static System.Formats.Asn1.AsnWriter;
 
 namespace SpaceEngine.Util
@@ -17,7 +18,11 @@ namespace SpaceEngine.Util
         {
             return (float)Math.Cos(x);
         }
-        public static Matrix4 createTransformationMatrix(Vector3 position, Vector3 rotation, float scale)
+        public static Matrix4 createTransformationMatrix(Transformation transformation)
+        {
+            return createTransformationMatrix(transformation.position, transformation.rotation, transformation.scale);
+        }
+            public static Matrix4 createTransformationMatrix(Vector3 position, Vector3 rotation, float scale)
         {
 
             Matrix4 matrix = Matrix4.Identity;
@@ -26,7 +31,11 @@ namespace SpaceEngine.Util
             matrix = matrix * Matrix4.CreateScale(scale);
             return matrix;
         }
-        public static Matrix4 createViewMatrix(Vector3 position, Vector3 rotation)
+        public static Matrix4 createViewMatrix(Transformation transformation)
+        {
+            return createViewMatrix(transformation.position, transformation.rotation);
+        }
+            public static Matrix4 createViewMatrix(Vector3 position, Vector3 rotation)
         {
 
             Matrix4 matrix = Matrix4.Identity;

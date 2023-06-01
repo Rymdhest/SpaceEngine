@@ -1,4 +1,4 @@
-﻿using SpaceEngine.GameWorld;
+﻿
 using OpenTK.Mathematics;
 using SpaceEngine.RenderEngine;
 using SpaceEngine.Util;
@@ -6,14 +6,14 @@ using Noise;
 
 namespace SpaceEngine.Modelling
 {
-    internal class TerrainChunk : ModelEntity
+    internal class TerrainChunk 
     {
         private float spaceBetweenVertices;
-        public TerrainChunk(Vector3 position, float WorldSize, int verticesPerRow) : base(position, new Vector3(0f), null)
+        public TerrainChunk(Vector3 position, float WorldSize, int verticesPerRow)
         {
-            base.setModel(generateModel(verticesPerRow, WorldSize));
+            
         }
-        private Model generateModel(int verticesPerRow, float WorldSize)
+        public static Model generateModel(int verticesPerRow, float WorldSize)
         {
             int totalVertices = verticesPerRow * verticesPerRow;
             float[] positions = new float[totalVertices * 3];
@@ -63,7 +63,7 @@ namespace SpaceEngine.Modelling
 
             return glLoader.loadToVAO(new RawModel(positions, colors, indices));
         }
-        private float noiseFunction(float x, float z)
+        private static float noiseFunction(float x, float z)
         {
             float frequency = 0.05f;
             float magnitude = 7f;

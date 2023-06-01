@@ -1,10 +1,11 @@
 ﻿
 
 using OpenTK.Graphics.OpenGL;
+using SpaceEngine.Entity_Component_System;
 
 namespace SpaceEngine.RenderEngine
 {
-    internal class Model
+    internal class Model : Component
     {
         private int vaoID;
         private int[] VBOS;

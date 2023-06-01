@@ -3,8 +3,9 @@ using OpenTK.Mathematics;
 using SpaceEngine.Shaders;
 using OpenTK.Graphics.OpenGL;
 using SpaceEngine.Util;
-using SpaceEngine.GameWorld;
 using OpenTK.Windowing.Common;
+using SpaceEngine.Entity_Component_System;
+using SpaceEngine.Entity_Component_System.Components;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -38,7 +39,7 @@ namespace SpaceEngine.RenderEngine
             //projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(fieldOfView, aspect, near, far);
         }
 
-        public void prepareFrame(Camera camera)
+        public void prepareFrame(Matrix4 viewMatrix)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Enable(EnableCap.DepthTest);
@@ -46,7 +47,7 @@ namespace SpaceEngine.RenderEngine
 
             basicShader.bind();
             basicShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
-            basicShader.loadUniformMatrix4f("viewMatrix", camera.createViewMatrix());
+            basicShader.loadUniformMatrix4f("viewMatrix", viewMatrix);
 
         }
 
@@ -58,19 +59,20 @@ namespace SpaceEngine.RenderEngine
             WindowHandler.getWindow().SwapBuffers();
         }
 
-        public void render(List<ModelEntity> modelEntities, Camera camera)
+        public void render(List<Entity> modelEntities, Matrix4 viewMatrix)
         {
-            prepareFrame(camera);
+            prepareFrame(viewMatrix);
 
-            foreach (ModelEntity modelEntity in modelEntities)
+            foreach (Entity modelEntity in modelEntities)
             {
-
-                basicShader.loadUniformMatrix4f("TransformationMatrix", modelEntity.createTransformationMatrix());
-                GL.BindVertexArray(modelEntity.GetModel().getVAOID());
+                Matrix4 transformationMatrix = MyMath.createTransformationMatrix(modelEntity.getComponent<Transformation>());
+                Model model = modelEntity.getComponent<Model>();
+                basicShader.loadUniformMatrix4f("TransformationMatrix", transformationMatrix);
+                GL.BindVertexArray(model.getVAOID());
                 GL.EnableVertexAttribArray(0);
                 GL.EnableVertexAttribArray(1);
 
-                GL.DrawElements(PrimitiveType.Triangles, modelEntity.GetModel().getVertexCount(), DrawElementsType.UnsignedInt, 0);
+                GL.DrawElements(PrimitiveType.Triangles, model.getVertexCount(), DrawElementsType.UnsignedInt, 0);
                 
             }
             //GL.BindBuffer(BufferTarget.ArrayBuffer, model.getIndexBuffer());
