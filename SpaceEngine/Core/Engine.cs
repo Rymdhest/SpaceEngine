@@ -19,7 +19,7 @@ namespace SpaceEngine.Core
         {
             Vector2i resoltion = new Vector2i(1600, 800);
             windowHandler = new WindowHandler(resoltion);
-            masterRenderer = new MasterRenderer(resoltion);
+            masterRenderer = new MasterRenderer();
             entityManager= new EntityManager();
             inputHandler = new InputHandler();
 
@@ -46,6 +46,7 @@ namespace SpaceEngine.Core
             };
             WindowHandler.getWindow().Resize += delegate (ResizeEventArgs eventArgs)
             {
+                windowHandler.onResize(eventArgs);
                 masterRenderer.onResize(eventArgs);
             };
 
@@ -65,17 +66,18 @@ namespace SpaceEngine.Core
 
         private void update(float delta)
         {
-            inputHandler.update(delta);
             EngineDeltaClock += delta;
             windowHandler.update(delta);
             entityManager.update(delta);
             masterRenderer.update(delta);
+            inputHandler.update(delta);
         }
 
         private void render()
         {
             Matrix4 viewMatrix = MyMath.createViewMatrix(entityManager.camera.getComponent<Transformation>());
-            masterRenderer.render(entityManager.renderEntities, viewMatrix); 
+            Vector3 cameraPos = entityManager.camera.getComponent<Transformation>().position;
+            masterRenderer.render(entityManager.renderEntities, viewMatrix, cameraPos); 
         }
     }
 }

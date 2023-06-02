@@ -11,10 +11,8 @@ namespace SpaceEngine.Entity_Component_System
         public Entity owner { get; set; }
 
 
-        public virtual void initialize()
-        {
-
-        }
+        public virtual void initialize()   { }
+        public virtual void cleanUp() { }
         public virtual void update(float delta) { }
     }
 }

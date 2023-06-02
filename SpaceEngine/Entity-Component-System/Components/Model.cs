@@ -28,7 +28,7 @@ namespace SpaceEngine.RenderEngine
             return vertexCount;
         }
 
-        public void cleanUp()
+        public override void cleanUp()
         {
             GL.DeleteVertexArray(vaoID);
             for (int i = 0; i<VBOS.Length; i++)

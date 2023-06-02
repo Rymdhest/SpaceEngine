@@ -16,21 +16,22 @@ namespace SpaceEngine.RenderEngine
         private float delta = 0f;
         private int framesLastSecond = 0;
         private int framesCurrentSecond = 0;
+        public static Vector2i resolution;
 
-        public WindowHandler(Vector2i resoltion)
+        public WindowHandler(Vector2i resolution)
         {
             GameWindowSettings gws = GameWindowSettings.Default;
             NativeWindowSettings nws = NativeWindowSettings.Default;
-
+            WindowHandler.resolution = resolution;
             nws.API = ContextAPI.OpenGL;
             //nws.APIVersion = Version.Parse("3.3");
             nws.AutoLoadBindings = true;
             nws.Title = title;
-            nws.Size = resoltion;
+            nws.Size = resolution;
             nws.Location = new Vector2i(100, 100);
 
-            gws.RenderFrequency = 1200;
-            gws.UpdateFrequency = 1200;
+            gws.RenderFrequency = 60;
+            gws.UpdateFrequency = 60;
 
             gameWindow = new GameWindow(gws, nws);
 
@@ -58,6 +59,11 @@ namespace SpaceEngine.RenderEngine
 
             framesCurrentSecond++;
             
+        }
+        public void onResize(ResizeEventArgs eventArgs)
+        {
+            resolution.X = eventArgs.Width;
+            resolution.Y = eventArgs.Height;
         }
         public float getDelta()
         {

@@ -7,7 +7,7 @@ in vec3 worldPosition[];
 
 out vec3 fragColor;
 out vec3 fragNormal;
-out vec3 pos;
+out vec3 posWorld;
 
 uniform mat4 projectionMatrix;
 uniform mat4 TransformationMatrix;
@@ -52,7 +52,7 @@ void main()
     gl_Position = gl_in[i].gl_Position;
     fragColor = geoColor[i];
 	fragNormal = faceNormal;
-	pos = worldPosition[i];
+	posWorld = worldPosition[i];
     EmitVertex();
   }
   EndPrimitive();

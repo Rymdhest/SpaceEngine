@@ -26,9 +26,22 @@ namespace SpaceEngine.Entity_Component_System
             components[typeof(T)] = component;
             component.initialize();
         }
+        public void cleanUp()
+        {
+            foreach (Component component in components.Values)
+            {
+                component.cleanUp();
+            }
+            components.Clear();
+        }
         public void removeComponent<T>() where T : Component
         {
-            components.Remove(typeof(T));
+            Type type = typeof(T);
+            if (components.TryGetValue(type, out Component component))
+            {
+                component.cleanUp();
+                components.Remove(typeof(T));
+            }
         }
         public void updateComponents(float delta)
         {
