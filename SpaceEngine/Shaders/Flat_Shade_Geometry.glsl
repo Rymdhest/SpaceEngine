@@ -3,11 +3,11 @@ layout(triangles) in;
 layout(triangle_strip, max_vertices=3) out;
 
 in vec3 geoColor[];
-in vec3 worldPosition[];
+in vec3 positionViewSpace[];
 
 out vec3 fragColor;
 out vec3 fragNormal;
-out vec3 posWorld;
+out vec3 positionViewSpace_pass;
 
 uniform mat4 projectionMatrix;
 uniform mat4 TransformationMatrix;
@@ -40,9 +40,9 @@ void main()
 	//vec3 v2 = gl_in[1].gl_Position.xyz;
 	//vec3 v3 = gl_in[2].gl_Position.xyz;
 
-	vec3 v1 = worldPosition[0];
-	vec3 v2 = worldPosition[1];
-	vec3 v3 = worldPosition[2];
+	vec3 v1 = positionViewSpace[0];
+	vec3 v2 = positionViewSpace[1];
+	vec3 v3 = positionViewSpace[2];
 
 	vec3 faceNormal = calculateFaceNormal(v1,v2,v3);
 	//faceNormal = normalize((modelViewMatrix*vec4(faceNormal, 0.0)).xyz);
@@ -52,7 +52,7 @@ void main()
     gl_Position = gl_in[i].gl_Position;
     fragColor = geoColor[i];
 	fragNormal = faceNormal;
-	posWorld = worldPosition[i];
+	positionViewSpace_pass = positionViewSpace[i];
     EmitVertex();
   }
   EndPrimitive();

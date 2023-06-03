@@ -19,7 +19,19 @@ namespace SpaceEngine.RenderEngine
             buffer2 = new FrameBuffer(frameBufferSettings);
             toggle = true;
         }
-        private void renderQuad(int texture)
+        private void renderTexture(int texture)
+        {
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+            render();
+        }
+        public void renderTextureToScreen(int texture)
+        {
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            renderTexture(texture);
+        }
+        private void render()
         {
             GL.BindVertexArray(quadModel.getVAOID());
             GL.EnableVertexAttribArray(0);
@@ -27,24 +39,23 @@ namespace SpaceEngine.RenderEngine
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
             GL.DepthMask(false);
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, texture);
 
             GL.DrawElements(PrimitiveType.Triangles, quadModel.getVertexCount(), DrawElementsType.UnsignedInt, 0);
 
             GL.BindVertexArray(0);
             stepToggle();
         }
-        public void renderTextureToScreen(int texture)
+        public void renderToNextFrameBuffer()
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            renderQuad(texture);
+            getNextFrameBuffer().bind();
+            render();
+
         }
         public void renderTextureToNextFrameBuffer(int texture)
         {
             getNextFrameBuffer().bind();
             //GL.Viewport(0, 0, resolution.X, resolution.Y);
-            renderQuad(texture);
+            renderTexture(texture);
         }
         public int getLastOutputTexture()
         {

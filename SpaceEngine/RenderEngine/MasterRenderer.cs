@@ -11,26 +11,22 @@ namespace SpaceEngine.RenderEngine
 {
     internal class MasterRenderer
     {
-        private ShaderProgram flatShader = new ShaderProgram("Flat_Shade_Vertex", "Flat_Shade_Fragment", "Flat_Shade_Geometry");
+        
         private ShaderProgram simpleShader = new ShaderProgram("Simple_Vertex", "Simple_Fragment");
         private Matrix4 projectionMatrix;
         private float fieldOfView;
         private float near = 0.1f;
         private float far = 100f;
-        public FrameBuffer gBuffer;
+        private Vector3 sunPosition = new Vector3(-30000f, 30000f, -30000f);
         private ScreenQuadRenderer screenQuadRenderer;
+        private GeometryPassRenderer geometryPassRenderer;
+        private DeferredLightPassRenderer deferredLightPassRenderer;
         public MasterRenderer() {
             fieldOfView = MyMath.PI/2f;
-            FrameBufferSettings gBufferSettings = new FrameBufferSettings();
-            gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment0));
-            gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment1));
-            gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment2));
 
-            DepthAttachmentSettings depthSettings = new DepthAttachmentSettings();
-            depthSettings.isTexture = true;
-            gBufferSettings.depthAttachmentSettings = depthSettings;
-            gBuffer = new FrameBuffer(gBufferSettings);
             screenQuadRenderer = new ScreenQuadRenderer();
+            geometryPassRenderer = new GeometryPassRenderer();
+            deferredLightPassRenderer= new DeferredLightPassRenderer();
             updateProjectionMatrix();
         }
         private void updateProjectionMatrix()
@@ -50,60 +46,31 @@ namespace SpaceEngine.RenderEngine
             //projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(fieldOfView, aspect, near, far);
         }
 
-        public void prepareFrame(Matrix4 viewMatrix, Vector3 viewPosition)
+        public void prepareFrame()
         {
-            
-            gBuffer.bind();
-            GL.DepthMask(true);
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.Blend);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            
 
-
-            flatShader.bind();
-            flatShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
-            flatShader.loadUniformMatrix4f("viewMatrix", viewMatrix);
-            flatShader.loadUniformVector3f("cameraPos", viewPosition);
 
         }
 
         public void finishFrame()
         {
-            GL.BindVertexArray(0);
-            flatShader.stop();
 
-            simpleShader.bind();
-            simpleShader.loadUniformInt("blitTexture", 0);
-            screenQuadRenderer.renderTextureToNextFrameBuffer(gBuffer.getRenderAttachment(0));
-            screenQuadRenderer.renderTextureToScreen(screenQuadRenderer.getLastOutputTexture());
-            simpleShader.stop();
+
+
 
             WindowHandler.getWindow().SwapBuffers();
-            
         }
-
+   
         public void render(List<Entity> modelEntities, Matrix4 viewMatrix, Vector3 viewPosition)
         {
+            prepareFrame();
+            geometryPassRenderer.render(modelEntities, viewMatrix, projectionMatrix);
             
-            prepareFrame(viewMatrix, viewPosition);
-
-            foreach (Entity modelEntity in modelEntities)
-            {
-                Matrix4 transformationMatrix = MyMath.createTransformationMatrix(modelEntity.getComponent<Transformation>());
-                Model model = modelEntity.getComponent<Model>();
-                flatShader.loadUniformMatrix4f("TransformationMatrix", transformationMatrix);
-                GL.BindVertexArray(model.getVAOID());
-                GL.EnableVertexAttribArray(0);
-                GL.EnableVertexAttribArray(1);
-
-                GL.DrawElements(PrimitiveType.Triangles, model.getVertexCount(), DrawElementsType.UnsignedInt, 0);
-                
-            }
-            GL.DisableVertexAttribArray(0);
-            GL.DisableVertexAttribArray(1);
-            //GL.BindBuffer(BufferTarget.ArrayBuffer, model.getIndexBuffer());
-            //GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+            deferredLightPassRenderer.render(geometryPassRenderer.gBuffer, sunPosition, viewMatrix);
+            simpleShader.bind();
+            simpleShader.loadUniformInt("blitTexture", 0);
+            screenQuadRenderer.renderTextureToScreen(deferredLightPassRenderer.quadRenderer.getLastOutputTexture());
+            simpleShader.stop();
             finishFrame();
         }
         public void update(float delta)
