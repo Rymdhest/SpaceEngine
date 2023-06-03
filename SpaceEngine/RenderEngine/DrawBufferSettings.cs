@@ -11,7 +11,7 @@ namespace SpaceEngine.RenderEngine
     {
         public PixelInternalFormat formatInternal = PixelInternalFormat.Rgba;
         public PixelFormat formatExternal = PixelFormat.Rgba;
-        public PixelType pixelType = PixelType.Float;
+        public PixelType pixelType = PixelType.UnsignedByte;
         public FramebufferAttachment colorAttachment;
         public DrawBufferSettings(FramebufferAttachment colorAttachment) {
             this.colorAttachment = colorAttachment;

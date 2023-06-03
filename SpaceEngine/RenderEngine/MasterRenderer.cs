@@ -11,12 +11,14 @@ namespace SpaceEngine.RenderEngine
 {
     internal class MasterRenderer
     {
-        private ShaderProgram basicShader = new ShaderProgram("Vertex_Shader", "Fragment_Shader", "Geometry_Shader");
+        private ShaderProgram flatShader = new ShaderProgram("Flat_Shade_Vertex", "Flat_Shade_Fragment", "Flat_Shade_Geometry");
+        private ShaderProgram simpleShader = new ShaderProgram("Simple_Vertex", "Simple_Fragment");
         private Matrix4 projectionMatrix;
         private float fieldOfView;
         private float near = 0.1f;
         private float far = 100f;
         public FrameBuffer gBuffer;
+        private ScreenQuadRenderer screenQuadRenderer;
         public MasterRenderer() {
             fieldOfView = MyMath.PI/2f;
             FrameBufferSettings gBufferSettings = new FrameBufferSettings();
@@ -28,6 +30,7 @@ namespace SpaceEngine.RenderEngine
             depthSettings.isTexture = true;
             gBufferSettings.depthAttachmentSettings = depthSettings;
             gBuffer = new FrameBuffer(gBufferSettings);
+            screenQuadRenderer = new ScreenQuadRenderer();
             updateProjectionMatrix();
         }
         private void updateProjectionMatrix()
@@ -49,35 +52,47 @@ namespace SpaceEngine.RenderEngine
 
         public void prepareFrame(Matrix4 viewMatrix, Vector3 viewPosition)
         {
+            
             gBuffer.bind();
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Enable(EnableCap.DepthTest);
             GL.DepthMask(true);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.Blend);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            
 
-            basicShader.bind();
-            basicShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
-            basicShader.loadUniformMatrix4f("viewMatrix", viewMatrix);
-            basicShader.loadUniformVector3f("cameraPos", viewPosition);
+
+            flatShader.bind();
+            flatShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
+            flatShader.loadUniformMatrix4f("viewMatrix", viewMatrix);
+            flatShader.loadUniformVector3f("cameraPos", viewPosition);
 
         }
 
         public void finishFrame()
         {
             GL.BindVertexArray(0);
-            gBuffer.resolveToScreen();
-            basicShader.stop();
+            flatShader.stop();
+
+            simpleShader.bind();
+            simpleShader.loadUniformInt("blitTexture", 0);
+            screenQuadRenderer.renderTextureToNextFrameBuffer(gBuffer.getRenderAttachment(0));
+            screenQuadRenderer.renderTextureToScreen(screenQuadRenderer.getLastOutputTexture());
+            simpleShader.stop();
+
             WindowHandler.getWindow().SwapBuffers();
+            
         }
 
         public void render(List<Entity> modelEntities, Matrix4 viewMatrix, Vector3 viewPosition)
         {
+            
             prepareFrame(viewMatrix, viewPosition);
 
             foreach (Entity modelEntity in modelEntities)
             {
                 Matrix4 transformationMatrix = MyMath.createTransformationMatrix(modelEntity.getComponent<Transformation>());
                 Model model = modelEntity.getComponent<Model>();
-                basicShader.loadUniformMatrix4f("TransformationMatrix", transformationMatrix);
+                flatShader.loadUniformMatrix4f("TransformationMatrix", transformationMatrix);
                 GL.BindVertexArray(model.getVAOID());
                 GL.EnableVertexAttribArray(0);
                 GL.EnableVertexAttribArray(1);
@@ -85,6 +100,8 @@ namespace SpaceEngine.RenderEngine
                 GL.DrawElements(PrimitiveType.Triangles, model.getVertexCount(), DrawElementsType.UnsignedInt, 0);
                 
             }
+            GL.DisableVertexAttribArray(0);
+            GL.DisableVertexAttribArray(1);
             //GL.BindBuffer(BufferTarget.ArrayBuffer, model.getIndexBuffer());
             //GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             finishFrame();

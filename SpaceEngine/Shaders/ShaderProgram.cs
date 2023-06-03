@@ -45,7 +45,10 @@ namespace SpaceEngine.Shaders
             extractAllUniformsToDictionary(geometryFile);
 
         }
-
+        public void loadUniformInt(string variableName, int value)
+        {
+            GL.Uniform1(uniforms[variableName], value);
+        }
         public void loadUniformFloat(string variableName, float value)
         {
             GL.Uniform1(uniforms[variableName], value);

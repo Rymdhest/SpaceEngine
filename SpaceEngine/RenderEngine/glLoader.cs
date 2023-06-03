@@ -22,6 +22,15 @@ namespace SpaceEngine.RenderEngine
             unbindVAO();
             return new Model(vaoID, VBOS, indices.Length);
         }
+        public static Model loadToVAO(float[] positions, int[] indices)
+        {
+            int vaoID = createVAO();
+            int[] VBOS = new int[2];
+            VBOS[1] = bindIndicesBuffer(indices);
+            VBOS[0] = storeDataInAttributeList(0, 2, positions);
+            unbindVAO();
+            return new Model(vaoID, VBOS, indices.Length);
+        }
 
         private static int createVAO()
         {
