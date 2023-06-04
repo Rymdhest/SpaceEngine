@@ -20,7 +20,6 @@ namespace SpaceEngine.RenderEngine
             gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment2));
 
             DepthAttachmentSettings depthSettings = new DepthAttachmentSettings();
-            depthSettings.isTexture = true;
             gBufferSettings.depthAttachmentSettings = depthSettings;
             gBuffer = new FrameBuffer(gBufferSettings);
         }
@@ -30,7 +29,9 @@ namespace SpaceEngine.RenderEngine
             gBuffer.bind();
             GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.Blend);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+            GL.Disable(EnableCap.Blend);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
   

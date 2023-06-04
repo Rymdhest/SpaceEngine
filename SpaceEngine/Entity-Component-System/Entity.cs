@@ -1,4 +1,6 @@
 ﻿
+using SpaceEngine.Entity_Component_System.Components;
+
 namespace SpaceEngine.Entity_Component_System
 {
     internal class Entity
@@ -8,6 +10,7 @@ namespace SpaceEngine.Entity_Component_System
         public Entity()
         {
             components= new Dictionary<Type, Component>();
+            EntityManager.entities.Add(this);
         }
 
         public T getComponent<T>() where T : Component

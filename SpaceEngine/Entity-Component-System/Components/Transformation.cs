@@ -7,8 +7,8 @@ namespace SpaceEngine.Entity_Component_System.Components
 {
     internal class Transformation : Component
     {
-        public Vector3 position { get; set; }
-        public Vector3 rotation { get; set; }
+        public Vector3 position;
+        public Vector3 rotation;
         public float scale { get; set; }
         public Transformation(float posX = 0.0f, float posY = 0.0f, float posZ = 0.0f, 
             float rotX = 0.0f, float rotY = 0.0f, float rotZ = 0.0f, float scale = 1.0f)

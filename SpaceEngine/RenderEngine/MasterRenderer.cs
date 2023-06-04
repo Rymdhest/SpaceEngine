@@ -17,7 +17,7 @@ namespace SpaceEngine.RenderEngine
         private float fieldOfView;
         private float near = 0.1f;
         private float far = 100f;
-        private Vector3 sunPosition = new Vector3(-30000f, 30000f, -30000f);
+        private Vector3 sunPosition = new Vector3(-30000f, 3000f, -30000f);
         private ScreenQuadRenderer screenQuadRenderer;
         private GeometryPassRenderer geometryPassRenderer;
         private DeferredLightPassRenderer deferredLightPassRenderer;
@@ -57,16 +57,15 @@ namespace SpaceEngine.RenderEngine
 
 
 
-
             WindowHandler.getWindow().SwapBuffers();
         }
    
-        public void render(List<Entity> modelEntities, Matrix4 viewMatrix, Vector3 viewPosition)
+        public void render(List<Entity> modelEntities, Matrix4 viewMatrix, Vector3 viewPosition, List<Entity> pointLights)
         {
             prepareFrame();
             geometryPassRenderer.render(modelEntities, viewMatrix, projectionMatrix);
             
-            deferredLightPassRenderer.render(geometryPassRenderer.gBuffer, sunPosition, viewMatrix);
+            deferredLightPassRenderer.render(geometryPassRenderer.gBuffer, sunPosition, viewMatrix,projectionMatrix, pointLights);
             simpleShader.bind();
             simpleShader.loadUniformInt("blitTexture", 0);
             screenQuadRenderer.renderTextureToScreen(deferredLightPassRenderer.quadRenderer.getLastOutputTexture());

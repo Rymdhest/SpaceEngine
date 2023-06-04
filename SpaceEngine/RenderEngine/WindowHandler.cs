@@ -55,7 +55,7 @@ namespace SpaceEngine.RenderEngine
                 gameWindow.Title = title + " " + framesLastSecond + " FPS";
                 secondStopWatch.Restart();
 
-    }
+            }
 
             framesCurrentSecond++;
             

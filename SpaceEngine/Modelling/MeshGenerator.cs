@@ -37,7 +37,7 @@ namespace SpaceEngine.Modelling
             return new RawModel(positions, colours, indices);
         }
 
-        public static RawModel generateIcosahedron(float scale)
+        public static RawModel generateIcosahedron(float scale, Vector3 color)
         {
             float[] positions = {
          0.000000f, -1.000000f, 0.000000f,
@@ -172,17 +172,17 @@ namespace SpaceEngine.Modelling
             }
             for (int i = 0; i < positions.Length; i += 3)
             {
-                colours[i] *= scale;
-                colours[i + 1] *= scale;
-                colours[i + 2] *= scale;
+                positions[i] *= scale;
+                positions[i + 1] *= scale;
+                positions[i + 2] *= scale;
             }
 
 
             for (int i = 0; i < colours.Length; i += 3)
             {
-                colours[i] = 1.0f;
-                colours[i + 1] = 0.0f;
-                colours[i + 2] = 0.0f;
+                colours[i] = color.X;
+                colours[i + 1] = color.Y;
+                colours[i + 2] = color.Z;
             }
             return new RawModel(positions, colours, indices);
 

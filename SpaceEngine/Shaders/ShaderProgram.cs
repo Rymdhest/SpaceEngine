@@ -101,7 +101,7 @@ namespace SpaceEngine.Shaders
                         if (!uniforms.ContainsKey(variableName))
                         {
                             int location = GL.GetUniformLocation(programID, variableName);
-                            if (location == -1) Console.WriteLine("Something went wrong getting uniform for "+variableName+" in "+name);
+                            if (location == -1) Console.WriteLine("Something went wrong getting uniform for "+variableName+" in "+ name+" maybe the variable is not used in shader?");
                             {
                                 
                             }

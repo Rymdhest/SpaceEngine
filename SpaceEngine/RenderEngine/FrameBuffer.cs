@@ -39,6 +39,14 @@ namespace SpaceEngine.RenderEngine
             unbind();
         }
 
+        public void blitDepthBufferFrom(FrameBuffer other)
+        {
+            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, other.frameBufferID);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, frameBufferID);
+            GL.BlitFramebuffer(0, 0, other.resolution.X, other.resolution.Y, 0, 0, this.resolution.X, this.resolution.Y, ClearBufferMask.DepthBufferBit, BlitFramebufferFilter.Nearest);
+            unbind();
+        }
+
         public void bind()
         {
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, frameBufferID);

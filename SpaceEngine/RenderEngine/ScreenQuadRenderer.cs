@@ -15,6 +15,7 @@ namespace SpaceEngine.RenderEngine
 
             FrameBufferSettings frameBufferSettings= new FrameBufferSettings();
             frameBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment0));
+            frameBufferSettings.depthAttachmentSettings = new DepthAttachmentSettings();
             buffer1 = new FrameBuffer(frameBufferSettings);
             buffer2 = new FrameBuffer(frameBufferSettings);
             toggle = true;
@@ -37,14 +38,15 @@ namespace SpaceEngine.RenderEngine
             GL.EnableVertexAttribArray(0);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.Blend);
             GL.DepthMask(false);
+            GL.Disable(EnableCap.Blend);
 
             GL.DrawElements(PrimitiveType.Triangles, quadModel.getVertexCount(), DrawElementsType.UnsignedInt, 0);
 
             GL.BindVertexArray(0);
             stepToggle();
         }
+
         public void renderToNextFrameBuffer()
         {
             getNextFrameBuffer().bind();

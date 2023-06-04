@@ -10,7 +10,7 @@ uniform sampler2D gAlbedo;
 uniform vec3 sunPositionViewSpace;
 const vec3 lightColor = vec3(1f, 1f, 1f);
 const float specularStrength = 0.5f;
-const float ambient = 0.3f;
+const float ambient = 0.15f;
 
 void main(void){
 	vec3 position = texture(gPosition, textureCoords).xyz;
@@ -24,6 +24,8 @@ void main(void){
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
 	vec3 specular = specularStrength * spec * lightColor;  
 	float lighting = max(dot(lightDir, normal), ambient);
+
+
 
 	vec3 color = albedo*lighting+specular;
 
