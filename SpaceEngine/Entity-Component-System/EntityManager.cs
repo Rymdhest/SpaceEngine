@@ -29,6 +29,10 @@ namespace SpaceEngine.Entity_Component_System.Components
             box.addComponent(glLoader.loadToVAO(MeshGenerator.generateBox(new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(0.5f, 0.5f, 0.5f))));
             renderEntities.Add(box);
 
+            Entity sphere = new Entity();
+            sphere.addComponent(new Transformation(new Vector3(0f, 10, 0f), new Vector3(0f,0f,0f)));
+            sphere.addComponent(glLoader.loadToVAO(MeshGenerator.generateIcosahedron(1f)));
+            renderEntities.Add(sphere);
 
             loadTerrain();
 
