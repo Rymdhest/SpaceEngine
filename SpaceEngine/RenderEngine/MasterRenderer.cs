@@ -64,10 +64,10 @@ namespace SpaceEngine.RenderEngine
             prepareFrame();
             geometryPassRenderer.render(flatShadeEntities, SmoothShadeEntities, viewMatrix, projectionMatrix);
             
-            deferredLightPassRenderer.render(geometryPassRenderer.gBuffer, sunPosition, viewMatrix,projectionMatrix, pointLights);
+            deferredLightPassRenderer.render(screenQuadRenderer, geometryPassRenderer.gBuffer, sunPosition, viewMatrix,projectionMatrix, pointLights);
             simpleShader.bind();
             simpleShader.loadUniformInt("blitTexture", 0);
-            screenQuadRenderer.renderTextureToScreen(deferredLightPassRenderer.quadRenderer.getLastOutputTexture());
+            screenQuadRenderer.renderTextureToScreen(screenQuadRenderer.getLastOutputTexture());
             simpleShader.stop();
             finishFrame();
         }
@@ -77,6 +77,8 @@ namespace SpaceEngine.RenderEngine
         }
         public void onResize(ResizeEventArgs eventArgs)
         {
+            screenQuadRenderer.onResize(eventArgs);
+            geometryPassRenderer.onResize(eventArgs);
             GL.Viewport(0, 0, WindowHandler.resolution.X, WindowHandler.resolution.Y);
             updateProjectionMatrix();
         }

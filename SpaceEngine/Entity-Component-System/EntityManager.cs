@@ -48,7 +48,7 @@ namespace SpaceEngine.Entity_Component_System.Components
             {
                 terrainChunk.cleanUp();
             }
-            float size = 10000f;
+            float size = 100f;
             int detail = 100;
             TerrainChunk terrain = new TerrainChunk(new Vector2(0f, 0f), size, detail);
             terrainChunk = new Entity();

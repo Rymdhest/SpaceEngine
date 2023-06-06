@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
 using SpaceEngine.Entity_Component_System;
 using SpaceEngine.Entity_Component_System.Components;
 using SpaceEngine.Shaders;
@@ -11,7 +12,6 @@ namespace SpaceEngine.RenderEngine
     {
         private ShaderProgram globalLightShader = new ShaderProgram("Simple_Vertex", "Global_Light_Fragment");
         private ShaderProgram pointLightShader = new ShaderProgram("Point_Light_Vertex", "Point_Light_Fragment");
-        public ScreenQuadRenderer quadRenderer = new ScreenQuadRenderer();
         public DeferredLightPassRenderer() {
             globalLightShader.bind();
             globalLightShader.loadUniformInt("gAlbedo", 0);
@@ -25,7 +25,7 @@ namespace SpaceEngine.RenderEngine
             pointLightShader.loadUniformInt("gPosition", 2);
             pointLightShader.stop();
         }
-        private void renderGlobalLight(FrameBuffer gBuffer, Vector3 sunPosition, Matrix4 viewMatrix)
+        private void renderGlobalLight(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Vector3 sunPosition, Matrix4 viewMatrix)
         {
             globalLightShader.bind();
 
@@ -37,7 +37,7 @@ namespace SpaceEngine.RenderEngine
             GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(2));
             Vector4 sunPosViewSpace = new Vector4(sunPosition.X, sunPosition.Y, sunPosition.Z, 1.0f) * viewMatrix;
             globalLightShader.loadUniformVector3f("sunPositionViewSpace", sunPosViewSpace.Xyz);
-            quadRenderer.renderToNextFrameBuffer();
+            renderer.renderToNextFrameBuffer();
 
             globalLightShader.stop();
 
@@ -88,11 +88,11 @@ namespace SpaceEngine.RenderEngine
             pointLightShader.stop();
             GL.CullFace(CullFaceMode.Back);
         }
-        public void render(FrameBuffer gBuffer, Vector3 sunPosition, Matrix4 viewMatrix, Matrix4 projectionMatrix, ComponentSystem pointLights)
+        public void render(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Vector3 sunPosition, Matrix4 viewMatrix, Matrix4 projectionMatrix, ComponentSystem pointLights)
         {
-            quadRenderer.getNextFrameBuffer().blitDepthBufferFrom(gBuffer);
-            quadRenderer.getLastFrameBuffer().blitDepthBufferFrom(gBuffer);
-            renderGlobalLight(gBuffer, sunPosition, viewMatrix);
+            renderer.getNextFrameBuffer().blitDepthBufferFrom(gBuffer);
+            renderer.getLastFrameBuffer().blitDepthBufferFrom(gBuffer);
+            renderGlobalLight(renderer, gBuffer, sunPosition, viewMatrix);
             renderPointLights(gBuffer, pointLights, viewMatrix, projectionMatrix);
         }
     }

@@ -4,6 +4,7 @@ using SpaceEngine.Entity_Component_System;
 using SpaceEngine.Util;
 using OpenTK.Graphics.OpenGL;
 using SpaceEngine.Shaders;
+using OpenTK.Windowing.Common;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -79,6 +80,10 @@ namespace SpaceEngine.RenderEngine
             //GL.BindBuffer(BufferTarget.ArrayBuffer, model.getIndexBuffer());
             //GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             finishFrame();
+        }
+        public void onResize(ResizeEventArgs eventArgs)
+        {
+            gBuffer.resize(WindowHandler.resolution);
         }
         private void finishFrame()
         {

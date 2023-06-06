@@ -1,4 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL;
+using OpenTK.Windowing.Common;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -77,6 +78,11 @@ namespace SpaceEngine.RenderEngine
         {
             if (toggle == true) toggle = false;
             else toggle = true;
+        }
+        public void onResize(ResizeEventArgs eventArgs)
+        {
+            buffer1.resize(WindowHandler.resolution);
+            buffer2.resize(WindowHandler.resolution);
         }
     }
 }

@@ -8,17 +8,22 @@ namespace SpaceEngine.RenderEngine
         private int frameBufferID;
         private int depthAttachment = -1;
         private int[] renderAttachments;
-        private Vector2i resolution;
+        private FrameBufferSettings settings;
         public FrameBuffer(FrameBufferSettings settings)
         {
-            this.resolution= settings.resolution;
+            this.settings = settings;
+            createFrameBuffer();
+        }
+
+        private void createFrameBuffer()
+        {
             frameBufferID = GL.GenFramebuffer();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, frameBufferID);
 
 
             DrawBuffersEnum[] buffers = new DrawBuffersEnum[settings.drawBuffers.Count];
             renderAttachments = new int[settings.drawBuffers.Count];
-            for (int i = 0; i<settings.drawBuffers.Count; i++)
+            for (int i = 0; i < settings.drawBuffers.Count; i++)
             {
                 renderAttachments[i] = createRenderAttachment(settings.drawBuffers[i], settings.resolution);
                 buffers[i] = (DrawBuffersEnum)settings.drawBuffers[i].colorAttachment;
@@ -30,12 +35,13 @@ namespace SpaceEngine.RenderEngine
                 depthAttachment = createDepthAttachment(settings.depthAttachmentSettings, settings.resolution);
             }
         }
+
         public void resolveToScreen()
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, frameBufferID);
             GL.DrawBuffer(DrawBufferMode.Back);
-            GL.BlitFramebuffer(0, 0, resolution.X, resolution.Y, 0, 0, WindowHandler.resolution.X, WindowHandler.resolution.Y, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
+            GL.BlitFramebuffer(0, 0, settings.resolution.X, settings.resolution.Y, 0, 0, WindowHandler.resolution.X, WindowHandler.resolution.Y, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
             unbind();
         }
 
@@ -43,14 +49,14 @@ namespace SpaceEngine.RenderEngine
         {
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, other.frameBufferID);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, frameBufferID);
-            GL.BlitFramebuffer(0, 0, other.resolution.X, other.resolution.Y, 0, 0, this.resolution.X, this.resolution.Y, ClearBufferMask.DepthBufferBit, BlitFramebufferFilter.Nearest);
+            GL.BlitFramebuffer(0, 0, other.settings.resolution.X, other.settings.resolution.Y, 0, 0, this.settings.resolution.X, this.settings.resolution.Y, ClearBufferMask.DepthBufferBit, BlitFramebufferFilter.Nearest);
             unbind();
         }
 
         public void bind()
         {
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, frameBufferID);
-            GL.Viewport(0, 0, resolution.X, resolution.Y);
+            GL.Viewport(0, 0, settings.resolution.X, settings.resolution.Y);
         }
         public int getDepthAttachment()
         {
@@ -101,6 +107,30 @@ namespace SpaceEngine.RenderEngine
         public int getRenderAttachment(int attachmentNumber)
         {
             return renderAttachments[attachmentNumber];
+        }
+        public void cleanUp()
+        {
+            if (settings.depthAttachmentSettings != null)
+            {
+                if (settings.depthAttachmentSettings.isTexture)
+                {
+                    GL.DeleteTexture(depthAttachment);
+                } else
+                {
+                    GL.DeleteRenderbuffer(depthAttachment);
+                }
+            }
+            foreach (int attachment in renderAttachments)
+            {
+                GL.DeleteTexture(attachment);
+            }
+            GL.DeleteFramebuffer(frameBufferID);
+        }
+        public void resize(Vector2i newResolution)
+        {
+            settings.resolution = newResolution;
+            cleanUp();
+            createFrameBuffer();
         }
     }
 }
