@@ -56,11 +56,11 @@ namespace SpaceEngine.Entity_Component_System.Components
                 smoothShadingModelEntities.Remove(terrainChunk);
             }
             float size = 100f;
-            int detail = 100;
+            int detail = 400;
             TerrainChunk terrain = new TerrainChunk(new Vector2(0f, 0f), size, detail);
             terrainChunk = new Entity();
             terrainChunk.addComponent(terrain.generateModel());
-            terrainChunk.addComponent(new Transformation());
+            terrainChunk.addComponent(new Transformation(new Vector3(-size/2f, 0f, -size / 2f), new Vector3(0f, MyMath.PI/2f, 0f), 1.0f));
             smoothShadingModelEntities.Add(terrainChunk);
         }
         public void update(float delta)

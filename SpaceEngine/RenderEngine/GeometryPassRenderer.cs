@@ -40,13 +40,13 @@ namespace SpaceEngine.RenderEngine
             prepareFrame(viewMatrix, projectionMatrix);
 
             flatShader.bind();
-            flatShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
-            flatShader.loadUniformMatrix4f("viewMatrix", viewMatrix);
             foreach (Entity modelEntity in flatShadeEntities)
             {
                 Matrix4 transformationMatrix = MyMath.createTransformationMatrix(modelEntity.getComponent<Transformation>());
                 Model model = modelEntity.getComponent<Model>();
-                flatShader.loadUniformMatrix4f("TransformationMatrix", transformationMatrix);
+                Matrix4 modelViewMatrix = transformationMatrix * viewMatrix;
+                smoothShader.loadUniformMatrix4f("modelViewMatrix", modelViewMatrix);
+                smoothShader.loadUniformMatrix4f("modelViewProjectionMatrix", modelViewMatrix * projectionMatrix);
                 GL.BindVertexArray(model.getVAOID());
                 GL.EnableVertexAttribArray(0);
                 GL.EnableVertexAttribArray(1);
@@ -59,13 +59,14 @@ namespace SpaceEngine.RenderEngine
 
 
             smoothShader.bind();
-            smoothShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
-            smoothShader.loadUniformMatrix4f("viewMatrix", viewMatrix);
             foreach (Entity modelEntity in smoothShadeEntities)
             {
                 Matrix4 transformationMatrix = MyMath.createTransformationMatrix(modelEntity.getComponent<Transformation>());
                 Model model = modelEntity.getComponent<Model>();
-                smoothShader.loadUniformMatrix4f("TransformationMatrix", transformationMatrix);
+                Matrix4 modelViewMatrix = transformationMatrix * viewMatrix;
+                smoothShader.loadUniformMatrix4f("modelViewMatrix", modelViewMatrix);
+                smoothShader.loadUniformMatrix4f("modelViewProjectionMatrix", modelViewMatrix*projectionMatrix);
+                smoothShader.loadUniformMatrix4f("normalModelViewMatrix", Matrix4.Transpose(Matrix4.Invert(modelViewMatrix)));
                 GL.BindVertexArray(model.getVAOID());
                 GL.EnableVertexAttribArray(0);
                 GL.EnableVertexAttribArray(1);

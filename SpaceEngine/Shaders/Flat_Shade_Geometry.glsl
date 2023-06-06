@@ -9,8 +9,6 @@ out vec3 fragColor;
 out vec3 fragNormal;
 out vec3 positionViewSpace_pass;
 
-uniform mat4 projectionMatrix;
-uniform mat4 TransformationMatrix;
 
 vec3 calculateFaceNormal(vec3 v1, vec3 v2, vec3 v3) {
 		vec3 normal = vec3(0.0, 0.0, 0.0);
@@ -35,7 +33,6 @@ vec3 calculateFaceNormal(vec3 v1, vec3 v2, vec3 v3) {
 
 void main()
 {	
-	mat4 modelViewMatrix =  TransformationMatrix;
 	//vec3 v1 = gl_in[0].gl_Position.xyz;
 	//vec3 v2 = gl_in[1].gl_Position.xyz;
 	//vec3 v3 = gl_in[2].gl_Position.xyz;
