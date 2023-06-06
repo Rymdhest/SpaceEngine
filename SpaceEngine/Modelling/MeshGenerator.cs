@@ -1,5 +1,6 @@
 ﻿
 using OpenTK.Mathematics;
+using SpaceEngine.RenderEngine;
 
 namespace SpaceEngine.Modelling
 {
@@ -37,7 +38,7 @@ namespace SpaceEngine.Modelling
             return new RawModel(positions, colours, indices);
         }
 
-        public static RawModel generateIcosahedron(float scale, Vector3 color)
+        public static RawModel generateIcosahedron(float scale, Vector3 color, MasterRenderer.Pipeline pipeline)
         {
             float[] positions = {
          0.000000f, -1.000000f, 0.000000f,
@@ -170,6 +171,22 @@ namespace SpaceEngine.Modelling
             {
                 indices[i] -= 1;
             }
+
+
+            float[] normals = new float[positions.Length];
+            if (pipeline == MasterRenderer.Pipeline.SMOOTH_SHADING)
+            {
+                for (int i = 0; i < normals.Length; i += 3)
+                {
+                    Vector3 normal = new Vector3(positions[i], positions[i + 1], positions[i + 2]);
+                    normal.Normalize();
+                    normals[i] = normal.X;
+                    normals[i + 1] = normal.Y;
+                    normals[i + 2] = normal.Z;
+                }
+            }
+
+
             for (int i = 0; i < positions.Length; i += 3)
             {
                 positions[i] *= scale;
@@ -184,7 +201,21 @@ namespace SpaceEngine.Modelling
                 colours[i + 1] = color.Y;
                 colours[i + 2] = color.Z;
             }
-            return new RawModel(positions, colours, indices);
+
+
+            if (pipeline == MasterRenderer.Pipeline.FLAT_SHADING)
+            {
+                return new RawModel(positions, colours, indices);
+            }
+            else if (pipeline == MasterRenderer.Pipeline.SMOOTH_SHADING)
+            {
+                return new RawModel(positions, colours, normals, indices);
+            }
+            else
+            {
+                return new RawModel(positions, colours, indices, pipeline);
+            }
+            
 
         }
     }

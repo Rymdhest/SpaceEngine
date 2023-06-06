@@ -5,7 +5,6 @@ using OpenTK.Graphics.OpenGL;
 using SpaceEngine.Util;
 using OpenTK.Windowing.Common;
 using SpaceEngine.Entity_Component_System;
-using SpaceEngine.Entity_Component_System.Components;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -60,7 +59,7 @@ namespace SpaceEngine.RenderEngine
             WindowHandler.getWindow().SwapBuffers();
         }
    
-        public void render(List<Entity> flatShadeEntities, List<Entity> SmoothShadeEntities, Matrix4 viewMatrix, Vector3 viewPosition, List<Entity> pointLights)
+        public void render(ComponentSystem flatShadeEntities, ComponentSystem SmoothShadeEntities, Matrix4 viewMatrix, Vector3 viewPosition, ComponentSystem pointLights)
         {
             prepareFrame();
             geometryPassRenderer.render(flatShadeEntities, SmoothShadeEntities, viewMatrix, projectionMatrix);

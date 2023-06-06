@@ -2,6 +2,8 @@
 
 using OpenTK.Graphics.OpenGL;
 using SpaceEngine.Entity_Component_System;
+using SpaceEngine.Entity_Component_System.Components;
+using System.Transactions;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -18,6 +20,14 @@ namespace SpaceEngine.RenderEngine
             this.VBOS = VBOS;
             this.vertexCount = vertexCount;
             this.pipeline = pipeline;
+
+            if (pipeline == MasterRenderer.Pipeline.FLAT_SHADING)
+            {
+                EntityManager.flatShadingSystem.addMember(this);
+            } else if (pipeline == MasterRenderer.Pipeline.SMOOTH_SHADING)
+            {
+                EntityManager.smoothShadingSystem.addMember(this);
+            }
         }
 
         public int getVAOID()
@@ -37,6 +47,7 @@ namespace SpaceEngine.RenderEngine
 
         public override void cleanUp()
         {
+            base.cleanUp();
             GL.DeleteVertexArray(vaoID);
             for (int i = 0; i<VBOS.Length; i++)
             {

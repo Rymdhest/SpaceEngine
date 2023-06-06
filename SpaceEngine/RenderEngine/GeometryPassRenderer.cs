@@ -34,16 +34,15 @@ namespace SpaceEngine.RenderEngine
             GL.Disable(EnableCap.Blend);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         }
-        public void render(List<Entity> flatShadeEntities, List<Entity> smoothShadeEntities, Matrix4 viewMatrix, Matrix4 projectionMatrix)
+        public void render(ComponentSystem flatShadeEntities, ComponentSystem smoothShadeEntities, Matrix4 viewMatrix, Matrix4 projectionMatrix)
         {
 
             prepareFrame(viewMatrix, projectionMatrix);
 
             flatShader.bind();
-            foreach (Entity modelEntity in flatShadeEntities)
+            foreach (Model model in flatShadeEntities.getMembers())
             {
-                Matrix4 transformationMatrix = MyMath.createTransformationMatrix(modelEntity.getComponent<Transformation>());
-                Model model = modelEntity.getComponent<Model>();
+                Matrix4 transformationMatrix = MyMath.createTransformationMatrix(model.owner.getComponent<Transformation>());
                 Matrix4 modelViewMatrix = transformationMatrix * viewMatrix;
                 smoothShader.loadUniformMatrix4f("modelViewMatrix", modelViewMatrix);
                 smoothShader.loadUniformMatrix4f("modelViewProjectionMatrix", modelViewMatrix * projectionMatrix);
@@ -59,10 +58,9 @@ namespace SpaceEngine.RenderEngine
 
 
             smoothShader.bind();
-            foreach (Entity modelEntity in smoothShadeEntities)
+            foreach (Model model in smoothShadeEntities.getMembers())
             {
-                Matrix4 transformationMatrix = MyMath.createTransformationMatrix(modelEntity.getComponent<Transformation>());
-                Model model = modelEntity.getComponent<Model>();
+                Matrix4 transformationMatrix = MyMath.createTransformationMatrix(model.owner.getComponent<Transformation>());
                 Matrix4 modelViewMatrix = transformationMatrix * viewMatrix;
                 smoothShader.loadUniformMatrix4f("modelViewMatrix", modelViewMatrix);
                 smoothShader.loadUniformMatrix4f("modelViewProjectionMatrix", modelViewMatrix*projectionMatrix);

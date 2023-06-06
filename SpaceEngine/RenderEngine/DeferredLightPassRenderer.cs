@@ -42,7 +42,7 @@ namespace SpaceEngine.RenderEngine
             globalLightShader.stop();
 
         }
-        private void renderPointLights(FrameBuffer gBuffer, List<Entity> pointLights, Matrix4 viewMatrix, Matrix4 projectionMatrix)
+        private void renderPointLights(FrameBuffer gBuffer, ComponentSystem pointLights, Matrix4 viewMatrix, Matrix4 projectionMatrix)
         {
             pointLightShader.bind();
             GL.Enable(EnableCap.CullFace);
@@ -66,16 +66,15 @@ namespace SpaceEngine.RenderEngine
             pointLightShader.loadUniformFloat("gScreenSizeX", WindowHandler.resolution.X);
             pointLightShader.loadUniformFloat("gScreenSizeY", WindowHandler.resolution.Y);
 
-            foreach (Entity entity in pointLights)
+            foreach (PointLight pointLight in pointLights.getMembers())
             {
-                PointLight pointLight = entity.getComponent<PointLight>();
-                Matrix4 transformationMatrix = MyMath.createTransformationMatrix(entity.getComponent<Transformation>());
-                Model model = entity.getComponent<PointLight>().lightVolumeModel;
+                Matrix4 transformationMatrix = MyMath.createTransformationMatrix(pointLight.owner.getComponent<Transformation>());
+                Model model = pointLight.lightVolumeModel;
                 pointLightShader.loadUniformMatrix4f("TransformationMatrix", transformationMatrix);
                 pointLightShader.loadUniformVector3f("attenuation", pointLight.attenuation);
                 pointLightShader.loadUniformVector3f("lightColor", pointLight.color);
 
-                Vector3 lightPositiobn = entity.getComponent<Transformation>().position;
+                Vector3 lightPositiobn = pointLight.owner.getComponent<Transformation>().position;
                 Vector4 lightPositionViewSpace = new Vector4(lightPositiobn.X, lightPositiobn.Y, lightPositiobn.Z, 1.0f) * viewMatrix;
                 pointLightShader.loadUniformVector3f("lightPositionViewSpace", lightPositionViewSpace.Xyz);
                 GL.BindVertexArray(model.getVAOID());
@@ -89,7 +88,7 @@ namespace SpaceEngine.RenderEngine
             pointLightShader.stop();
             GL.CullFace(CullFaceMode.Back);
         }
-        public void render(FrameBuffer gBuffer, Vector3 sunPosition, Matrix4 viewMatrix, Matrix4 projectionMatrix, List<Entity> pointLights)
+        public void render(FrameBuffer gBuffer, Vector3 sunPosition, Matrix4 viewMatrix, Matrix4 projectionMatrix, ComponentSystem pointLights)
         {
             quadRenderer.getNextFrameBuffer().blitDepthBufferFrom(gBuffer);
             quadRenderer.getLastFrameBuffer().blitDepthBufferFrom(gBuffer);

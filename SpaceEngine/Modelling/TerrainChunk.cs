@@ -24,7 +24,7 @@ namespace SpaceEngine.Modelling
                 }
             }
         }
-        public Model generateModel()
+        public Model generateModel(MasterRenderer.Pipeline pipeline)
         {
             
             int totalVertices = resolution * resolution;
@@ -47,10 +47,14 @@ namespace SpaceEngine.Modelling
                     positions[vertexPointer * 3 + 1] = localWorldY;
                     positions[vertexPointer * 3 + 2] = localWorldZ;
 
-                    Vector3 normal = calculateVertexNormal(x, z);
-                    normals[vertexPointer * 3] = normal.X;
-                    normals[vertexPointer * 3 + 1] = normal.Y;
-                    normals[vertexPointer * 3 + 2] = normal.Z;
+                    if (pipeline == MasterRenderer.Pipeline.SMOOTH_SHADING)
+                    {
+                        Vector3 normal = calculateVertexNormal(x, z);
+                        normals[vertexPointer * 3] = normal.X;
+                        normals[vertexPointer * 3 + 1] = normal.Y;
+                        normals[vertexPointer * 3 + 2] = normal.Z;
+                    }
+
 
                     colors[vertexPointer * 3] = 0f;
                     colors[vertexPointer * 3 + 1] = MyMath.clamp01(localWorldY / 10);
@@ -78,8 +82,18 @@ namespace SpaceEngine.Modelling
                     indices[pointer++] = bottomRight;
                 }
             }
-
-            return glLoader.loadToVAO(positions, colors, normals, indices);
+            Model terrainModel;
+            if (pipeline == MasterRenderer.Pipeline.SMOOTH_SHADING)
+            {
+                terrainModel = glLoader.loadToVAO(positions, colors, normals, indices);
+            } else if (pipeline == MasterRenderer.Pipeline.FLAT_SHADING)
+            {
+                terrainModel = glLoader.loadToVAO(positions, colors, indices);
+            } else
+            {
+                terrainModel = glLoader.loadToVAO(positions, colors, normals, indices);
+            }
+            return terrainModel;
         }
         public Vector3 getLocalWorldPositionFromGridSpace(int x, int z)
         {
@@ -115,7 +129,7 @@ namespace SpaceEngine.Modelling
             return vertexNormal;
         }
 
-        private static float noiseFunction(float x, float z)
+        private static float noiseFunction(double x, double z)
         {
             float frequency = 0.05f;
             float magnitude = 7f;

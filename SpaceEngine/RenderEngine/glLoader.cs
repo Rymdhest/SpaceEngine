@@ -2,6 +2,7 @@
 
 using OpenTK.Graphics.OpenGL;
 using SpaceEngine.Modelling;
+using static SpaceEngine.RenderEngine.MasterRenderer;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -9,9 +10,19 @@ namespace SpaceEngine.RenderEngine
     {
         public static Model loadToVAO(RawModel rawModel)
         {
-            return loadToVAO(rawModel.positions, rawModel.colors, rawModel.indices);
+            if (rawModel.pipeline == Pipeline.FLAT_SHADING)
+            {
+                return loadToVAO(rawModel.positions, rawModel.colors, rawModel.indices);
+            } else if (rawModel.pipeline == Pipeline.SMOOTH_SHADING)
+            {
+                return loadToVAO(rawModel.positions, rawModel.colors, rawModel.normals,rawModel.indices);
+            } else
+            {
+                return loadToVAO(rawModel.positions, rawModel.colors, rawModel.indices, rawModel.pipeline);
+            }
+            
         }
-        public static Model loadToVAO(float[] positions, float[] colors, int[] indices)
+        public static Model loadToVAO(float[] positions, float[] colors, int[] indices, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.FLAT_SHADING)
         {
             int vaoID = createVAO();
             int[] VBOS = new int[3];
@@ -20,10 +31,10 @@ namespace SpaceEngine.RenderEngine
             VBOS[0] = storeDataInAttributeList(0, 3, positions);
             VBOS[1] = storeDataInAttributeList(1, 3, colors);
             unbindVAO();
-            return new Model(vaoID, VBOS, indices.Length, MasterRenderer.Pipeline.FLAT_SHADING);
+            return new Model(vaoID, VBOS, indices.Length, pipeline);
         }
 
-        public static Model loadToVAO(float[] positions, float[] colors, float[] normals, int[] indices)
+        public static Model loadToVAO(float[] positions, float[] colors, float[] normals, int[] indices, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.SMOOTH_SHADING)
         {
             int vaoID = createVAO();
             int[] VBOS = new int[4];
@@ -33,17 +44,17 @@ namespace SpaceEngine.RenderEngine
             VBOS[1] = storeDataInAttributeList(1, 3, colors);
             VBOS[2] = storeDataInAttributeList(2, 3, normals);
             unbindVAO();
-            return new Model(vaoID, VBOS, indices.Length, MasterRenderer.Pipeline.SMOOTH_SHADING);
+            return new Model(vaoID, VBOS, indices.Length, pipeline);
         }
 
-        public static Model loadToVAO(float[] positions, int[] indices)
+        public static Model loadToVAO(float[] positions, int[] indices, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.OTHER)
         {
             int vaoID = createVAO();
             int[] VBOS = new int[2];
             VBOS[1] = bindIndicesBuffer(indices);
             VBOS[0] = storeDataInAttributeList(0, 2, positions);
             unbindVAO();
-            return new Model(vaoID, VBOS, indices.Length, MasterRenderer.Pipeline.OTHER);
+            return new Model(vaoID, VBOS, indices.Length, pipeline);
         }
 
         private static int createVAO()
