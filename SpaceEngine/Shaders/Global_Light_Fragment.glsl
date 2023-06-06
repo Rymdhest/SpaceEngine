@@ -9,8 +9,8 @@ uniform sampler2D gAlbedo;
 
 uniform vec3 sunPositionViewSpace;
 const vec3 lightColor = vec3(1f, 1f, 1f);
-const float specularStrength = 0.5f;
-const float ambient = 0.15f;
+const float specularStrength = 0.35f;
+const float ambient = 0.35f;
 
 void main(void){
 	vec3 position = texture(gPosition, textureCoords).xyz;

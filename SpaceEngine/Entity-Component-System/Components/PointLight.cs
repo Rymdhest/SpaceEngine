@@ -13,12 +13,13 @@ namespace SpaceEngine.Entity_Component_System.Components
         public Model lightVolumeModel { get; set; }
         public PointLight(Vector3 color, Vector3 attenuation)
         {
+            this.color = color;
             this.attenuation = attenuation;
             float constant = attenuation.X;
             float linear = attenuation.Y;
             float quadratic = attenuation.Z;
             float lightMax = (float)Math.Max((float)Math.Max(color.X, color.Y), color.Z);
-            radius = (-linear + (float)Math.Sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 2.5f) * lightMax))) / (2f * quadratic);
+            radius = (-linear + (float)Math.Sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 1.5f) * lightMax))) / (2f * quadratic);
             lightVolumeModel = glLoader.loadToVAO(MeshGenerator.generateIcosahedron(radius, new Vector3(0f, 0f, 1.0f), MasterRenderer.Pipeline.OTHER));
             EntityManager.pointLightSystem.addMember(this);
         }

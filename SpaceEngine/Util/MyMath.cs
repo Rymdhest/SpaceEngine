@@ -18,6 +18,11 @@ namespace SpaceEngine.Util
         {
             return (float)Math.Cos(x);
         }
+        public static float pow(float baseNumber, float exponent)
+        {
+            return (float)Math.Pow(baseNumber, exponent);
+        }
+
         public static Matrix4 createTransformationMatrix(Transformation transformation)
         {
             return createTransformationMatrix(transformation.position, transformation.rotation, transformation.scale);
@@ -66,7 +71,11 @@ namespace SpaceEngine.Util
         {
             return (1.0f - amount) * left + amount * right;
         }
-        public static Vector3 calculateFaceNormal(Vector3 v3, Vector3 v2, Vector3 v1)
+        public static Vector3 lerp(float amount, Vector3 left, Vector3 right)
+        {
+            return (1.0f - amount) * left + amount * right;
+        }
+        public static Vector3 calculateFaceNormal(Vector3 v1, Vector3 v2, Vector3 v3)
         {
             float aX, aY, aZ, bX, bY, bZ;
 

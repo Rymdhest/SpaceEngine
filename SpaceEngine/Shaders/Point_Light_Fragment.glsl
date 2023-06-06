@@ -32,7 +32,7 @@ void main(void){
 	lighting *= attenuationFactor;
 	specular *= attenuationFactor;
 
-	vec3 color = albedo*lighting+specular;
+	vec3 color = albedo*lighting*lightColor+specular;
 
 	out_Colour =  vec4(color, 1.0f);
 }
