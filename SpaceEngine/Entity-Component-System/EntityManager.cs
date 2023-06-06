@@ -11,17 +11,15 @@ namespace SpaceEngine.Entity_Component_System.Components
     internal class EntityManager
     {
 
-        public static List<Entity> entities;
-        public static List<Entity> renderEntities;
-        public static List<Entity> pointLights;
+        public static List<Entity> entities = new List<Entity>();
+        public static List<Entity> flatShadingModelEntities = new List<Entity>();
+        public static List<Entity> smoothShadingModelEntities = new List<Entity>();
+        public static List<Entity> pointLights = new List<Entity>();
         public Entity camera { get; set; }
         public Entity? terrainChunk;
         public EntityManager() {
-            entities= new List<Entity>();
-            renderEntities = new List<Entity>();
-            pointLights = new List<Entity>();
 
-            Vector3 center = new Vector3 (100, 0, 100);
+            Vector3 center = new Vector3 (0, 0, 0);
 
             camera = new Entity();
             camera.addComponent(new Transformation(new Vector3(-1f, 3f, -1f)+center, new Vector3(0.5f, MyMath.PI/2f+ MyMath.PI / 4f, 0f)));
@@ -30,7 +28,7 @@ namespace SpaceEngine.Entity_Component_System.Components
             Entity box = new Entity();
             box.addComponent(new Transformation());
             box.addComponent(glLoader.loadToVAO(MeshGenerator.generateBox(new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(0.5f, 0.5f, 0.5f))));
-            renderEntities.Add(box);
+            flatShadingModelEntities.Add(box);
 
             Random rand = new Random();
             for (int i = 0; i<100; i++)
@@ -41,7 +39,7 @@ namespace SpaceEngine.Entity_Component_System.Components
                 sphere.addComponent(glLoader.loadToVAO(MeshGenerator.generateIcosahedron(0.1f, color)));
                 sphere.addComponent(new PointLight(color, new Vector3(0.1f, 0f, 3f)));
                 sphere.addComponent(new RandomMover());
-                renderEntities.Add(sphere);
+                flatShadingModelEntities.Add(sphere);
                 pointLights.Add(sphere);
             }
 
@@ -54,14 +52,16 @@ namespace SpaceEngine.Entity_Component_System.Components
             if (terrainChunk != null)
             {
                 terrainChunk.cleanUp();
-                renderEntities.Remove(terrainChunk);
+                flatShadingModelEntities.Remove(terrainChunk);
+                smoothShadingModelEntities.Remove(terrainChunk);
             }
-            float size = 200f;
+            float size = 100f;
             int detail = 100;
+            TerrainChunk terrain = new TerrainChunk(new Vector2(0f, 0f), size, detail);
             terrainChunk = new Entity();
-            terrainChunk.addComponent(TerrainChunk.generateModel(detail, size));
+            terrainChunk.addComponent(terrain.generateModel());
             terrainChunk.addComponent(new Transformation());
-            renderEntities.Add(terrainChunk);
+            smoothShadingModelEntities.Add(terrainChunk);
         }
         public void update(float delta)
         {   

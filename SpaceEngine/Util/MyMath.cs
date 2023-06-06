@@ -66,5 +66,19 @@ namespace SpaceEngine.Util
         {
             return (1.0f - amount) * left + amount * right;
         }
+        public static Vector3 calculateFaceNormal(Vector3 v3, Vector3 v2, Vector3 v1)
+        {
+            float aX, aY, aZ, bX, bY, bZ;
+
+            aX = v2.X - v1.X;
+            aY = v2.Y - v1.Y;
+            aZ = v2.Z - v1.Z;
+
+            bX = v3.X - v1.X;
+            bY = v3.Y - v1.Y;
+            bZ = v3.Z - v1.Z;
+
+            return new Vector3((aY * bZ) - (aZ * bY), (aZ * bX) - (aX * bZ), (aX * bY) - (aY * bX));
+        }
     }
 }

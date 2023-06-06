@@ -20,8 +20,22 @@ namespace SpaceEngine.RenderEngine
             VBOS[0] = storeDataInAttributeList(0, 3, positions);
             VBOS[1] = storeDataInAttributeList(1, 3, colors);
             unbindVAO();
-            return new Model(vaoID, VBOS, indices.Length);
+            return new Model(vaoID, VBOS, indices.Length, MasterRenderer.Pipeline.FLAT_SHADING);
         }
+
+        public static Model loadToVAO(float[] positions, float[] colors, float[] normals, int[] indices)
+        {
+            int vaoID = createVAO();
+            int[] VBOS = new int[4];
+            VBOS[3] = bindIndicesBuffer(indices);
+
+            VBOS[0] = storeDataInAttributeList(0, 3, positions);
+            VBOS[1] = storeDataInAttributeList(1, 3, colors);
+            VBOS[2] = storeDataInAttributeList(2, 3, normals);
+            unbindVAO();
+            return new Model(vaoID, VBOS, indices.Length, MasterRenderer.Pipeline.SMOOTH_SHADING);
+        }
+
         public static Model loadToVAO(float[] positions, int[] indices)
         {
             int vaoID = createVAO();
@@ -29,7 +43,7 @@ namespace SpaceEngine.RenderEngine
             VBOS[1] = bindIndicesBuffer(indices);
             VBOS[0] = storeDataInAttributeList(0, 2, positions);
             unbindVAO();
-            return new Model(vaoID, VBOS, indices.Length);
+            return new Model(vaoID, VBOS, indices.Length, MasterRenderer.Pipeline.OTHER);
         }
 
         private static int createVAO()

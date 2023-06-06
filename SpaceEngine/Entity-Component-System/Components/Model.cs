@@ -10,17 +10,24 @@ namespace SpaceEngine.RenderEngine
         private int vaoID;
         private int[] VBOS;
         private int vertexCount;
+        private MasterRenderer.Pipeline pipeline;
 
-        public Model(int vaoID, int[] VBOS, int vertexCount)
+        public Model(int vaoID, int[] VBOS, int vertexCount, MasterRenderer.Pipeline pipeline)
         {
             this.vaoID = vaoID;
             this.VBOS = VBOS;
             this.vertexCount = vertexCount;
+            this.pipeline = pipeline;
         }
 
         public int getVAOID()
         {
             return vaoID;
+        }
+
+        public MasterRenderer.Pipeline getPipeline()
+        {
+            return pipeline;
         }
 
         public int getVertexCount()
