@@ -15,14 +15,14 @@ namespace SpaceEngine.Entity_Component_System.Components
         public static ComponentSystem flatShadingSystem = new ComponentSystem();
         public static ComponentSystem smoothShadingSystem = new ComponentSystem();
         public static ComponentSystem pointLightSystem = new ComponentSystem();
+        public static TerrainManager terrainManager = new TerrainManager();
         public Entity camera { get; set; }
-        public Entity? terrainChunk;
         public EntityManager() {
 
             Vector3 center = new Vector3 (0, 0, 0);
 
             camera = new Entity();
-            camera.addComponent(new Transformation(new Vector3(-1f, 3f, -1f)+center, new Vector3(0.5f, MyMath.PI/2f+ MyMath.PI / 4f, 0f)));
+            camera.addComponent(new Transformation(new Vector3(-1f, 3f, -1f)+center, new Vector3(0.5f, MathF.PI/2f+ MathF.PI / 4f, 0f)));;
             camera.addComponent(new InputMove());
 
             Entity box = new Entity();
@@ -39,27 +39,17 @@ namespace SpaceEngine.Entity_Component_System.Components
                 sphere.addComponent(new PointLight(color, new Vector3(0.1f, 0f, 1.5f)));
                 sphere.addComponent(new RandomMover());
             }
-            loadTerrain();
 
         }
         public void loadTerrain()
         {
-            if (terrainChunk != null)
-            {
-                terrainChunk.cleanUp();
-            }
-            float size = 1260f;
-            int detail =800;
-            TerrainChunk terrain = new TerrainChunk(new Vector2(0f, 0f), size, detail);
-            terrainChunk = new Entity();
-            terrainChunk.addComponent(terrain.generateModel(MasterRenderer.Pipeline.FLAT_SHADING));
-            terrainChunk.addComponent(new Transformation(new Vector3(-size/2f, 0f, -size / 2f), new Vector3(0f, 0f, 0f), 1.0f));
+            terrainManager.update(camera.getComponent<Transformation>().position);
         }
         public void update(float delta)
-        {   
+        {
+            loadTerrain();
             if (InputHandler.isKeyClicked(Keys.T))
             {
-                loadTerrain();
             }
             //camera.updateComponents(delta);
             foreach(Entity entity in entities)

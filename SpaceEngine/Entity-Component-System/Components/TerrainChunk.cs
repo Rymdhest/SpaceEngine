@@ -3,15 +3,16 @@ using OpenTK.Mathematics;
 using SpaceEngine.RenderEngine;
 using SpaceEngine.Util;
 using Noise;
+using SpaceEngine.Entity_Component_System;
 
 namespace SpaceEngine.Modelling
 {
-    internal class TerrainChunk 
+    internal class TerrainChunk : Component
     {
         private float spaceBetweenVertices;
         private float[,] heightsLocalGridSpace;
         int resolution;
-        private OpenSimplexNoise noise = new OpenSimplexNoise(25995);
+        private static OpenSimplexNoise noise = new OpenSimplexNoise(14);
         public TerrainChunk(Vector2 position, float WorldSize, int resolution)
         {
             this.resolution = resolution;

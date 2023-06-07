@@ -10,7 +10,7 @@ namespace SpaceEngine.Entity_Component_System.Components
         {
             Transformation transformation = owner.getComponent<Transformation>();
             base.update(delta);
-            float moveAmount = 5f * delta;
+            float moveAmount = 150f * delta;
             float turnAmount = 2.5f * delta;
             if (InputHandler.isKeyDown(Keys.W))
             {

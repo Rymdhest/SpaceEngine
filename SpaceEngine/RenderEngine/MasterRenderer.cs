@@ -2,7 +2,6 @@
 using OpenTK.Mathematics;
 using SpaceEngine.Shaders;
 using OpenTK.Graphics.OpenGL;
-using SpaceEngine.Util;
 using OpenTK.Windowing.Common;
 using SpaceEngine.Entity_Component_System;
 
@@ -21,7 +20,7 @@ namespace SpaceEngine.RenderEngine
         private GeometryPassRenderer geometryPassRenderer;
         private DeferredLightPassRenderer deferredLightPassRenderer;
         public MasterRenderer() {
-            fieldOfView = MyMath.PI/2f;
+            fieldOfView = MathF.PI/2f;
 
             screenQuadRenderer = new ScreenQuadRenderer();
             geometryPassRenderer = new GeometryPassRenderer();

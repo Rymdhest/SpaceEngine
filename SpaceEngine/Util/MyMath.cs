@@ -1,28 +1,10 @@
-﻿
-
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 using SpaceEngine.Entity_Component_System.Components;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace SpaceEngine.Util
 {
     internal class MyMath
     {
-        public static readonly float PI = (float)Math.PI;
-
-        public static float sin(float x)
-        {
-            return (float)Math.Sin(x);
-        }
-        public static float cos(float x)
-        {
-            return (float)Math.Cos(x);
-        }
-        public static float pow(float baseNumber, float exponent)
-        {
-            return (float)Math.Pow(baseNumber, exponent);
-        }
-
         public static Matrix4 createTransformationMatrix(Transformation transformation)
         {
             return createTransformationMatrix(transformation.position, transformation.rotation, transformation.scale);
