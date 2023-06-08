@@ -12,11 +12,13 @@ namespace SpaceEngine.Modelling
         private float spaceBetweenVertices;
         private float[,] heightsLocalGridSpace;
         private Vector2 positionChunkGlobalWorld;
-        int resolution;
-        private static OpenSimplexNoise noise = new OpenSimplexNoise(14);
+        private int resolution;
+        private float worldSize;
+        private static OpenSimplexNoise noise = new OpenSimplexNoise(4499954);
         public TerrainChunk(Vector2 position, float WorldSize, int resolution)
         {
             this.resolution = resolution;
+            this.worldSize = WorldSize;
             this.positionChunkGlobalWorld = position;
             heightsLocalGridSpace = new float[resolution, resolution];
             spaceBetweenVertices = WorldSize / (resolution-1);
@@ -28,6 +30,42 @@ namespace SpaceEngine.Modelling
                 }
             }
         }
+        public float getPolygonHeightAt(Vector2 position)
+        {
+            float height;
+            float d = spaceBetweenVertices;
+            Vector2i grid = fromGlobalWorldToLocalGrid(position);
+            float xCoord = ( position.X % d)/d;
+            float zCoord = (position.Y % d)/d;
+
+            if (xCoord <0) xCoord += 1;
+            if (zCoord < 0) zCoord += 1;
+
+            d = 1f;
+            if (xCoord <= (1 - zCoord))
+            {
+                Vector3 v1 = new Vector3(0, heightsLocalGridSpace[grid.X, grid.Y], 0);
+                Vector3 v2 = new Vector3(d, heightsLocalGridSpace[grid.X + 1, grid.Y], 0);
+                Vector3 v3 = new Vector3(0, heightsLocalGridSpace[grid.X, grid.Y + 1], d);
+                height = MyMath.barryCentric(v1, v2, v3, new Vector2(xCoord, zCoord));
+            } else
+            {
+                Vector3 v1 = new Vector3(d, heightsLocalGridSpace[grid.X+1, grid.Y], 0);
+                Vector3 v2 = new Vector3(d, heightsLocalGridSpace[grid.X+1, grid.Y+1], d);
+                Vector3 v3 = new Vector3(0, heightsLocalGridSpace[grid.X, grid.Y + 1], d);
+                height = MyMath.barryCentric(v1, v2, v3, new Vector2(xCoord, zCoord));
+            }
+
+
+            return height;
+        }
+        public Vector2i fromGlobalWorldToLocalGrid(Vector2 world)
+        {
+            Vector2 localWorld = world-positionChunkGlobalWorld;
+            Vector2i localGrid = (Vector2i)(localWorld / spaceBetweenVertices);
+            return localGrid;
+        }
+
         public RawModel generateRawModel(MasterRenderer.Pipeline pipeline)
         {
             
@@ -171,7 +209,7 @@ namespace SpaceEngine.Modelling
             mountain *= ridge;
             mountain *= mountainHeight;
 
-            float dessertHill = (1f - Math.Abs(octavedNoise(x, z, 0.0055f, 1, 8))) * (float)Math.Pow(1f-mountainess, 1.2) * 15.3f;
+            float dessertHill = (1f - Math.Abs(octavedNoise(x, z, 0.0055f, 1, 5))) * (float)Math.Pow(1f-mountainess, 1.2) * 15.3f;
 
             value += mountain+0.2f+ dessertHill;
 

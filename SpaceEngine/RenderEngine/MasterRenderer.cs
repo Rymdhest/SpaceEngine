@@ -13,8 +13,8 @@ namespace SpaceEngine.RenderEngine
         private ShaderProgram simpleShader = new ShaderProgram("Simple_Vertex", "Simple_Fragment");
         private Matrix4 projectionMatrix;
         private float fieldOfView;
-        private float near = 0.001f;
-        private float far = 100f;
+        private float near = 0.1f;
+        private float far = 1000f;
         private Vector3 sunPosition = new Vector3(-30000f, 30000f, -30000f);
         private ScreenQuadRenderer screenQuadRenderer;
         private GeometryPassRenderer geometryPassRenderer;

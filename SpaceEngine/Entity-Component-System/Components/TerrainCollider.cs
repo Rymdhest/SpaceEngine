@@ -8,7 +8,6 @@ namespace SpaceEngine.Entity_Component_System.Components
         {
             Vector3 position = owner.getComponent<Transformation>().position;
             float groundHeight = EntityManager.terrainManager.getNoiseHeightAt(position.Xz);
-
             if (owner.hasComponent<HitBox>())
             {
                 groundHeight -= owner.getComponent<HitBox>().hitBox.min.Y;

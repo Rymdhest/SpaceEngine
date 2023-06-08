@@ -3,12 +3,13 @@ using SpaceEngine.Entity_Component_System.Components;
 using SpaceEngine.Entity_Component_System;
 using SpaceEngine.RenderEngine;
 using System.Diagnostics;
+using System.ComponentModel.Design;
 
 namespace SpaceEngine.Modelling
 {
     internal class TerrainManager
     {
-        private Dictionary<Vector3i, Entity> chunkEntities = new Dictionary<Vector3i, Entity>();
+        public Dictionary<Vector3i, Entity> chunkEntities = new Dictionary<Vector3i, Entity>();
         private static float chunkSizeWorld = 200f;
         private static float viewDistanceWorld = 4000;
         private static Object threadLock = new object();
@@ -33,7 +34,18 @@ namespace SpaceEngine.Modelling
         {
             return TerrainChunk.noiseFunction(position.X, position.Y);
         }
-
+        public float getPolygonHeightAt(Vector2 position)
+        {
+            List<Entity> chunks = chunkEntities.Where(kv => kv.Key.Xy == fromWorldToChunkSpace(position)).Select(kv => kv.Value).ToList();
+            if (chunks.Count > 0) {
+                return chunks[0].getComponent<TerrainChunk>().getPolygonHeightAt(position);
+            }
+            else 
+            {
+                return TerrainChunk.noiseFunction(position.X, position.Y);
+            }
+            
+        }
         public void cleanUp()
         {
             foreach (Entity entity in chunkEntities.Values)
@@ -92,22 +104,22 @@ namespace SpaceEngine.Modelling
             Console.WriteLine("finished worker thread "+ Thread.CurrentThread.ManagedThreadId);
         }
 
+        public Vector2i fromWorldToChunkSpace(Vector2 worldSpace)
+        {
+            float chunkZ = (worldSpace.Y / chunkSizeWorld);
+            if (chunkZ < 0) chunkZ -= 1;
+            float chunkX = (worldSpace.X / chunkSizeWorld);
+            if (chunkX < 0) chunkX -= 1;
+            return new Vector2i((int)(chunkX), (int)(chunkZ));
+        }
+
         public void update(Vector3 viewPosition)
         {
             TerrainManager.chunkSizeWorld = 200f;
-            TerrainManager.viewDistanceWorld = 3500;
-
-
-
-
-
+            TerrainManager.viewDistanceWorld = 5000;
 
             List<Vector3i> desiresChunkSpacePositions = new List<Vector3i>();
-            float chunkZ = (viewPosition.Z / chunkSizeWorld);
-            if (chunkZ < 0) chunkZ -= 1;
-            float chunkX = (viewPosition.X / chunkSizeWorld);
-            if (chunkX < 0) chunkX -= 1;
-            Vector2i viewPosChunkSpace = new Vector2i((int)(chunkX), (int)(chunkZ));
+            Vector2i viewPosChunkSpace = fromWorldToChunkSpace(viewPosition.Xz);
 
             int viewDistanceChunkSpace =(int) (viewDistanceWorld / chunkSizeWorld);
             int maxDetail = 256;

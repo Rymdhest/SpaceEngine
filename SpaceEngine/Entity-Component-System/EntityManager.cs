@@ -33,7 +33,7 @@ namespace SpaceEngine.Entity_Component_System.Components
             box.addComponent(glLoader.loadToVAO(MeshGenerator.generateBox(new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(0.5f, 0.5f, 0.5f))));
 
             Random rand = new Random();
-            for (int i = 0; i<100; i++)
+            for (int i = 0; i<10; i++)
             {
                 Vector3 color = new Vector3(rand.NextSingle(), rand.NextSingle(), rand.NextSingle());
                 Entity sphere = new Entity();
@@ -54,7 +54,12 @@ namespace SpaceEngine.Entity_Component_System.Components
         }
         public void update(float delta)
         {
-
+            List<Entity> chunks = terrainManager.chunkEntities.Where(kv => kv.Key.Xy == terrainManager.fromWorldToChunkSpace(camera.getComponent<Transformation>().position.Xz)).Select(kv => kv.Value).ToList();
+            if (chunks.Count > 0 )
+            {
+                
+                //Console.WriteLine( chunks[0].getComponent<TerrainChunk>().fromGlobalWorldToLocalGrid(camera.getComponent<Transformation>().position.Xz));
+            }
             loadTerrain();
             if (InputHandler.isKeyClicked(Keys.T))
             {

@@ -9,7 +9,7 @@ namespace SpaceEngine.Util
         {
             return createTransformationMatrix(transformation.position, transformation.rotation, transformation.scale);
         }
-            public static Matrix4 createTransformationMatrix(Vector3 position, Vector3 rotation, float scale)
+        public static Matrix4 createTransformationMatrix(Vector3 position, Vector3 rotation, float scale)
         {
 
             Matrix4 matrix = Matrix4.Identity;
@@ -22,7 +22,7 @@ namespace SpaceEngine.Util
         {
             return createViewMatrix(transformation.position, transformation.rotation);
         }
-            public static Matrix4 createViewMatrix(Vector3 position, Vector3 rotation)
+        public static Matrix4 createViewMatrix(Vector3 position, Vector3 rotation)
         {
 
             Matrix4 matrix = Matrix4.Identity;
@@ -70,6 +70,14 @@ namespace SpaceEngine.Util
             bZ = v3.Z - v1.Z;
 
             return new Vector3((aY * bZ) - (aZ * bY), (aZ * bX) - (aX * bZ), (aX * bY) - (aY * bX));
+        }
+        public static float barryCentric(Vector3 p1, Vector3 p2, Vector3 p3, Vector2 pos)
+        {
+            float det = (p2.Z - p3.Z) * (p1.X - p3.X) + (p3.X - p2.X) * (p1.Z - p3.Z);
+            float l1 = ((p2.Z - p3.Z) * (pos.X - p3.X) + (p3.X - p2.X) * (pos.Y - p3.Z)) / det;
+            float l2 = ((p3.Z - p1.Z) * (pos.X - p3.X) + (p1.X - p3.X) * (pos.Y - p3.Z)) / det;
+            float l3 = 1.0f - l1 - l2;
+            return l1 * p1.Y + l2 * p2.Y + l3 * p3.Y;
         }
     }
 }
