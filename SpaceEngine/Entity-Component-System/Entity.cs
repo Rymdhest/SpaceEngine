@@ -40,6 +40,10 @@ namespace SpaceEngine.Entity_Component_System
             }
             components.Clear();
         }
+        public Boolean hasComponent<T>() where T : Component
+        {
+            return components.ContainsKey(typeof(T));
+        }
         public void removeComponent<T>() where T : Component
         {
             Type type = typeof(T);

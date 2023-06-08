@@ -28,6 +28,11 @@ namespace SpaceEngine.Modelling
 
         }
 
+        public float getNoiseHeightAt(Vector2 position)
+        {
+            return TerrainChunk.noiseFunction(position.X, position.Y);
+        }
+
         public void cleanUp()
         {
             foreach (Entity entity in chunkEntities.Values)

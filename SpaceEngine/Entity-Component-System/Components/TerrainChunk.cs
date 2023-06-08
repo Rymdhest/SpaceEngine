@@ -144,7 +144,7 @@ namespace SpaceEngine.Modelling
             vertexNormal.Normalize();
             return vertexNormal;
         }
-        private float octavedNoise(float x, float y, float frequency, float magnitude, int octaves)
+        public static float octavedNoise(float x, float y, float frequency, float magnitude, int octaves)
         {
             float value = 0;
             float totalMagnitude = 0;
@@ -159,7 +159,7 @@ namespace SpaceEngine.Modelling
             return value;
         }
 
-        private float noiseFunction(float x, float z)
+        public static float noiseFunction(float x, float z)
         {
             float value = 0f;
 

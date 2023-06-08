@@ -2,9 +2,7 @@
 using SpaceEngine.RenderEngine;
 using OpenTK.Mathematics;
 using SpaceEngine.Core;
-using OpenTK.Input;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using SpaceEngine.Util;
 
 namespace SpaceEngine.Entity_Component_System.Components
 {
@@ -23,15 +21,19 @@ namespace SpaceEngine.Entity_Component_System.Components
             Vector3 center = new Vector3 (0, 0, 0);
 
             camera = new Entity();
-            camera.addComponent(new Transformation(new Vector3(-1f, 3f, -1f)+center, new Vector3(0.5f, MathF.PI/2f+ MathF.PI / 4f, 0f)));;
+            camera.addComponent(new Transformation(new Vector3(-1f, 13f, -1f)+center, new Vector3(0.5f, MathF.PI/2f+ MathF.PI / 4f, 0f)));;
             camera.addComponent(new InputMove());
+            camera.addComponent(new Momentum());
+            //camera.addComponent(new Gravity());
+            camera.addComponent(new TerrainCollider());
+            camera.addComponent(new HitBox(new Vector3(-1, -1, -1), new Vector3(1)));
 
             Entity box = new Entity();
             box.addComponent(new Transformation());
             box.addComponent(glLoader.loadToVAO(MeshGenerator.generateBox(new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(0.5f, 0.5f, 0.5f))));
 
             Random rand = new Random();
-            for (int i = 0; i<10; i++)
+            for (int i = 0; i<100; i++)
             {
                 Vector3 color = new Vector3(rand.NextSingle(), rand.NextSingle(), rand.NextSingle());
                 Entity sphere = new Entity();
@@ -39,6 +41,10 @@ namespace SpaceEngine.Entity_Component_System.Components
                 sphere.addComponent(glLoader.loadToVAO(MeshGenerator.generateIcosahedron(0.1f, color, MasterRenderer.Pipeline.FLAT_SHADING)));
                 sphere.addComponent(new PointLight(color, new Vector3(0.1f, 0f, 1.5f)));
                 sphere.addComponent(new RandomMover());
+                sphere.addComponent(new Momentum());
+                sphere.addComponent(new Gravity());
+                sphere.addComponent(new TerrainCollider());
+                sphere.addComponent(new HitBox(new Vector3(-1, -1, -1), new Vector3(1)));
             }
 
         }
@@ -48,6 +54,7 @@ namespace SpaceEngine.Entity_Component_System.Components
         }
         public void update(float delta)
         {
+
             loadTerrain();
             if (InputHandler.isKeyClicked(Keys.T))
             {
