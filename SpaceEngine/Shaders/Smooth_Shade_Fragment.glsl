@@ -11,5 +11,5 @@ layout (location = 2) out vec4 gPosition;
 void main() {
 	gDiffuse = vec4(fragColor, 1.0);
 	gNormal = vec4(normalize(fragNormal), 1.0);
-	gPosition = vec4(positionViewSpace, 1.0);
+	gPosition = vec4(positionViewSpace, 1.0f);
 }

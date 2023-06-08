@@ -33,7 +33,9 @@ namespace SpaceEngine.RenderEngine
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
             GL.Disable(EnableCap.Blend);
+            GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+           
         }
         public void render(ComponentSystem flatShadeEntities, ComponentSystem smoothShadeEntities, Matrix4 viewMatrix, Matrix4 projectionMatrix)
         {

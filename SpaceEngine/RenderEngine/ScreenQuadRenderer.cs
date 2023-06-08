@@ -37,6 +37,7 @@ namespace SpaceEngine.RenderEngine
         {
             GL.BindVertexArray(quadModel.getVAOID());
             GL.EnableVertexAttribArray(0);
+            GL.ClearColor(1f, 0f, 0f, 1f);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Disable(EnableCap.DepthTest);
             GL.DepthMask(false);

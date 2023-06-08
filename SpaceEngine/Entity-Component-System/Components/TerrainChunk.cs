@@ -74,7 +74,7 @@ namespace SpaceEngine.Modelling
                     Vector3 rockColor = new Vector3(82 / 255f, 82 / 255f, 82 / 255f);
                     Vector3 waterColor = new Vector3(35 / 255f, 137 / 255f, 218 / 255f);
                     Vector3 color = MyMath.lerp(1f-MyMath.clamp01(normal.Y * normal.Y), groundColor, rockColor);
-                    if (positionLocalWorld.Y <= 0.25f)
+                    if (positionLocalWorld.Y <= 1.85f && normal.Y > 0.65f)
                     {
                         color = sandColor;
                     }
