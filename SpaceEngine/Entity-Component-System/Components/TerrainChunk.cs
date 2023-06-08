@@ -11,11 +11,13 @@ namespace SpaceEngine.Modelling
     {
         private float spaceBetweenVertices;
         private float[,] heightsLocalGridSpace;
+        private Vector2 positionChunkGlobalWorld;
         int resolution;
         private static OpenSimplexNoise noise = new OpenSimplexNoise(14);
         public TerrainChunk(Vector2 position, float WorldSize, int resolution)
         {
             this.resolution = resolution;
+            this.positionChunkGlobalWorld = position;
             heightsLocalGridSpace = new float[resolution, resolution];
             spaceBetweenVertices = WorldSize / (resolution-1);
             for (int z = 0; z < resolution; z++)
@@ -26,7 +28,7 @@ namespace SpaceEngine.Modelling
                 }
             }
         }
-        public Model generateModel(MasterRenderer.Pipeline pipeline)
+        public RawModel generateRawModel(MasterRenderer.Pipeline pipeline)
         {
             
             int totalVertices = resolution * resolution;
@@ -45,10 +47,10 @@ namespace SpaceEngine.Modelling
                     float localWorldX = x* spaceBetweenVertices;
                     float localWorldZ = z* spaceBetweenVertices;
                     float localWorldY = heightsLocalGridSpace[x,z];
-                    Vector3 position = new Vector3(localWorldX, localWorldY, localWorldZ);
-                    positions[vertexPointer * 3] = position.X;
-                    positions[vertexPointer * 3 + 1] = position.Y;
-                    positions[vertexPointer * 3 + 2] = position.Z;
+                    Vector3 positionLocalWorld = new Vector3(localWorldX, localWorldY, localWorldZ);
+                    positions[vertexPointer * 3] = positionLocalWorld.X;
+                    positions[vertexPointer * 3 + 1] = positionLocalWorld.Y;
+                    positions[vertexPointer * 3 + 2] = positionLocalWorld.Z;
 
 
                     Vector3 normal = calculateVertexNormal(x, z);
@@ -63,18 +65,20 @@ namespace SpaceEngine.Modelling
                     Vector3 snowColor = new Vector3(221 / 255f, 229 / 255f, 244 / 255f);
                     Vector3 dirtColor = new Vector3(144 / 255f, 120 / 255f, 48 / 255f);
                     Vector3 sandColor = new Vector3(236 / 255f, 244 / 255f, 173 / 255f);
-                    float dirtyness = noise.Evaluate(position.X*0.05f, position.Z*0.05f);
+
+                    Vector3 posiyionGlobalWorld = new Vector3(positionChunkGlobalWorld.X+positionLocalWorld.X, positionLocalWorld.Y, positionChunkGlobalWorld.Y+positionLocalWorld.Z);
+                    float dirtyness = noise.Evaluate(posiyionGlobalWorld.X*0.002f, posiyionGlobalWorld.Z*0.002f);
                     grassColor = MyMath.lerp(MyMath.clamp01(dirtyness), grassColor, dirtColor);
-                    Vector3 groundColor = MyMath.lerp(MyMath.clamp01(position.Y-100f), grassColor, snowColor);
+                    Vector3 groundColor = MyMath.lerp(MyMath.clamp01(positionLocalWorld.Y-100f), grassColor, snowColor);
 
                     Vector3 rockColor = new Vector3(82 / 255f, 82 / 255f, 82 / 255f);
                     Vector3 waterColor = new Vector3(35 / 255f, 137 / 255f, 218 / 255f);
                     Vector3 color = MyMath.lerp(1f-MyMath.clamp01(normal.Y * normal.Y), groundColor, rockColor);
-                    if (position.Y <= 0.25f)
+                    if (positionLocalWorld.Y <= 0.25f)
                     {
                         color = sandColor;
                     }
-                    if (position.Y <= 0.0f)
+                    if (positionLocalWorld.Y <= 0.0f)
                     {
                         color = waterColor;
                     }
@@ -104,17 +108,7 @@ namespace SpaceEngine.Modelling
                     indices[pointer++] = bottomRight;
                 }
             }
-            Model terrainModel;
-            if (pipeline == MasterRenderer.Pipeline.SMOOTH_SHADING)
-            {
-                terrainModel = glLoader.loadToVAO(positions, colors, normals, indices);
-            } else if (pipeline == MasterRenderer.Pipeline.FLAT_SHADING)
-            {
-                terrainModel = glLoader.loadToVAO(positions, colors, indices);
-            } else
-            {
-                terrainModel = glLoader.loadToVAO(positions, colors, normals, indices);
-            }
+            RawModel terrainModel = new RawModel(positions, colors, normals, indices, pipeline);
             return terrainModel;
         }
         public Vector3 getLocalWorldPositionFromGridSpace(int x, int z)

@@ -27,5 +27,10 @@ namespace SpaceEngine.Modelling
             this.indices = indices;
             this.pipeline = pipeline;
         }
+
+        public void cleanUp()
+        {
+
+        }
     }
 }

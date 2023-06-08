@@ -39,7 +39,6 @@ namespace SpaceEngine.RenderEngine
         {
 
             prepareFrame(viewMatrix, projectionMatrix);
-
             flatShader.bind();
             foreach (Model model in flatShadeEntities.getMembers())
             {
@@ -54,6 +53,7 @@ namespace SpaceEngine.RenderEngine
                 GL.DrawElements(PrimitiveType.Triangles, model.getVertexCount(), DrawElementsType.UnsignedInt, 0);
 
             }
+
             flatShader.stop();
 
 

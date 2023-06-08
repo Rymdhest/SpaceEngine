@@ -16,6 +16,7 @@ namespace SpaceEngine.Entity_Component_System.Components
         public static ComponentSystem smoothShadingSystem = new ComponentSystem();
         public static ComponentSystem pointLightSystem = new ComponentSystem();
         public static TerrainManager terrainManager = new TerrainManager();
+        public static Object threadLock = new object();
         public Entity camera { get; set; }
         public EntityManager() {
 
@@ -50,12 +51,17 @@ namespace SpaceEngine.Entity_Component_System.Components
             loadTerrain();
             if (InputHandler.isKeyClicked(Keys.T))
             {
+                terrainManager.cleanUp();
             }
             //camera.updateComponents(delta);
-            foreach(Entity entity in entities)
+            lock (threadLock)
             {
-                entity.updateComponents(delta);
+                foreach (Entity entity in entities)
+                {
+                    entity.updateComponents(delta);
+                }
             }
+
         }
     }
 }

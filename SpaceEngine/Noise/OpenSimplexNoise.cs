@@ -3,7 +3,6 @@
  * and heavily refactored to improve performance. */
 
 using System.Runtime.CompilerServices;
-
 namespace Noise
 {
     public class OpenSimplexNoise
