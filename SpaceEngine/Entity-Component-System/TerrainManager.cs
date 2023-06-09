@@ -60,7 +60,6 @@ namespace SpaceEngine.Modelling
                 data.rawModel.cleanUp();
             }
             finishedBuildList.Clear();
-
             buildQueue.Clear();
         }
 

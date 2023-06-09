@@ -39,6 +39,7 @@ namespace SpaceEngine.Entity_Component_System
                 component.cleanUp();
             }
             components.Clear();
+            EntityManager.entities.Remove(this);
         }
         public Boolean hasComponent<T>() where T : Component
         {

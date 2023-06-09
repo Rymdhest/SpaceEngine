@@ -1,7 +1,7 @@
 #version 330
 
 in vec3 fragColor;
-in vec3 fragNormal;
+flat in vec3 fragNormal;
 in vec3 positionViewSpace;
 
 layout (location = 0) out vec4 gDiffuse;

@@ -1,11 +1,48 @@
 ﻿
 using OpenTK.Mathematics;
 using SpaceEngine.RenderEngine;
+using System.Reflection.Emit;
+using System;
 
 namespace SpaceEngine.Modelling
 {
     internal class MeshGenerator
     {
+
+        public static RawModel generateCylinder(List<Vector3> rings, int polygonsPerRing, Vector3 color)
+        {
+            float PI = MathF.PI;
+            List<Vector3> positions = new List<Vector3>();
+            List<Vector3> colors = new List<Vector3>();
+            List<int> indices = new List<int>();
+
+            for (int ring = 0; ring<rings.Count; ring++)
+            {
+                for(int detail = 0; detail<polygonsPerRing; detail++)
+                {
+                    float x1 = MathF.Sin(2f * PI * ((float)detail / polygonsPerRing)) * rings[ring].X;
+                    float z1 = MathF.Cos(2f * PI * ((float)detail / polygonsPerRing)) * rings[ring].Z;
+                    float y1 = rings[ring].Y;
+                    Vector3 p1 = new Vector3(x1, y1, z1);
+
+                    positions.Add(p1);
+                    colors.Add(color);
+
+                    if (ring < rings.Count-1)
+                    {
+                        indices.Add((ring + 1) * polygonsPerRing + (detail + 0) % polygonsPerRing);
+                        indices.Add((ring + 0) * polygonsPerRing + (detail + 0) % polygonsPerRing);
+                        indices.Add((ring + 0) * polygonsPerRing + (detail + 1) % polygonsPerRing);
+
+                        indices.Add((ring + 1) * polygonsPerRing + (detail + 0) % polygonsPerRing);
+                        indices.Add((ring + 0) * polygonsPerRing + (detail + 1) % polygonsPerRing);
+                        indices.Add((ring + 1) * polygonsPerRing + (detail + 1) % polygonsPerRing);
+                    }
+                }
+            }
+            return new RawModel(positions, colors, indices, MasterRenderer.Pipeline.FLAT_SHADING);
+        }
+
         public static RawModel generateBox(Vector3 min, Vector3 max)
         {
             float[] positions = {
@@ -38,7 +75,7 @@ namespace SpaceEngine.Modelling
             return new RawModel(positions, colours, indices);
         }
 
-        public static RawModel generateIcosahedron(float scale, Vector3 color, MasterRenderer.Pipeline pipeline)
+        public static RawModel generateIcosahedron(Vector3 scale, Vector3 color, MasterRenderer.Pipeline pipeline)
         {
             float[] positions = {
          0.000000f, -1.000000f, 0.000000f,
@@ -189,9 +226,9 @@ namespace SpaceEngine.Modelling
 
             for (int i = 0; i < positions.Length; i += 3)
             {
-                positions[i] *= scale;
-                positions[i + 1] *= scale;
-                positions[i + 2] *= scale;
+                positions[i] *= scale.X;
+                positions[i + 1] *= scale.Y;
+                positions[i + 2] *= scale.Z;
             }
 
 

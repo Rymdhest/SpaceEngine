@@ -5,7 +5,35 @@ namespace SpaceEngine.Util
 {
     internal class MyMath
     {
+        public static Random rand = new Random();
+
+        public static Vector3 rng3D()
+        {
+            return new Vector3(rand.NextSingle(), rand.NextSingle(), rand.NextSingle());
+        }
+        public static Vector3 rng3DMinusPlus()
+        {
+            return (new Vector3(rngMinusPlus(), rngMinusPlus(), rngMinusPlus()));
+        }
+        public static Vector2 rng2D()
+        {
+            return new Vector2(rand.NextSingle(), rand.NextSingle());
+        }
+        public static Vector2 rng2DMinusPlus()
+        {
+            return (new Vector2(rngMinusPlus(), rngMinusPlus()));
+        }
+        public static float rngMinusPlus()
+        {
+            return (rand.NextSingle() * 2f - 1f);
+        }
+        public static float rng()
+        {
+            return rand.NextSingle();
+        }
+  
         public static Matrix4 createTransformationMatrix(Transformation transformation)
+        
         {
             return createTransformationMatrix(transformation.position, transformation.rotation, transformation.scale);
         }

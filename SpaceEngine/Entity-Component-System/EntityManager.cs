@@ -3,6 +3,7 @@ using SpaceEngine.RenderEngine;
 using OpenTK.Mathematics;
 using SpaceEngine.Core;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using SpaceEngine.Util;
 
 namespace SpaceEngine.Entity_Component_System.Components
 {
@@ -15,13 +16,14 @@ namespace SpaceEngine.Entity_Component_System.Components
         public static ComponentSystem pointLightSystem = new ComponentSystem();
         public static TerrainManager terrainManager = new TerrainManager();
         public static Object threadLock = new object();
+        public Entity sculpture = new Entity();
         public Entity camera { get; set; }
         public EntityManager() {
 
             Vector3 center = new Vector3 (0, 0, 0);
 
             camera = new Entity();
-            camera.addComponent(new Transformation(new Vector3(-1f, 13f, -1f)+center, new Vector3(0.5f, MathF.PI/2f+ MathF.PI / 4f, 0f)));;
+            camera.addComponent(new Transformation(new Vector3(-31f, 13f, -1f)+center, new Vector3(0.5f, MathF.PI/2f+ MathF.PI / 4f, 0f)));;
             camera.addComponent(new InputMove());
             camera.addComponent(new Momentum());
             //camera.addComponent(new Gravity());
@@ -38,7 +40,7 @@ namespace SpaceEngine.Entity_Component_System.Components
                 Vector3 color = new Vector3(rand.NextSingle(), rand.NextSingle(), rand.NextSingle());
                 Entity sphere = new Entity();
                 sphere.addComponent(new Transformation(new Vector3(4f, 2.3f, 4f) + center, new Vector3(0f, 0f, 0f)));
-                sphere.addComponent(glLoader.loadToVAO(MeshGenerator.generateIcosahedron(0.1f, color, MasterRenderer.Pipeline.FLAT_SHADING)));
+                sphere.addComponent(glLoader.loadToVAO(MeshGenerator.generateIcosahedron(new Vector3(0.5f), color, MasterRenderer.Pipeline.FLAT_SHADING)));
                 sphere.addComponent(new PointLight(color, new Vector3(0.1f, 0f, 1.5f)));
                 sphere.addComponent(new RandomMover());
                 sphere.addComponent(new Momentum());
@@ -46,6 +48,10 @@ namespace SpaceEngine.Entity_Component_System.Components
                 sphere.addComponent(new TerrainCollider());
                 sphere.addComponent(new HitBox(new Vector3(-1, -1, -1), new Vector3(1)));
             }
+            sculpture = new Entity();
+            sculpture.addComponent(new Transformation(new Vector3(-15f, -15, 0), new Vector3(0)));
+            sculpture.addComponent(glLoader.loadToVAO(ModelGenerator.generateTree()));
+            sculpture.addComponent(new TerrainCollider());
 
         }
         public void loadTerrain()
@@ -64,6 +70,22 @@ namespace SpaceEngine.Entity_Component_System.Components
             if (InputHandler.isKeyClicked(Keys.T))
             {
                 terrainManager.cleanUp();
+            } 
+            if (InputHandler.isKeyClicked(Keys.G))
+            {
+                this.sculpture.cleanUp();
+                sculpture = new Entity();
+                sculpture.addComponent(new Transformation(new Vector3(-15f, -15, 0), new Vector3(0)));
+                sculpture.addComponent(glLoader.loadToVAO(ModelGenerator.generateTree()));
+                sculpture.addComponent(new TerrainCollider());
+
+                for (int i = 0; i<100; i++)
+                {
+                    Entity sculpture = new Entity();
+                    sculpture.addComponent(new Transformation(new Vector3(MyMath.rngMinusPlus(), -100f, MyMath.rngMinusPlus())*1000f, new Vector3(0)));
+                    sculpture.addComponent(glLoader.loadToVAO(ModelGenerator.generateTree()));
+                    sculpture.addComponent(new TerrainCollider());
+                }
             }
             //camera.updateComponents(delta);
             lock (threadLock)

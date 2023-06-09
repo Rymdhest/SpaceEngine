@@ -6,7 +6,7 @@ layout(location=2) in vec3 normal;
 
 out vec3 fragColor;
 out vec3 positionViewSpace;
-out vec3 fragNormal;
+flat out vec3 fragNormal;
 uniform mat4 modelViewMatrix;
 uniform mat4 modelViewProjectionMatrix;
 uniform mat4 normalModelViewMatrix;
