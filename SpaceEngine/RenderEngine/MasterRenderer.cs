@@ -19,12 +19,14 @@ namespace SpaceEngine.RenderEngine
         private ScreenQuadRenderer screenQuadRenderer;
         private GeometryPassRenderer geometryPassRenderer;
         private DeferredLightPassRenderer deferredLightPassRenderer;
+        private PostProcessingRenderer postProcessingRenderer;
         public MasterRenderer() {
             fieldOfView = MathF.PI/2f;
 
             screenQuadRenderer = new ScreenQuadRenderer();
             geometryPassRenderer = new GeometryPassRenderer();
             deferredLightPassRenderer= new DeferredLightPassRenderer();
+            postProcessingRenderer= new PostProcessingRenderer();
             updateProjectionMatrix();
         }
         private void updateProjectionMatrix()
@@ -62,8 +64,9 @@ namespace SpaceEngine.RenderEngine
         {
             prepareFrame();
             geometryPassRenderer.render(flatShadeEntities, SmoothShadeEntities, viewMatrix, projectionMatrix);
-            
             deferredLightPassRenderer.render(screenQuadRenderer, geometryPassRenderer.gBuffer, sunPosition, viewMatrix,projectionMatrix, pointLights);
+            postProcessingRenderer.doPostProcessing(screenQuadRenderer, geometryPassRenderer.gBuffer);
+
             simpleShader.bind();
             simpleShader.loadUniformInt("blitTexture", 0);
             screenQuadRenderer.renderTextureToScreen(screenQuadRenderer.getLastOutputTexture());

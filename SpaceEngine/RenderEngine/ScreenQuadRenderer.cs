@@ -59,6 +59,7 @@ namespace SpaceEngine.RenderEngine
             getNextFrameBuffer().bind();
             //GL.Viewport(0, 0, resolution.X, resolution.Y);
             renderTexture(texture);
+            stepToggle();
         }
         public int getLastOutputTexture()
         {

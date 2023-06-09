@@ -1,4 +1,4 @@
-#version 330 core
+#version 330
 in vec2 textureCoords;
 
 layout (location = 0) out vec4 gDiffuse;
