@@ -58,6 +58,14 @@ namespace SpaceEngine.RenderEngine
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, frameBufferID);
             GL.Viewport(0, 0, settings.resolution.X, settings.resolution.Y);
         }
+        public void bindRead()
+        {
+            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, frameBufferID);
+        }
+        public void bindDraw()
+        {
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, frameBufferID);
+        }
         public int getDepthAttachment()
         {
             return depthAttachment;

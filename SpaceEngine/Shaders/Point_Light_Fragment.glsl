@@ -11,13 +11,13 @@ uniform vec3 attenuation;
 uniform float gScreenSizeX;
 uniform float gScreenSizeY;
 
-const float specularStrength = 0.5f;
 
 void main(void){
 	vec2 textureCoords = gl_FragCoord.xy / vec2(gScreenSizeX, gScreenSizeY);
 	vec3 position = texture(gPosition, textureCoords).xyz;
 	vec3 normal = texture(gNormal, textureCoords).xyz;
 	vec3 albedo = texture(gAlbedo, textureCoords).rgb;
+	float specularStrength = texture(gNormal, textureCoords).a;
 
 	vec3 viewDir = normalize(-position);
 	vec3 lightDir = normalize(lightPositionViewSpace - position);

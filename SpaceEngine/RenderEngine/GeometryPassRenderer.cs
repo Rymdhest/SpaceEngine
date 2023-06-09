@@ -56,7 +56,7 @@ namespace SpaceEngine.RenderEngine
 
             }
 
-            flatShader.stop();
+            flatShader.unBind();
 
 
 
@@ -76,7 +76,7 @@ namespace SpaceEngine.RenderEngine
                 GL.DrawElements(PrimitiveType.Triangles, model.getVertexCount(), DrawElementsType.UnsignedInt, 0);
 
             }
-            smoothShader.stop();
+            smoothShader.unBind();
 
 
             //GL.BindBuffer(BufferTarget.ArrayBuffer, model.getIndexBuffer());

@@ -1,6 +1,7 @@
 ﻿
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using System.Xml.Linq;
 
 namespace SpaceEngine.Shaders
 {
@@ -49,25 +50,77 @@ namespace SpaceEngine.Shaders
         {
             GL.Uniform1(uniforms[variableName], value);
         }
+        public void loadUniformIntArray(string variableName, int[] values)
+        {
+            for (int i = 0; i < values.Length; i++)
+            {
+                GL.Uniform1(uniforms[variableName + "[" + i + "]"], values[i]);
+            }
+        }
+
+
         public void loadUniformFloat(string variableName, float value)
         {
             GL.Uniform1(uniforms[variableName], value);
         }
+        public void loadUniformFloatArray(string variableName, float[] values)
+        {
+            for (int i = 0; i<values.Length; i++)
+            {
+                GL.Uniform1(uniforms[variableName+"["+i+"]"], values[i]);
+            }
+        }
+
+
         public void loadUniformVector2f(string variableName, Vector2 value)
         {
             GL.Uniform2(uniforms[variableName], value);
         }
+        public void loadUniformVector2fArray(string variableName, Vector2[] values)
+        {
+            for (int i = 0; i < values.Length; i++)
+            {
+                GL.Uniform2(uniforms[variableName + "[" + i + "]"], values[i]);
+            }
+        }
+
+
         public void loadUniformVector3f(string variableName, Vector3 value)
         {
             GL.Uniform3(uniforms[variableName], value);
         }
+        public void loadUniformVector3fArray(string variableName, Vector3[] values)
+        {
+            for (int i = 0; i < values.Length; i++)
+            {
+                GL.Uniform3(uniforms[variableName + "[" + i + "]"], values[i]);
+            }
+        }
+
+
         public void loadUniformVector4f(string variableName, Vector4 value)
         {
             GL.Uniform4(uniforms[variableName], value);
         }
+        public void loadUniformVector4fArray(string variableName, Vector4[] values)
+        {
+            for (int i = 0; i < values.Length; i++)
+            {
+                GL.Uniform4(uniforms[variableName + "[" + i + "]"], values[i]);
+            }
+        }
+
+
         public void loadUniformMatrix4f(string variableName, Matrix4 value)
         {
             GL.UniformMatrix4(uniforms[variableName],true, ref value);
+        }
+        public void loadUniformMatrix4fArray(string variableName, Matrix4[] values)
+        {
+            for (int i = 0; i < values.Length; i++)
+            {
+                GL.UniformMatrix4(uniforms[variableName + "[" + i + "]"],true, ref values[i]);
+            }
         }
 
         private int loadShader(string name, ShaderType type)
@@ -87,10 +140,10 @@ namespace SpaceEngine.Shaders
             return shaderID;
         }
 
-        private void extractAllUniformsToDictionary(string name)
+        private void extractAllUniformsToDictionary(string fileName)
         {
 
-            string fullPath = "../../../Shaders/" + name + ".glsl";
+            string fullPath = "../../../Shaders/" + fileName + ".glsl";
             foreach(string line in File.ReadLines(fullPath))
             {
                 string[] words = line.Split(" ");
@@ -98,26 +151,44 @@ namespace SpaceEngine.Shaders
                     if (words[0] =="uniform")
                     {
                         string variableName = words[2].Remove(words[2].Length-1, 1);
-                        if (!uniforms.ContainsKey(variableName))
+                        if (variableName.Last<char>() == ']')
                         {
-                            int location = GL.GetUniformLocation(programID, variableName);
-                            if (location == -1) Console.WriteLine("Something went wrong getting uniform for "+variableName+" in "+ name+" maybe the variable is not used in shader?");
+                            string[] variableWords = variableName.Split("[");
+                            string arraySizeString = variableWords[1];
+                            arraySizeString = arraySizeString.Remove(arraySizeString.Length - 1, 1);
+                            int arraySize = int.Parse(arraySizeString);
+                            variableName = variableWords[0];
+                            for (int i = 0; i<arraySize; i++)
                             {
-                                
+                                loadUniform(variableName+"["+i+"]", fileName);
                             }
-                            uniforms.Add(variableName, location);
+                        } else
+                        {
+                            loadUniform(variableName, fileName);
                         }
 
+                        
                     }
                 }
             }
         }
-
+        private void loadUniform(string variableName, string fileName)
+        {
+            if (!uniforms.ContainsKey(variableName))
+            {
+                int location = GL.GetUniformLocation(programID, variableName);
+                if (location == -1)
+                {
+                    Console.WriteLine("Something went wrong getting uniform for " + variableName + " in " + fileName + " maybe the variable is not used in shader?");
+                }
+                uniforms.Add(variableName, location);
+            }
+        }
         public void bind()
         {
             GL.UseProgram(programID);
         }
-        public void stop()
+        public void unBind()
         {
             GL.UseProgram(0);
         }

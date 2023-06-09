@@ -121,8 +121,8 @@ namespace SpaceEngine.Modelling
             Vector2i viewPosChunkSpace = fromWorldToChunkSpace(viewPosition.Xz);
 
             int viewDistanceChunkSpace =(int) (viewDistanceWorld / chunkSizeWorld);
-            int maxDetail = 256;
-            int minDetail = 2;
+            int maxDetail = 128;
+            int minDetail = 4;
             for (int z = -viewDistanceChunkSpace; z<= viewDistanceChunkSpace; z++)
             {
                 for (int x = -viewDistanceChunkSpace; x <= viewDistanceChunkSpace; x++)
@@ -132,7 +132,7 @@ namespace SpaceEngine.Modelling
                     int detailDampener = Math.Max(Math.Abs(x+ offsetX), Math.Abs(z+ offsetZ));
                     detailDampener -= 0;
                     if (detailDampener < 0) detailDampener = 0;
-                    detailDampener = detailDampener / 2;
+                    detailDampener = detailDampener / 4;
                     int detail = (int)(maxDetail / (Math.Pow(2, detailDampener)));
                     if (detail < minDetail) 
                     {

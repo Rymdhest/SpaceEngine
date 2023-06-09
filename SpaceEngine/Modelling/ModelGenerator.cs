@@ -7,8 +7,8 @@ namespace SpaceEngine.Modelling
         public static RawModel generateTree()
         {
 
-            Vector3 trunkColor = new Vector3 (105/255f, 75/255f, 55/255f);
-            Vector3 leafColor = new Vector3(61 / 255f, 134 / 255f, 11 / 255f);
+            Vector3 trunkColor = new Vector3 (0.55f, 0.39f, 0.18f);
+            Vector3 leafColor = new Vector3(0.49f, 0.54f, 0.24f);
 
             float trunkRadius = 0.4f;
             float trunkHeight = 4.4f;

@@ -33,7 +33,7 @@ namespace SpaceEngine.RenderEngine
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             renderTexture(texture);
         }
-        private void render()
+        public void render()
         {
             GL.BindVertexArray(quadModel.getVAOID());
             GL.EnableVertexAttribArray(0);
@@ -46,14 +46,13 @@ namespace SpaceEngine.RenderEngine
             GL.DrawElements(PrimitiveType.Triangles, quadModel.getVertexCount(), DrawElementsType.UnsignedInt, 0);
 
             GL.BindVertexArray(0);
-            stepToggle();
         }
 
         public void renderToNextFrameBuffer()
         {
             getNextFrameBuffer().bind();
             render();
-
+            stepToggle();
         }
         public void renderTextureToNextFrameBuffer(int texture)
         {
