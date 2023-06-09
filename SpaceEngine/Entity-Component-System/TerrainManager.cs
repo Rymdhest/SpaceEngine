@@ -144,15 +144,6 @@ namespace SpaceEngine.Modelling
             List<Vector3i> chunksToRemove;
             List<Vector3i> chunksToAdd;
 
-
-
-
-
-
-
-
-
-
             if (finishedBuildList.Count > 0)
             {
                 watch.Restart();

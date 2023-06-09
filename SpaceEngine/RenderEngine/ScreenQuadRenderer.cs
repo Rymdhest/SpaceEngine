@@ -12,7 +12,7 @@ namespace SpaceEngine.RenderEngine
         public ScreenQuadRenderer() {
             float[] positions = { -1, 1, -1, -1, 1, -1, 1, 1 };
             int[] indices = { 0, 1, 2, 3, 0, 2 };
-            quadModel = glLoader.loadToVAO(positions, indices);
+            quadModel = glLoader.loadToVAO(positions, indices, 2, MasterRenderer.Pipeline.OTHER);
 
             FrameBufferSettings frameBufferSettings= new FrameBufferSettings();
             frameBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment0));

@@ -11,32 +11,56 @@ namespace SpaceEngine.Modelling
         public float[] positions;
         public float[] colors;
         public float[] normals;
+        public float[] materials;
         public int[] indices;
         public MasterRenderer.Pipeline pipeline;
 
         public RawModel()
-        : this(new float[0], new float[0], new float[0], new int[0], MasterRenderer.Pipeline.FLAT_SHADING)
+        : this(new float[0], new float[0], new float[0], new float[0], new int[0], MasterRenderer.Pipeline.FLAT_SHADING)
         {
-
         }
         public RawModel(List<Vector3> positions, List<Vector3> colours, List<int> indices, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.FLAT_SHADING)
             : this(fromVector3ListToArray(positions), fromVector3ListToArray(colours), fromIntListToArray(indices), MasterRenderer.Pipeline.FLAT_SHADING)
         {
-
         }
+
         public RawModel(float[] positions, float[] colors, int[] indices, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.FLAT_SHADING)
-            : this(positions, colors, new float[0], indices, pipeline)
+            : this(positions, colors,new float[0], new float[0], indices, pipeline)
         {
-
+            materials = new float[positions.Length];
+            for (int i = 0; i < positions.Length; i++)
+            {
+                materials[i] = 1.0f;
+            }
         }
-        public RawModel(float[] positions, float[] colors, float[] normals, int[] indices, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.SMOOTH_SHADING)
+
+            public RawModel(float[] positions, float[] colors, float[] materials, float[] normals, int[] indices, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.SMOOTH_SHADING)
         {
             this.positions = positions;
             this.colors = colors;
             this.normals = normals;
+            this.materials = materials;
             this.indices = indices;
             this.pipeline = pipeline;
+
+
         }
+
+        public void setSpecularity(float setTo)
+        {
+            for (int i = 0; i < materials.Length; i += 3)
+            {
+                materials[i] = setTo;
+            }
+        }
+        public void setBloom(float setTo)
+        {
+            for (int i = 0; i < materials.Length; i += 3)
+            {
+                materials[i+1] = setTo;
+            }
+        }
+
         public void flatRandomness(float amount)
         {
             flatRandomness(new Vector3(amount));
@@ -107,6 +131,7 @@ namespace SpaceEngine.Modelling
         {
             float[] newPositions = new float[positions.Length+other.positions.Length];
             float[] newColours = new float[colors.Length + other.colors.Length];
+            float[] newMaterials = new float[materials.Length + other.materials.Length];
             float[] newnNrmals = new float[normals.Length + other.normals.Length];
             int[] newIndices = new int[indices.Length + other.indices.Length];
 
@@ -114,6 +139,7 @@ namespace SpaceEngine.Modelling
             {
                 newPositions[i] = positions[i];
                 newColours[i] = colors[i];
+                newMaterials[i] = materials[i];
             }
             for (int i = 0; i < normals.Length; i++)
             {
@@ -127,6 +153,7 @@ namespace SpaceEngine.Modelling
             {
                 newPositions[positions.Length + i] = other.positions[i];
                 newColours[positions.Length + i] = other.colors[i];
+                newMaterials[positions.Length + i] = other.materials[i];
             }
             for (int i = 0; i < other.normals.Length; i++)
             {
@@ -138,6 +165,7 @@ namespace SpaceEngine.Modelling
             }
             positions = newPositions;
             colors = newColours;
+            materials = newMaterials;
             normals = newnNrmals;
             indices = newIndices;
         }

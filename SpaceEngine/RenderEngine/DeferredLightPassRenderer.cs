@@ -80,8 +80,8 @@ namespace SpaceEngine.RenderEngine
             ambientOcclusionShader.loadUniformVector3fArray("samples", kernelSamples);
 
             ambientOcclusionShader.loadUniformFloat("radius", 0.8f);
-            ambientOcclusionShader.loadUniformFloat("strength", 7.5f);
-            ambientOcclusionShader.loadUniformFloat("bias", 0.04f);
+            ambientOcclusionShader.loadUniformFloat("strength", 5.5f);
+            ambientOcclusionShader.loadUniformFloat("bias", 0.07f);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, noiseTexture);

@@ -12,29 +12,17 @@ namespace SpaceEngine.RenderEngine
         {
             if (rawModel.pipeline == Pipeline.FLAT_SHADING)
             {
-                return loadToVAO(rawModel.positions, rawModel.colors, rawModel.indices);
+                return loadToVAO(rawModel.positions, rawModel.colors,rawModel.materials, rawModel.indices);
             } else if (rawModel.pipeline == Pipeline.SMOOTH_SHADING)
             {
-                return loadToVAO(rawModel.positions, rawModel.colors, rawModel.normals,rawModel.indices);
+                return loadToVAO(rawModel.positions, rawModel.colors, rawModel.materials, rawModel.normals,rawModel.indices);
             } else
             {
-                return loadToVAO(rawModel.positions, rawModel.colors, rawModel.indices, rawModel.pipeline);
+                return loadToVAO(rawModel.positions, rawModel.indices, 3, rawModel.pipeline);
             }
             
         }
-        public static Model loadToVAO(float[] positions, float[] colors, int[] indices, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.FLAT_SHADING)
-        {
-            int vaoID = createVAO();
-            int[] VBOS = new int[3];
-            VBOS[2] = bindIndicesBuffer(indices);
-
-            VBOS[0] = storeDataInAttributeList(0, 3, positions);
-            VBOS[1] = storeDataInAttributeList(1, 3, colors);
-            unbindVAO();
-            return new Model(vaoID, VBOS, indices.Length, pipeline);
-        }
-
-        public static Model loadToVAO(float[] positions, float[] colors, float[] normals, int[] indices, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.SMOOTH_SHADING)
+        public static Model loadToVAO(float[] positions, float[] colors, float[] materials, int[] indices, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.FLAT_SHADING)
         {
             int vaoID = createVAO();
             int[] VBOS = new int[4];
@@ -42,17 +30,31 @@ namespace SpaceEngine.RenderEngine
 
             VBOS[0] = storeDataInAttributeList(0, 3, positions);
             VBOS[1] = storeDataInAttributeList(1, 3, colors);
-            VBOS[2] = storeDataInAttributeList(2, 3, normals);
+            VBOS[2] = storeDataInAttributeList(2, 3, materials);
             unbindVAO();
             return new Model(vaoID, VBOS, indices.Length, pipeline);
         }
 
-        public static Model loadToVAO(float[] positions, int[] indices, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.OTHER)
+        public static Model loadToVAO(float[] positions, float[] colors, float[] materials, float[] normals, int[] indices, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.SMOOTH_SHADING)
+        {
+            int vaoID = createVAO();
+            int[] VBOS = new int[5];
+            VBOS[4] = bindIndicesBuffer(indices);
+
+            VBOS[0] = storeDataInAttributeList(0, 3, positions);
+            VBOS[1] = storeDataInAttributeList(1, 3, colors);
+            VBOS[2] = storeDataInAttributeList(2, 3, materials);
+            VBOS[3] = storeDataInAttributeList(3, 3, normals);
+            unbindVAO();
+            return new Model(vaoID, VBOS, indices.Length, pipeline);
+        }
+
+        public static Model loadToVAO(float[] positions, int[] indices, int dimensions, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.OTHER)
         {
             int vaoID = createVAO();
             int[] VBOS = new int[2];
             VBOS[1] = bindIndicesBuffer(indices);
-            VBOS[0] = storeDataInAttributeList(0, 2, positions);
+            VBOS[0] = storeDataInAttributeList(0, dimensions, positions);
             unbindVAO();
             return new Model(vaoID, VBOS, indices.Length, pipeline);
         }

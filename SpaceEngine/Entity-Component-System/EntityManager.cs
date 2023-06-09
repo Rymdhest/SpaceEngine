@@ -48,10 +48,7 @@ namespace SpaceEngine.Entity_Component_System.Components
                 sphere.addComponent(new TerrainCollider());
                 sphere.addComponent(new HitBox(new Vector3(-1, -1, -1), new Vector3(1)));
             }
-            sculpture = new Entity();
-            sculpture.addComponent(new Transformation(new Vector3(-15f, -15, 0), new Vector3(0)));
-            sculpture.addComponent(glLoader.loadToVAO(ModelGenerator.generateTree()));
-            sculpture.addComponent(new TerrainCollider());
+            
 
         }
         public void loadTerrain()

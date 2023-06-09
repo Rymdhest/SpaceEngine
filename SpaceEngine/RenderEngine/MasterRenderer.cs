@@ -70,6 +70,7 @@ namespace SpaceEngine.RenderEngine
             simpleShader.bind();
             simpleShader.loadUniformInt("blitTexture", 0);
             screenQuadRenderer.renderTextureToScreen(screenQuadRenderer.getLastOutputTexture());
+            //screenQuadRenderer.renderTextureToScreen(geometryPassRenderer.gBuffer.getRenderAttachment(2));
             simpleShader.unBind();
             finishFrame();
         }

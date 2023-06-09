@@ -72,6 +72,7 @@ namespace SpaceEngine.Modelling
             int totalVertices = resolution * resolution;
             float[] positions = new float[totalVertices * 3];
             float[] colors = new float[totalVertices * 3];
+            float[] materials = new float[totalVertices * 3];
             float[] normals = new float[totalVertices * 3];
             int[] indices = new int[6 * (resolution - 1) * (resolution - 1)];
 
@@ -90,7 +91,7 @@ namespace SpaceEngine.Modelling
                     positions[vertexPointer * 3 + 1] = positionLocalWorld.Y;
                     positions[vertexPointer * 3 + 2] = positionLocalWorld.Z;
 
-
+                    float specularity = 0f;
                     Vector3 normal = calculateVertexNormal(x, z);
                     if (pipeline == MasterRenderer.Pipeline.SMOOTH_SHADING)
                     {
@@ -112,6 +113,7 @@ namespace SpaceEngine.Modelling
                     Vector3 rockColor = new Vector3(82 / 255f, 82 / 255f, 82 / 255f);
                     Vector3 waterColor = new Vector3(35 / 255f, 137 / 255f, 218 / 255f);
                     Vector3 color = MyMath.lerp(1f-MyMath.clamp01(normal.Y * normal.Y), groundColor, rockColor);
+                    specularity = MyMath.lerp(1f - MyMath.clamp01(normal.Y), 0f, 1f);
                     if (positionLocalWorld.Y <= 1.85f && normal.Y > 0.65f)
                     {
                         color = sandColor;
@@ -119,11 +121,16 @@ namespace SpaceEngine.Modelling
                     if (positionLocalWorld.Y <= 0.0f)
                     {
                         color = waterColor;
+                        specularity = 1.0f;
                     }
                     colors[vertexPointer * 3] = color.X;
                     colors[vertexPointer * 3 + 1] = color.Y;
                     colors[vertexPointer * 3 + 2] = color.Z;
 
+
+                    materials[vertexPointer * 3] = specularity;
+                    materials[vertexPointer * 3 + 1] = 0f;
+                    materials[vertexPointer * 3 + 2] = 0f;
 
                     vertexPointer++;
                 }
@@ -146,7 +153,7 @@ namespace SpaceEngine.Modelling
                     indices[pointer++] = bottomRight;
                 }
             }
-            RawModel terrainModel = new RawModel(positions, colors, normals, indices, pipeline);
+            RawModel terrainModel = new RawModel(positions, colors, materials, normals, indices, pipeline);
             return terrainModel;
         }
         public Vector3 getLocalWorldPositionFromGridSpace(int x, int z)

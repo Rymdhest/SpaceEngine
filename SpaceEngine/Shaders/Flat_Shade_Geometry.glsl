@@ -4,9 +4,11 @@ layout(triangle_strip, max_vertices=3) out;
 
 in vec3 geoColor[];
 in vec3 positionViewSpace[];
+in vec3 geoMaterials[];
 
 out vec3 fragColor;
 out vec3 fragNormal;
+out vec3 fragMaterials;
 out vec3 positionViewSpace_pass;
 
 
@@ -48,6 +50,7 @@ void main()
   {
     gl_Position = gl_in[i].gl_Position;
     fragColor = geoColor[i];
+    fragMaterials = geoMaterials[i];
 	fragNormal = faceNormal;
 	positionViewSpace_pass = positionViewSpace[i];
     EmitVertex();

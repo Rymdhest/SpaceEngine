@@ -41,6 +41,7 @@ namespace SpaceEngine.RenderEngine
         {
 
             prepareFrame(viewMatrix, projectionMatrix);
+            
             flatShader.bind();
             foreach (Model model in flatShadeEntities.getMembers())
             {
@@ -51,13 +52,14 @@ namespace SpaceEngine.RenderEngine
                 GL.BindVertexArray(model.getVAOID());
                 GL.EnableVertexAttribArray(0);
                 GL.EnableVertexAttribArray(1);
+                GL.EnableVertexAttribArray(2);
 
                 GL.DrawElements(PrimitiveType.Triangles, model.getVertexCount(), DrawElementsType.UnsignedInt, 0);
 
             }
 
             flatShader.unBind();
-
+            
 
 
             smoothShader.bind();
@@ -72,6 +74,7 @@ namespace SpaceEngine.RenderEngine
                 GL.EnableVertexAttribArray(0);
                 GL.EnableVertexAttribArray(1);
                 GL.EnableVertexAttribArray(2);
+                GL.EnableVertexAttribArray(3);
 
                 GL.DrawElements(PrimitiveType.Triangles, model.getVertexCount(), DrawElementsType.UnsignedInt, 0);
 
@@ -93,6 +96,7 @@ namespace SpaceEngine.RenderEngine
             GL.DisableVertexAttribArray(0);
             GL.DisableVertexAttribArray(1);
             GL.DisableVertexAttribArray(2);
+            GL.DisableVertexAttribArray(3);
 
         }
     }

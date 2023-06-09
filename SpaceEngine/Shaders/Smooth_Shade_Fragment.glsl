@@ -1,8 +1,9 @@
 #version 330
 
 in vec3 fragColor;
-flat in vec3 fragNormal;
-in vec3 positionViewSpace;
+in vec3 fragNormal;
+in vec3 fragMaterials;
+in vec3 positionViewSpace_pass;
 
 layout (location = 0) out vec4 gDiffuse;
 layout (location = 1) out vec4 gNormal;
@@ -10,6 +11,6 @@ layout (location = 2) out vec4 gPosition;
 
 void main() {
 	gDiffuse = vec4(fragColor, 1.0);
-	gNormal = vec4(normalize(fragNormal), 1.0);
-	gPosition = vec4(positionViewSpace, 1.0f);
+	gNormal = vec4(normalize(fragNormal), fragMaterials.r);
+	gPosition = vec4(positionViewSpace_pass, fragMaterials.g);
 }
