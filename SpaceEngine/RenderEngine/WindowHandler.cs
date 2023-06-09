@@ -3,13 +3,12 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using System.Diagnostics;
-
 namespace SpaceEngine.RenderEngine
 {
     internal class WindowHandler
     {
         private string title = "SpaceEngine";
-        private static GameWindow? gameWindow = null;
+        public static GameWindow? gameWindow = null;
 
         private Stopwatch frameStopWatch = new Stopwatch();
         private Stopwatch secondStopWatch = new Stopwatch();
@@ -69,5 +68,17 @@ namespace SpaceEngine.RenderEngine
         {
             return delta;
         }
+        public static void setMouseGrabbed(bool setTo)
+        {
+            if (setTo)
+            {
+                gameWindow.CursorState = CursorState.Grabbed;
+            } else
+            {
+                gameWindow.CursorState = CursorState.Normal;
+            }
+            
+        }
     }
+
 }

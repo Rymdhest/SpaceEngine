@@ -49,6 +49,10 @@ namespace SpaceEngine.Core
                 windowHandler.onResize(eventArgs);
                 masterRenderer.onResize(eventArgs);
             };
+            WindowHandler.getWindow().MouseMove += delegate (MouseMoveEventArgs eventArgs)
+            {
+                inputHandler.MouseMove(eventArgs);
+            };
 
 
         }

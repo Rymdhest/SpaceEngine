@@ -33,8 +33,18 @@ namespace SpaceEngine.Modelling
                 materials[i] = 1.0f;
             }
         }
+        public RawModel(float[] positions, float[] colors, float[] normals, int[] indices, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.FLAT_SHADING)
+    : this(positions, colors, new float[0], normals, indices, pipeline)
+        {
+            materials = new float[positions.Length];
+            for (int i = 0; i < positions.Length; i++)
+            {
+                materials[i] = 1.0f;
+            }
+        }
 
-            public RawModel(float[] positions, float[] colors, float[] materials, float[] normals, int[] indices, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.SMOOTH_SHADING)
+
+        public RawModel(float[] positions, float[] colors, float[] materials, float[] normals, int[] indices, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.SMOOTH_SHADING)
         {
             this.positions = positions;
             this.colors = colors;
