@@ -1,4 +1,6 @@
 ﻿using SpaceEngine.Shaders;
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Windowing.Common;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -6,17 +8,45 @@ namespace SpaceEngine.RenderEngine
     {
 
         private ShaderProgram FXAAShader = new ShaderProgram("Simple_Vertex", "FXAA_Fragment");
+        private ShaderProgram verticalBlurShader = new ShaderProgram("blur_Vertical_Vertex", "blur_Fragment");
+        private ShaderProgram horizontalBlurShader = new ShaderProgram("blur_Horizontal_Vertex", "blur_Fragment");
+        private ShaderProgram bloomFilterShader = new ShaderProgram("Simple_Vertex", "bloom_Filter_Fragment");
+        private ShaderProgram combineShader = new ShaderProgram("Simple_Vertex", "Combine_Fragment");
+        private FrameBuffer vBlurFBO;
+        private FrameBuffer hBlurFBO;
+        private FrameBuffer bloomFilterFBO;
 
         public PostProcessingRenderer()
         {
             FXAAShader.bind();
             FXAAShader.loadUniformInt("l_tex", 0);
             FXAAShader.unBind();
+
+            bloomFilterShader.bind();
+            bloomFilterShader.loadUniformInt("gDiffuse", 0);
+            bloomFilterShader.loadUniformInt("gPosition", 1);
+            bloomFilterShader.unBind();
+
+            combineShader.bind();
+            combineShader.loadUniformInt("texture0", 0);
+            combineShader.loadUniformInt("texture1", 1);
+            combineShader.unBind();
+
+            FrameBufferSettings frameBufferSettings = new FrameBufferSettings(WindowHandler.resolution/4);
+            frameBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment0));
+
+            vBlurFBO = new FrameBuffer(frameBufferSettings);
+            hBlurFBO = new FrameBuffer(frameBufferSettings);
+
+            FrameBufferSettings bloomFrameBufferSettings = new FrameBufferSettings(WindowHandler.resolution);
+            bloomFrameBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment0));
+            bloomFilterFBO = new FrameBuffer(bloomFrameBufferSettings);
         }
 
         public void doPostProcessing(ScreenQuadRenderer renderer, FrameBuffer gBuffer)
         {
             applyFXAA(renderer);
+            applyBloom(renderer, gBuffer);
         }
 
         private void applyFXAA(ScreenQuadRenderer renderer)
@@ -25,6 +55,55 @@ namespace SpaceEngine.RenderEngine
             FXAAShader.loadUniformVector2f("win_size", WindowHandler.resolution);
             renderer.renderTextureToNextFrameBuffer(renderer.getLastOutputTexture());
             FXAAShader.unBind();
+        }
+        private void applyBloom(ScreenQuadRenderer renderer, FrameBuffer gBuffer)
+        {
+            bloomFilterFBO.bind();
+            bloomFilterShader.bind();
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(0));
+            GL.ActiveTexture(TextureUnit.Texture1);
+            GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(2));
+            renderer.render();
+            bloomFilterShader.unBind();
+            bloomFilterFBO.unbind();
+
+            verticalBlurShader.bind();
+            vBlurFBO.bind();
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, bloomFilterFBO.getRenderAttachment(0));
+            verticalBlurShader.loadUniformFloat("targetHeight", vBlurFBO.getResolution().Y);
+            renderer.render();
+            vBlurFBO.unbind();
+            verticalBlurShader.unBind();
+
+            horizontalBlurShader.bind();
+            hBlurFBO.bind();
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, vBlurFBO.getRenderAttachment(0));
+            horizontalBlurShader.loadUniformFloat("targetWidth", hBlurFBO.getResolution().X);
+            renderer.render();
+            hBlurFBO.unbind();
+            horizontalBlurShader.unBind();
+
+            combineShader.bind();
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, hBlurFBO.getRenderAttachment(0));
+            GL.ActiveTexture(TextureUnit.Texture1);
+            GL.BindTexture(TextureTarget.Texture2D, renderer.getLastOutputTexture());
+            renderer.renderToNextFrameBuffer();
+            combineShader.unBind();
+
+            //MasterRenderer.simpleShader.bind();
+            //renderer.renderTextureToNextFrameBuffer(hBlurFBO.getRenderAttachment(0));
+            //screenQuadRenderer.renderTextureToScreen(geometryPassRenderer.gBuffer.getRenderAttachment(2));
+            //MasterRenderer.simpleShader.unBind();
+        }
+        public void onResize(ResizeEventArgs eventArgs)
+        {
+            vBlurFBO.resize(WindowHandler.resolution/4);
+            hBlurFBO.resize(WindowHandler.resolution / 4);
+            bloomFilterFBO.resize(WindowHandler.resolution);
         }
     }
 }

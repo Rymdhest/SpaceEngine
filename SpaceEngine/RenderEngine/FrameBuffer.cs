@@ -140,5 +140,9 @@ namespace SpaceEngine.RenderEngine
             cleanUp();
             createFrameBuffer();
         }
+        public Vector2i getResolution()
+        {
+            return settings.resolution;
+        }
     }
 }

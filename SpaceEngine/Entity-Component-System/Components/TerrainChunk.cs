@@ -154,6 +154,7 @@ namespace SpaceEngine.Modelling
                 }
             }
             RawModel terrainModel = new RawModel(positions, colors, materials, normals, indices, pipeline);
+            terrainModel.setBloom(0.1f);
             return terrainModel;
         }
         public Vector3 getLocalWorldPositionFromGridSpace(int x, int z)

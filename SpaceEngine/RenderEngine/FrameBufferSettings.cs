@@ -10,8 +10,8 @@ namespace SpaceEngine.RenderEngine
         public DepthAttachmentSettings? depthAttachmentSettings = null;
         public List<DrawBufferSettings> drawBuffers= new List<DrawBufferSettings>();
         public Vector2i resolution;
-        public FrameBufferSettings() {
-            this.resolution = new Vector2i(WindowHandler.resolution.X, WindowHandler.resolution.Y);
+        public FrameBufferSettings(Vector2i resolution) {
+            this.resolution = resolution;
         }
     }
 }

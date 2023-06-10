@@ -10,7 +10,7 @@ namespace SpaceEngine.RenderEngine
     internal class MasterRenderer
     {
         public enum Pipeline {FLAT_SHADING, SMOOTH_SHADING, OTHER};
-        private ShaderProgram simpleShader = new ShaderProgram("Simple_Vertex", "Simple_Fragment");
+        public static ShaderProgram simpleShader = new ShaderProgram("Simple_Vertex", "Simple_Fragment");
         private Matrix4 projectionMatrix;
         private float fieldOfView;
         private float near = 0.1f;
@@ -82,6 +82,7 @@ namespace SpaceEngine.RenderEngine
         {
             screenQuadRenderer.onResize(eventArgs);
             geometryPassRenderer.onResize(eventArgs);
+            postProcessingRenderer.onResize(eventArgs);
             GL.Viewport(0, 0, WindowHandler.resolution.X, WindowHandler.resolution.Y);
             updateProjectionMatrix();
         }

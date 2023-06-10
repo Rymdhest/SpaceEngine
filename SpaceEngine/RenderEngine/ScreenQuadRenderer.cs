@@ -14,7 +14,7 @@ namespace SpaceEngine.RenderEngine
             int[] indices = { 0, 1, 2, 3, 0, 2 };
             quadModel = glLoader.loadToVAO(positions, indices, 2, MasterRenderer.Pipeline.OTHER);
 
-            FrameBufferSettings frameBufferSettings= new FrameBufferSettings();
+            FrameBufferSettings frameBufferSettings= new FrameBufferSettings(WindowHandler.resolution);
             frameBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment0));
             frameBufferSettings.depthAttachmentSettings = new DepthAttachmentSettings();
             buffer1 = new FrameBuffer(frameBufferSettings);
@@ -64,6 +64,10 @@ namespace SpaceEngine.RenderEngine
         public int getLastOutputTexture()
         {
             return getLastFrameBuffer().getRenderAttachment(0);
+        }
+        public int getNextOutputTexture()
+        {
+            return getNextFrameBuffer().getRenderAttachment(0);
         }
         public FrameBuffer getNextFrameBuffer()
         {

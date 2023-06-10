@@ -239,10 +239,11 @@ namespace SpaceEngine.Modelling
                 colours[i + 2] = color.Z;
             }
 
-
             if (pipeline == MasterRenderer.Pipeline.FLAT_SHADING)
             {
-                return new RawModel(positions, colours, indices);
+                RawModel rawModel = new RawModel(positions, colours, indices);
+                rawModel.setBloom(5f);
+                return rawModel;
             }
             else if (pipeline == MasterRenderer.Pipeline.SMOOTH_SHADING)
             {

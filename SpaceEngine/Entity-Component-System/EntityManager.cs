@@ -41,7 +41,7 @@ namespace SpaceEngine.Entity_Component_System.Components
                 Entity sphere = new Entity();
                 sphere.addComponent(new Transformation(new Vector3(4f, 2.3f, 4f) + center, new Vector3(0f, 0f, 0f)));
                 sphere.addComponent(glLoader.loadToVAO(MeshGenerator.generateIcosahedron(new Vector3(0.5f), color, MasterRenderer.Pipeline.FLAT_SHADING)));
-                sphere.addComponent(new PointLight(color, new Vector3(0.1f, 0f, 1.5f)));
+                sphere.addComponent(new PointLight(color*3f, new Vector3(0.1f, 0f, 1.5f)));
                 sphere.addComponent(new RandomMover());
                 sphere.addComponent(new Momentum());
                 sphere.addComponent(new Gravity());

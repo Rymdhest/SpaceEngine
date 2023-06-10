@@ -16,7 +16,7 @@ namespace SpaceEngine.RenderEngine
 
         public GeometryPassRenderer()
         {
-            FrameBufferSettings gBufferSettings = new FrameBufferSettings();
+            FrameBufferSettings gBufferSettings = new FrameBufferSettings(WindowHandler.resolution);
             gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment0));
             gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment1));
             gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment2));
