@@ -30,7 +30,7 @@ namespace SpaceEngine.Modelling
             materials = new float[positions.Length];
             for (int i = 0; i < positions.Length; i++)
             {
-                materials[i] = 1.0f;
+                materials[i] = 0.0f;
             }
         }
         public RawModel(float[] positions, float[] colors, float[] normals, int[] indices, MasterRenderer.Pipeline pipeline = MasterRenderer.Pipeline.FLAT_SHADING)
@@ -39,7 +39,7 @@ namespace SpaceEngine.Modelling
             materials = new float[positions.Length];
             for (int i = 0; i < positions.Length; i++)
             {
-                materials[i] = 1.0f;
+                materials[i] = 0.0f;
             }
         }
 

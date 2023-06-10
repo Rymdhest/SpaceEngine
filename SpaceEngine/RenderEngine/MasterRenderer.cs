@@ -4,6 +4,7 @@ using SpaceEngine.Shaders;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
 using SpaceEngine.Entity_Component_System;
+using SpaceEngine.Core;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -15,7 +16,7 @@ namespace SpaceEngine.RenderEngine
         private float fieldOfView;
         private float near = 0.1f;
         private float far = 1000f;
-        private Vector3 sunPosition = new Vector3(-30000f, 30000f, -30000f);
+        private Vector3 sunPosition = new Vector3(0f,0f,0f);
         private ScreenQuadRenderer screenQuadRenderer;
         private GeometryPassRenderer geometryPassRenderer;
         private DeferredLightPassRenderer deferredLightPassRenderer;
@@ -65,7 +66,7 @@ namespace SpaceEngine.RenderEngine
             prepareFrame();
             geometryPassRenderer.render(flatShadeEntities, SmoothShadeEntities, viewMatrix, projectionMatrix);
             deferredLightPassRenderer.render(screenQuadRenderer, geometryPassRenderer.gBuffer, sunPosition, viewMatrix,projectionMatrix, pointLights);
-            postProcessingRenderer.doPostProcessing(screenQuadRenderer, geometryPassRenderer.gBuffer);
+            postProcessingRenderer.doPostProcessing(screenQuadRenderer, geometryPassRenderer.gBuffer, sunPosition, viewPosition, viewMatrix);
 
             simpleShader.bind();
             simpleShader.loadUniformInt("blitTexture", 0);
@@ -76,7 +77,11 @@ namespace SpaceEngine.RenderEngine
         }
         public void update(float delta)
         {
-
+            float distance = 999999f;
+            float speed = 0.5f;
+            sunPosition.X = MathF.Sin(Engine.EngineDeltaClock* speed) * distance;
+            sunPosition.Y = (MathF.Cos(Engine.EngineDeltaClock* speed)+0.7f) * distance;
+            sunPosition.Z = MathF.Cos(Engine.EngineDeltaClock* speed) * distance;
         }
         public void onResize(ResizeEventArgs eventArgs)
         {

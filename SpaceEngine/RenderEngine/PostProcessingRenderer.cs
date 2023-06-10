@@ -1,6 +1,7 @@
 ﻿using SpaceEngine.Shaders;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
+using OpenTK.Mathematics;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -12,12 +13,14 @@ namespace SpaceEngine.RenderEngine
         private ShaderProgram horizontalBlurShader = new ShaderProgram("blur_Horizontal_Vertex", "blur_Fragment");
         private ShaderProgram bloomFilterShader = new ShaderProgram("Simple_Vertex", "bloom_Filter_Fragment");
         private ShaderProgram combineShader = new ShaderProgram("Simple_Vertex", "Combine_Fragment");
+        private ShaderProgram skyShader = new ShaderProgram("Simple_Vertex", "sky_Fragment");
         private FrameBuffer vBlurFBO;
         private FrameBuffer hBlurFBO;
         private FrameBuffer bloomFilterFBO;
 
         public PostProcessingRenderer()
         {
+
             FXAAShader.bind();
             FXAAShader.loadUniformInt("l_tex", 0);
             FXAAShader.unBind();
@@ -43,11 +46,37 @@ namespace SpaceEngine.RenderEngine
             bloomFilterFBO = new FrameBuffer(bloomFrameBufferSettings);
         }
 
-        public void doPostProcessing(ScreenQuadRenderer renderer, FrameBuffer gBuffer)
+        public void doPostProcessing(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Vector3 sunPosition, Vector3 viewPosition, Matrix4 viewMatrix)
         {
+            applySky(renderer, gBuffer, sunPosition, viewPosition, viewMatrix);
             applyFXAA(renderer);
             applyBloom(renderer, gBuffer);
         }
+
+        private void applySky(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Vector3 sunPosition, Vector3 viewPosition, Matrix4 viewMatrix)
+        {
+            //renderer.getNextFrameBuffer().blitDepthBufferFrom(gBuffer);
+            //renderer.getLastFrameBuffer().blitDepthBufferFrom(gBuffer);
+
+            skyShader.bind();
+
+            skyShader.loadUniformVector3f("sunPositionWorld", sunPosition);
+            skyShader.loadUniformVector3f("viewPositionWorld", viewPosition);
+            skyShader.loadUniformMatrix4f("viewMatrix", viewMatrix);
+            skyShader.loadUniformVector2f("screenResolution", WindowHandler.resolution);
+
+            renderer.getLastFrameBuffer().bind();
+
+            GL.DepthFunc(DepthFunction.Lequal);
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, renderer.getLastOutputTexture());
+
+            renderer.render(depthTest :true, depthMask:false, blend :false, clearColor:false);
+            //renderer.stepToggle();
+            skyShader.unBind();
+
+            GL.DepthFunc(DepthFunction.Less);
+        } 
 
         private void applyFXAA(ScreenQuadRenderer renderer)
         {

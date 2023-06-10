@@ -242,7 +242,6 @@ namespace SpaceEngine.Modelling
             if (pipeline == MasterRenderer.Pipeline.FLAT_SHADING)
             {
                 RawModel rawModel = new RawModel(positions, colours, indices);
-                rawModel.setBloom(5f);
                 return rawModel;
             }
             else if (pipeline == MasterRenderer.Pipeline.SMOOTH_SHADING)

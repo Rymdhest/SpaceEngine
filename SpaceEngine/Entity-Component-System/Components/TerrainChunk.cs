@@ -91,7 +91,8 @@ namespace SpaceEngine.Modelling
                     positions[vertexPointer * 3 + 1] = positionLocalWorld.Y;
                     positions[vertexPointer * 3 + 2] = positionLocalWorld.Z;
 
-                    float specularity = 0f;
+                    float specularity;
+                    float bloom = 0.05f;
                     Vector3 normal = calculateVertexNormal(x, z);
                     if (pipeline == MasterRenderer.Pipeline.SMOOTH_SHADING)
                     {
@@ -122,6 +123,7 @@ namespace SpaceEngine.Modelling
                     {
                         color = waterColor;
                         specularity = 1.0f;
+                        bloom = 0.2f;
                     }
                     colors[vertexPointer * 3] = color.X;
                     colors[vertexPointer * 3 + 1] = color.Y;
@@ -129,7 +131,7 @@ namespace SpaceEngine.Modelling
 
 
                     materials[vertexPointer * 3] = specularity;
-                    materials[vertexPointer * 3 + 1] = 0f;
+                    materials[vertexPointer * 3 + 1] = bloom;
                     materials[vertexPointer * 3 + 2] = 0f;
 
                     vertexPointer++;
@@ -154,7 +156,6 @@ namespace SpaceEngine.Modelling
                 }
             }
             RawModel terrainModel = new RawModel(positions, colors, materials, normals, indices, pipeline);
-            terrainModel.setBloom(0.1f);
             return terrainModel;
         }
         public Vector3 getLocalWorldPositionFromGridSpace(int x, int z)

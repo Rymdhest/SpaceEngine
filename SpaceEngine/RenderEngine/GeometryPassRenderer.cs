@@ -17,11 +17,14 @@ namespace SpaceEngine.RenderEngine
         public GeometryPassRenderer()
         {
             FrameBufferSettings gBufferSettings = new FrameBufferSettings(WindowHandler.resolution);
-            gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment0));
+            DrawBufferSettings gPosition = new DrawBufferSettings(FramebufferAttachment.ColorAttachment0);
+            gPosition.formatInternal = PixelInternalFormat.Rgba16f;
+            gBufferSettings.drawBuffers.Add(gPosition);
             gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment1));
             gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment2));
 
             DepthAttachmentSettings depthSettings = new DepthAttachmentSettings();
+            depthSettings.isTexture = true;
             gBufferSettings.depthAttachmentSettings = depthSettings;
             gBuffer = new FrameBuffer(gBufferSettings);
         }

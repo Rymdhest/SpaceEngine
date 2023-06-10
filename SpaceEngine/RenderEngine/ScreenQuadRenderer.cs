@@ -16,7 +16,9 @@ namespace SpaceEngine.RenderEngine
 
             FrameBufferSettings frameBufferSettings= new FrameBufferSettings(WindowHandler.resolution);
             frameBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment0));
-            frameBufferSettings.depthAttachmentSettings = new DepthAttachmentSettings();
+            DepthAttachmentSettings depthSettings = new DepthAttachmentSettings();
+            depthSettings.isTexture = true;
+            frameBufferSettings.depthAttachmentSettings = depthSettings;
             buffer1 = new FrameBuffer(frameBufferSettings);
             buffer2 = new FrameBuffer(frameBufferSettings);
             toggle = true;
@@ -33,15 +35,22 @@ namespace SpaceEngine.RenderEngine
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             renderTexture(texture);
         }
-        public void render()
+        public void render(bool depthTest = false, bool depthMask = false, bool blend = false, bool clearColor = true)
         {
             GL.BindVertexArray(quadModel.getVAOID());
             GL.EnableVertexAttribArray(0);
-            GL.ClearColor(1f, 0f, 0f, 1f);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Disable(EnableCap.DepthTest);
-            GL.DepthMask(false);
-            GL.Disable(EnableCap.Blend);
+
+            GL.ClearColor(0f, 0f, 1f, 1f);
+            if (clearColor)GL.Clear(ClearBufferMask.ColorBufferBit);
+            
+
+            if (depthTest) GL.Enable(EnableCap.DepthTest); 
+            else GL.Disable(EnableCap.DepthTest);
+
+            GL.DepthMask(depthMask);
+
+            if (blend) GL.Enable(EnableCap.Blend);
+            else GL.Disable(EnableCap.Blend);
 
             GL.DrawElements(PrimitiveType.Triangles, quadModel.getVertexCount(), DrawElementsType.UnsignedInt, 0);
 
@@ -79,7 +88,7 @@ namespace SpaceEngine.RenderEngine
             if (toggle) return buffer2;
             else return buffer1;
         }
-        private void stepToggle()
+        public void stepToggle()
         {
             if (toggle == true) toggle = false;
             else toggle = true;

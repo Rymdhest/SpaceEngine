@@ -7,4 +7,6 @@ uniform sampler2D blitTexture;
 
 void main(void){
 	out_Colour =  texture(blitTexture, textureCoords);
+
+	//out_Colour.rgb =  vec3(texture(blitTexture, textureCoords).a);
 }
