@@ -13,8 +13,8 @@ namespace SpaceEngine.RenderEngine
         private ShaderProgram postGeometryShader = new ShaderProgram("Post_Geometry_Vertex", "Post_Geometry_Fragment");
         public void render(ComponentSystem postGeometrySystem, Matrix4 viewMatrix, Matrix4 projectionMatrix)
         {
-            postGeometryShader.cleanUp();
-            postGeometryShader = new ShaderProgram("Post_Geometry_Vertex", "Post_Geometry_Fragment");
+            //postGeometryShader.cleanUp();
+            //postGeometryShader = new ShaderProgram("Post_Geometry_Vertex", "Post_Geometry_Fragment");
             prepareFrame();
             postGeometryShader.bind();
             foreach (Model model in postGeometrySystem.getMembers())
@@ -27,6 +27,7 @@ namespace SpaceEngine.RenderEngine
                 Vector3 pos = model.owner.getComponent<Transformation>().position;
                 postGeometryShader.loadUniformVector4f("modelWorldPosition", (new Vector4(pos.X, pos.Y, pos.Z, 1.0f)* viewMatrix* projectionMatrix));
                 postGeometryShader.loadUniformVector2f("screenResolution", WindowHandler.resolution);
+                postGeometryShader.loadUniformFloat("scale", model.owner.getComponent<Transformation>().scale);
                 //postGeometryShader.loadUniformMatrix4f("normalModelViewMatrix", Matrix4.Transpose(Matrix4.Invert(modelViewMatrix)));
                 GL.BindVertexArray(model.getVAOID());
                 GL.EnableVertexAttribArray(0);
@@ -46,6 +47,7 @@ namespace SpaceEngine.RenderEngine
             GL.DepthMask(true);
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
+            GL.Disable(EnableCap.Blend);
             GL.Enable(EnableCap.Blend);
         }
         private void finishFrame()

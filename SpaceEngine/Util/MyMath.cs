@@ -32,6 +32,11 @@ namespace SpaceEngine.Util
             return rand.NextSingle();
         }
   
+        public static Vector3 reflect(Vector3 vector, Vector3 normal)
+        {
+            return vector-(2f * Vector3.Dot(normal, vector)*normal);
+        }
+
         public static Matrix4 createTransformationMatrix(Transformation transformation)
         
         {
@@ -41,9 +46,9 @@ namespace SpaceEngine.Util
         {
 
             Matrix4 matrix = Matrix4.Identity;
+            matrix = matrix * Matrix4.CreateScale(scale);
             matrix = matrix * createRotationMatrix(rotation);
             matrix = matrix * Matrix4.CreateTranslation(position);
-            matrix = matrix * Matrix4.CreateScale(scale);
             return matrix;
         }
         public static Matrix4 createViewMatrix(Transformation transformation)
@@ -97,7 +102,9 @@ namespace SpaceEngine.Util
             bY = v3.Y - v1.Y;
             bZ = v3.Z - v1.Z;
 
-            return new Vector3((aY * bZ) - (aZ * bY), (aZ * bX) - (aX * bZ), (aX * bY) - (aY * bX));
+            Vector3 normal = new Vector3((aY * bZ) - (aZ * bY), (aZ * bX) - (aX * bZ), (aX * bY) - (aY * bX));
+            normal.Normalize();
+            return normal;
         }
         public static float barryCentric(Vector3 p1, Vector3 p2, Vector3 p3, Vector2 pos)
         {

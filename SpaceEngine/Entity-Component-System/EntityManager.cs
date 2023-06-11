@@ -40,23 +40,7 @@ namespace SpaceEngine.Entity_Component_System.Components
             sun.addComponent(new Sun());
             this.sun = sun;
 
-            Random rand = new Random();
-            for (int i = 0; i<10; i++)
-            {
-                Vector3 color = new Vector3(rand.NextSingle(), rand.NextSingle(), rand.NextSingle());
-                Vector3 position = new Vector3(MyMath.rngMinusPlus(), MyMath.rngMinusPlus(), MyMath.rngMinusPlus()) *25f;
-                Entity sphere = new Entity();
-                sphere.addComponent(new Transformation(position + center, new Vector3(0f, 0f, 0f)));
-                RawModel rawModel = MeshGenerator.generateIcosahedron(new Vector3(0.5f), color, MasterRenderer.Pipeline.POST_GEOMETRY);
-                rawModel.setBloom(3f);
-                sphere.addComponent(glLoader.loadToVAO(rawModel));
-                sphere.addComponent(new PointLight(color*3f, new Vector3(0.1f, 0f, 1.5f)));
-                sphere.addComponent(new RandomMover());
-                sphere.addComponent(new Momentum());
-                sphere.addComponent(new Gravity());
-                sphere.addComponent(new TerrainCollider());
-                sphere.addComponent(new HitBox(new Vector3(-1, -1, -1), new Vector3(1)));
-            }
+
         }
         public void loadTerrain()
         {
@@ -64,6 +48,27 @@ namespace SpaceEngine.Entity_Component_System.Components
         }
         public void update(float delta)
         {
+            if (InputHandler.isKeyClicked(Keys.G))
+            {
+                Vector3 forward = camera.getComponent<Transformation>().createForwardVector();
+                Vector3 center = camera.getComponent<Transformation>().position;
+                Vector3 color = new Vector3(MyMath.rng(), MyMath.rng(), MyMath.rng());
+                Entity sphere = new Entity();
+                float power = (MyMath.rng() * 5f + 1) * 0.5f;
+                sphere.addComponent(new Transformation(center+ forward*1.5f, new Vector3(0f, 0f, 0f), MathF.Sqrt(power)));
+                RawModel rawModel = MeshGenerator.generateIcosahedron(new Vector3(1.0f), color * MathF.Sqrt(power), MasterRenderer.Pipeline.POST_GEOMETRY);
+                rawModel.setBloom(3f);
+                sphere.addComponent(glLoader.loadToVAO(rawModel));
+                sphere.addComponent(new PointLight(color * power, new Vector3(0.1f, 0f, 1.5f)));
+                sphere.addComponent(new Momentum(forward * 50f));
+                sphere.addComponent(new TerrainCollider());
+                sphere.addComponent(new Gravity());
+                sphere.addComponent(new HitBox(new Vector3(-MathF.Sqrt(power) / 2f), new Vector3(MathF.Sqrt(power) / 2f)));
+            }
+
+
+            postGeometrySystem.getMembers().Sort((v1, v2) => (v2.owner.getComponent<Transformation>().position - camera.getComponent<Transformation>().position).LengthSquared.CompareTo((v1.owner.getComponent<Transformation>().position - camera.getComponent<Transformation>().position).LengthSquared));
+
             List<Entity> chunks = terrainManager.chunkEntities.Where(kv => kv.Key.Xy == terrainManager.fromWorldToChunkSpace(camera.getComponent<Transformation>().position.Xz)).Select(kv => kv.Value).ToList();
             if (chunks.Count > 0 )
             {
@@ -75,7 +80,7 @@ namespace SpaceEngine.Entity_Component_System.Components
             {
                 terrainManager.cleanUp();
             } 
-            if (InputHandler.isKeyClicked(Keys.G))
+            if (InputHandler.isKeyClicked(Keys.H))
             {
                 this.sculpture.cleanUp();
                 sculpture = new Entity();

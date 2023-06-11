@@ -37,6 +37,13 @@ namespace SpaceEngine.Entity_Component_System.Components
             moveVector = rotationMatrix * moveVector;
             translate(moveVector);
         }
+        public Vector3 createForwardVector()
+        {
+            Vector4 moveVector = new Vector4(0f, 0f, -1f, 1.0f);
+            moveVector = MyMath.createRotationMatrix(rotation) * moveVector;
+            moveVector.Normalize();
+            return moveVector.Xyz;
+        }
 
     }
 }

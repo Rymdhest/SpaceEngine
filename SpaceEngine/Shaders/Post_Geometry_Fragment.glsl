@@ -9,6 +9,7 @@ in vec4 clipSpacePosition;
 //layout (location = 1) out vec4 gNormal;
 //layout (location = 2) out vec4 gPosition;
 uniform vec2 screenResolution;
+uniform float scale;
 //layout (location = 0) out vec4 out_Color;
 out vec4 out_Color;
 
@@ -34,12 +35,12 @@ void main() {
 	vec2 uv = (clipSpacePosition/clipSpacePosition.w).xy;
 	uv = (uv.xy*screenResolution)/screenResolution.y;
 
-	float radius = surfaceDistance*5.0f;
+	float radius = surfaceDistance*5.0f*scale;
 
 	float distance = length(uv-lightCenterUV);
 	distance = smoothstep(radius, 0.0f, distance);
 
-	vec3 col = vec3(distance)*fragColor;
+	vec3 col = vec3(distance)*fragColor*2f;
 	//out_Color = vec4(lightCenterUV-uv, 0f, 1.0f);
 	out_Color = vec4(col, 1.0f);
 }

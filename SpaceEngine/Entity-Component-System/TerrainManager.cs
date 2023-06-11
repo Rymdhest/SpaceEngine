@@ -47,6 +47,19 @@ namespace SpaceEngine.Modelling
             }
             
         }
+        public Vector3 getNormalFlatAt(Vector2 position)
+        {
+            List<Entity> chunks = chunkEntities.Where(kv => kv.Key.Xy == fromWorldToChunkSpace(position)).Select(kv => kv.Value).ToList();
+            if (chunks.Count > 0)
+            {
+                return chunks[0].getComponent<TerrainChunk>().getNormalFlatAt(position);
+            }
+            else
+            {
+                return new Vector3(0f, 1f, 0f);
+            }
+
+        }
         public void cleanUp()
         {
             foreach (Entity entity in chunkEntities.Values)

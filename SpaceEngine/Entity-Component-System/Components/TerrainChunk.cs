@@ -30,7 +30,37 @@ namespace SpaceEngine.Modelling
                 }
             }
         }
-        public float getPolygonHeightAt(Vector2 position)
+        public Vector3 getNormalFlatAt(Vector2 position)
+        {
+            Vector3 normal;
+            float d = spaceBetweenVertices;
+            Vector2i grid = fromGlobalWorldToLocalGrid(position);
+            float xCoord = (position.X % d) / d;
+            float zCoord = (position.Y % d) / d;
+
+            if (xCoord < 0) xCoord += 1;
+            if (zCoord < 0) zCoord += 1;
+
+            d = 1f;
+            if (xCoord <= (1 - zCoord))
+            {
+                Vector3 v1 = new Vector3(0, heightsLocalGridSpace[grid.X, grid.Y], 0);
+                Vector3 v2 = new Vector3(d, heightsLocalGridSpace[grid.X + 1, grid.Y], 0);
+                Vector3 v3 = new Vector3(0, heightsLocalGridSpace[grid.X, grid.Y + 1], d);
+                normal = MyMath.calculateFaceNormal(v1, v2, v3);
+            }
+            else
+            {
+                Vector3 v1 = new Vector3(d, heightsLocalGridSpace[grid.X + 1, grid.Y], 0);
+                Vector3 v2 = new Vector3(d, heightsLocalGridSpace[grid.X + 1, grid.Y + 1], d);
+                Vector3 v3 = new Vector3(0, heightsLocalGridSpace[grid.X, grid.Y + 1], d);
+                normal = MyMath.calculateFaceNormal(v1, v2, v3);
+            }
+
+
+            return normal;
+        }
+            public float getPolygonHeightAt(Vector2 position)
         {
             float height;
             float d = spaceBetweenVertices;
