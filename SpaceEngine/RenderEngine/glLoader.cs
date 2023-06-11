@@ -16,7 +16,12 @@ namespace SpaceEngine.RenderEngine
             } else if (rawModel.pipeline == Pipeline.SMOOTH_SHADING)
             {
                 return loadToVAO(rawModel.positions, rawModel.colors, rawModel.materials, rawModel.normals,rawModel.indices);
-            } else
+            }
+            else if (rawModel.pipeline == Pipeline.POST_GEOMETRY)
+            {
+                return loadToVAO(rawModel.positions, rawModel.colors, rawModel.materials, rawModel.indices, rawModel.pipeline);
+            }
+            else
             {
                 return loadToVAO(rawModel.positions, rawModel.indices, 3, rawModel.pipeline);
             }

@@ -24,9 +24,14 @@ namespace SpaceEngine.RenderEngine
             if (pipeline == MasterRenderer.Pipeline.FLAT_SHADING)
             {
                 EntityManager.flatShadingSystem.addMember(this);
-            } else if (pipeline == MasterRenderer.Pipeline.SMOOTH_SHADING)
+            }
+            else if (pipeline == MasterRenderer.Pipeline.SMOOTH_SHADING)
             {
                 EntityManager.smoothShadingSystem.addMember(this);
+            }
+            else if (pipeline == MasterRenderer.Pipeline.POST_GEOMETRY)
+            {
+                EntityManager.postGeometrySystem.addMember(this);
             }
         }
 

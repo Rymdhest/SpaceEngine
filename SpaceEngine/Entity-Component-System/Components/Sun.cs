@@ -17,7 +17,7 @@ namespace SpaceEngine.Entity_Component_System.Components
         private Vector3 skyColorSunset = new Vector3(0.95f, 0.35f, 0f);
         private Vector3 skyColorDay = new Vector3(0.27f, 0.71f, 0.96f);
         private Vector3 skyColorSpace = new Vector3(0.01f, 0.02f, 0.06f);
-        private float ambient = 0.3f;
+        private float ambient = 0.25f;
         private float fogDensity = 0.001f;
 
         public float time = 0f;

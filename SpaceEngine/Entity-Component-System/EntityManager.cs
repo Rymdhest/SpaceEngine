@@ -13,6 +13,7 @@ namespace SpaceEngine.Entity_Component_System.Components
         public static List<Entity> entities = new List<Entity>();
         public static ComponentSystem flatShadingSystem = new ComponentSystem();
         public static ComponentSystem smoothShadingSystem = new ComponentSystem();
+        public static ComponentSystem postGeometrySystem = new ComponentSystem();
         public static ComponentSystem pointLightSystem = new ComponentSystem();
         public static TerrainManager terrainManager = new TerrainManager();
         public static Object threadLock = new object();
@@ -43,9 +44,10 @@ namespace SpaceEngine.Entity_Component_System.Components
             for (int i = 0; i<10; i++)
             {
                 Vector3 color = new Vector3(rand.NextSingle(), rand.NextSingle(), rand.NextSingle());
+                Vector3 position = new Vector3(MyMath.rngMinusPlus(), MyMath.rngMinusPlus(), MyMath.rngMinusPlus()) *25f;
                 Entity sphere = new Entity();
-                sphere.addComponent(new Transformation(new Vector3(4f, 2.3f, 4f) + center, new Vector3(0f, 0f, 0f)));
-                RawModel rawModel = MeshGenerator.generateIcosahedron(new Vector3(0.5f), color, MasterRenderer.Pipeline.FLAT_SHADING);
+                sphere.addComponent(new Transformation(position + center, new Vector3(0f, 0f, 0f)));
+                RawModel rawModel = MeshGenerator.generateIcosahedron(new Vector3(0.5f), color, MasterRenderer.Pipeline.POST_GEOMETRY);
                 rawModel.setBloom(3f);
                 sphere.addComponent(glLoader.loadToVAO(rawModel));
                 sphere.addComponent(new PointLight(color*3f, new Vector3(0.1f, 0f, 1.5f)));
@@ -55,8 +57,6 @@ namespace SpaceEngine.Entity_Component_System.Components
                 sphere.addComponent(new TerrainCollider());
                 sphere.addComponent(new HitBox(new Vector3(-1, -1, -1), new Vector3(1)));
             }
-            
-
         }
         public void loadTerrain()
         {
@@ -92,7 +92,7 @@ namespace SpaceEngine.Entity_Component_System.Components
                 }
             }
             //camera.updateComponents(delta);
-            lock (threadLock)
+            //lock (threadLock)
             {
                 foreach (Entity entity in entities)
                 {

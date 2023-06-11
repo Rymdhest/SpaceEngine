@@ -35,7 +35,6 @@ void main(void){
 	float specularStrength = texture(gNormal, textureCoords).a;
 
 	vec3 totalAmbient = vec3(ambient*ambientOcclusion*albedo);
-	vec3 lighting = totalAmbient;
 
 	vec3 viewDir = normalize(-position);
 
@@ -45,7 +44,7 @@ void main(void){
 
 	vec3 diffuse = max(dot(sunDirectionViewSpace, normal), 0f)*albedo*sunColor;
 
-	lighting += diffuse + specular;
+	vec3 lighting = max(diffuse + specular, totalAmbient);
 	lighting = applyFog(lighting, -position.z, -viewDir, sunDirectionViewSpace);
 
 	out_Colour =  vec4(lighting, 1.0f);

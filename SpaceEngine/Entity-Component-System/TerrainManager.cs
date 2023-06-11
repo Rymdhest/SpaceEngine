@@ -4,6 +4,7 @@ using SpaceEngine.Entity_Component_System;
 using SpaceEngine.RenderEngine;
 using System.Diagnostics;
 using System.ComponentModel.Design;
+using System.Collections.Generic;
 
 namespace SpaceEngine.Modelling
 {
@@ -178,6 +179,7 @@ namespace SpaceEngine.Modelling
                     chunksToAdd = desiresChunkSpacePositions.Except(chunkEntities.Keys.ToList()).ToList();
                     chunksToAdd = chunksToAdd.Except(buildQueue).ToList();
                     chunksToAdd = chunksToAdd.Except(finishedBuildList.Keys).ToList();
+                    chunksToAdd.Sort((v1, v2) => (v1.Xy - viewPosChunkSpace).EuclideanLength.CompareTo((v2.Xy - viewPosChunkSpace).EuclideanLength));
                     if (chunksToAdd.Count > 0)
                     {
                         Console.WriteLine("adding: " + chunksToAdd.Count + " chunks to build queue");
@@ -225,7 +227,7 @@ namespace SpaceEngine.Modelling
                     working = true;
                 }
                 
-                for (int i = 0; i<3; i++)
+                for (int i = 0; i<4; i++)
                 {
                     Thread thread = new Thread(buildNextChunk);
                     Console.WriteLine("adding worker thread " + thread.ManagedThreadId);

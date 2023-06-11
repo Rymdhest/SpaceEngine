@@ -128,7 +128,16 @@ namespace SpaceEngine.Shaders
             string fullPath = "../../../Shaders/"+ name+".glsl";
             int shaderID = GL.CreateShader(type);
 
-            GL.ShaderSource(shaderID, File.ReadAllText(fullPath));
+            string fileString = "";
+            try
+            {
+                fileString = File.ReadAllText(fullPath);
+            } catch (Exception e)
+            {
+                return -1;
+            }
+
+            GL.ShaderSource(shaderID, fileString);
             GL.CompileShader(shaderID);
 
             GL.GetShader(shaderID, ShaderParameter.CompileStatus, out var code);
@@ -144,33 +153,43 @@ namespace SpaceEngine.Shaders
         {
 
             string fullPath = "../../../Shaders/" + fileName + ".glsl";
-            foreach(string line in File.ReadLines(fullPath))
+            try
             {
-                string[] words = line.Split(" ");
-                if (words.Length == 3) {
-                    if (words[0] =="uniform")
+                foreach (string line in File.ReadLines(fullPath))
+                {
+                    string[] words = line.Split(" ");
+                    if (words.Length == 3)
                     {
-                        string variableName = words[2].Remove(words[2].Length-1, 1);
-                        if (variableName.Last<char>() == ']')
+                        if (words[0] == "uniform")
                         {
-                            string[] variableWords = variableName.Split("[");
-                            string arraySizeString = variableWords[1];
-                            arraySizeString = arraySizeString.Remove(arraySizeString.Length - 1, 1);
-                            int arraySize = int.Parse(arraySizeString);
-                            variableName = variableWords[0];
-                            for (int i = 0; i<arraySize; i++)
+                            string variableName = words[2].Remove(words[2].Length - 1, 1);
+                            if (variableName.Last<char>() == ']')
                             {
-                                loadUniform(variableName+"["+i+"]", fileName);
+                                string[] variableWords = variableName.Split("[");
+                                string arraySizeString = variableWords[1];
+                                arraySizeString = arraySizeString.Remove(arraySizeString.Length - 1, 1);
+                                int arraySize = int.Parse(arraySizeString);
+                                variableName = variableWords[0];
+                                for (int i = 0; i < arraySize; i++)
+                                {
+                                    loadUniform(variableName + "[" + i + "]", fileName);
+                                }
                             }
-                        } else
-                        {
-                            loadUniform(variableName, fileName);
-                        }
+                            else
+                            {
+                                loadUniform(variableName, fileName);
+                            }
 
-                        
+
+                        }
                     }
                 }
             }
+            catch (Exception e)
+            {
+                return;
+            }
+
         }
         private void loadUniform(string variableName, string fileName)
         {
@@ -179,7 +198,7 @@ namespace SpaceEngine.Shaders
                 int location = GL.GetUniformLocation(programID, variableName);
                 if (location == -1)
                 {
-                    Console.WriteLine("Something went wrong getting uniform for " + variableName + " in " + fileName + " maybe the variable is not used in shader?");
+                    //Console.WriteLine("Something went wrong getting uniform for " + variableName + " in " + fileName + " maybe the variable is not used in shader?");
                 }
                 
                 uniforms.Add(variableName, location);

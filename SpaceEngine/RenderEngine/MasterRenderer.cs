@@ -5,12 +5,13 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
 using SpaceEngine.Entity_Component_System;
 using SpaceEngine.Core;
+using SpaceEngine.Entity_Component_System.Components;
 
 namespace SpaceEngine.RenderEngine
 {
     internal class MasterRenderer
     {
-        public enum Pipeline {FLAT_SHADING, SMOOTH_SHADING, OTHER};
+        public enum Pipeline {FLAT_SHADING, SMOOTH_SHADING, POST_GEOMETRY, OTHER};
         public static ShaderProgram simpleShader = new ShaderProgram("Simple_Vertex", "Simple_Fragment");
         private Matrix4 projectionMatrix;
         private float fieldOfView;
@@ -20,6 +21,7 @@ namespace SpaceEngine.RenderEngine
         private GeometryPassRenderer geometryPassRenderer;
         private DeferredLightPassRenderer deferredLightPassRenderer;
         private PostProcessingRenderer postProcessingRenderer;
+        private PostGeometryRenderer postGeometryRenderer;
         public MasterRenderer() {
             fieldOfView = MathF.PI/2f;
 
@@ -27,6 +29,7 @@ namespace SpaceEngine.RenderEngine
             geometryPassRenderer = new GeometryPassRenderer();
             deferredLightPassRenderer= new DeferredLightPassRenderer();
             postProcessingRenderer= new PostProcessingRenderer();
+            postGeometryRenderer = new PostGeometryRenderer();
             updateProjectionMatrix();
         }
         private void updateProjectionMatrix()
@@ -60,13 +63,13 @@ namespace SpaceEngine.RenderEngine
             WindowHandler.getWindow().SwapBuffers();
         }
    
-        public void render(ComponentSystem flatShadeEntities, ComponentSystem SmoothShadeEntities, Matrix4 viewMatrix, Vector3 viewPosition, Entity sunEntity, ComponentSystem pointLights)
+        public void render(Matrix4 viewMatrix, Vector3 viewPosition, Entity sunEntity, ComponentSystem pointLights)
         {
             prepareFrame();
-            geometryPassRenderer.render(flatShadeEntities, SmoothShadeEntities, viewMatrix, projectionMatrix);
+            geometryPassRenderer.render(EntityManager.flatShadingSystem, EntityManager.smoothShadingSystem, viewMatrix, projectionMatrix);
             deferredLightPassRenderer.render(screenQuadRenderer, geometryPassRenderer.gBuffer, sunEntity, viewMatrix,projectionMatrix, pointLights);
+            postGeometryRenderer.render(EntityManager.postGeometrySystem, viewMatrix, projectionMatrix);
             postProcessingRenderer.doPostProcessing(screenQuadRenderer, geometryPassRenderer.gBuffer, sunEntity, viewPosition, viewMatrix);
-
             simpleShader.bind();
             simpleShader.loadUniformInt("blitTexture", 0);
             screenQuadRenderer.renderTextureToScreen(screenQuadRenderer.getLastOutputTexture());

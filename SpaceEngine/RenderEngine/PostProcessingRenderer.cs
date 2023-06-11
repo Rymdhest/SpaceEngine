@@ -50,10 +50,10 @@ namespace SpaceEngine.RenderEngine
 
         public void doPostProcessing(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Vector3 viewPosition, Matrix4 viewMatrix)
         {
-            applyFXAA(renderer);
-            applyBloom(renderer, gBuffer);
             applySky(renderer, gBuffer, sunEntity, viewPosition, viewMatrix);
-            
+            applyBloom(renderer, gBuffer);
+            applyFXAA(renderer);
+
         }
 
         private void applySky(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Vector3 viewPosition, Matrix4 viewMatrix)
@@ -102,7 +102,7 @@ namespace SpaceEngine.RenderEngine
             bloomFilterFBO.bind();
             bloomFilterShader.bind();
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, renderer.getNextOutputTexture());
+            GL.BindTexture(TextureTarget.Texture2D, renderer.getLastOutputTexture());
             //GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(0));
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(2));
