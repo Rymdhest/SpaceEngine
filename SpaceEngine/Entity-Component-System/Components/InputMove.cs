@@ -13,7 +13,7 @@ namespace SpaceEngine.Entity_Component_System.Components
             base.update(delta);
             float moveAmount = 20f * delta;
             float turnAmount = 2.5f * delta;
-            float mouseTurnAmount = 0.25f * delta;
+            float mouseTurnAmount = 0.001f;
 
             if (InputHandler.isKeyDown(Keys.LeftShift))
             {

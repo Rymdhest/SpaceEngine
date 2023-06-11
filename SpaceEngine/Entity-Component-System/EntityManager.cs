@@ -17,6 +17,7 @@ namespace SpaceEngine.Entity_Component_System.Components
         public static TerrainManager terrainManager = new TerrainManager();
         public static Object threadLock = new object();
         public Entity sculpture = new Entity();
+        public Entity sun;
         public Entity camera { get; set; }
         public EntityManager() {
 
@@ -33,6 +34,10 @@ namespace SpaceEngine.Entity_Component_System.Components
             Entity box = new Entity();
             box.addComponent(new Transformation());
             box.addComponent(glLoader.loadToVAO(MeshGenerator.generateBox(new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(0.5f, 0.5f, 0.5f))));
+
+            Entity sun = new Entity();
+            sun.addComponent(new Sun());
+            this.sun = sun;
 
             Random rand = new Random();
             for (int i = 0; i<10; i++)

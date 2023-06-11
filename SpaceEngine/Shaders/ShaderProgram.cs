@@ -181,6 +181,7 @@ namespace SpaceEngine.Shaders
                 {
                     Console.WriteLine("Something went wrong getting uniform for " + variableName + " in " + fileName + " maybe the variable is not used in shader?");
                 }
+                
                 uniforms.Add(variableName, location);
             }
         }

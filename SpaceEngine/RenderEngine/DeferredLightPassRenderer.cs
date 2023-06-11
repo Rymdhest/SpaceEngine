@@ -110,8 +110,10 @@ namespace SpaceEngine.RenderEngine
             ambientOcclusionBlurShader.unBind();
         }
 
-            private void renderGlobalLight(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Vector3 sunPosition, Matrix4 viewMatrix)
+            private void renderGlobalLight(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Matrix4 viewMatrix)
         {
+            Sun sun = sunEntity.getComponent<Sun>();
+
             globalLightShader.bind();
 
             GL.ActiveTexture(TextureUnit.Texture0);
@@ -120,8 +122,16 @@ namespace SpaceEngine.RenderEngine
             GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(1));
             GL.ActiveTexture(TextureUnit.Texture2);
             GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(2));
-            Vector4 sunPosViewSpace = new Vector4(sunPosition.X, sunPosition.Y, sunPosition.Z, 1.0f) * viewMatrix;
-            globalLightShader.loadUniformVector3f("sunPositionViewSpace", sunPosViewSpace.Xyz);
+            Vector3 sunDirection = sunEntity.getComponent<Sun>().getDirection();
+            Vector4 sunDirectionViewSpace = new Vector4(sunDirection.X, sunDirection.Y, sunDirection.Z, 1.0f)* Matrix4.Transpose(Matrix4.Invert(viewMatrix));
+            globalLightShader.loadUniformVector3f("sunDirectionViewSpace", sunDirectionViewSpace.Xyz);
+
+            globalLightShader.loadUniformVector3f("sunColor", sun.getSunColor());
+            globalLightShader.loadUniformVector3f("sunScatterColor", sun.getSunScatterColor());
+            globalLightShader.loadUniformVector3f("fogColor", sun.getFogColor());
+            globalLightShader.loadUniformFloat("ambient", sun.getAmbient());
+            globalLightShader.loadUniformFloat("fogDensity", sun.getFogDensity());
+
             renderer.renderToNextFrameBuffer();
 
             globalLightShader.unBind();
@@ -173,12 +183,12 @@ namespace SpaceEngine.RenderEngine
             pointLightShader.unBind();
             GL.CullFace(CullFaceMode.Back);
         }
-        public void render(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Vector3 sunPosition, Matrix4 viewMatrix, Matrix4 projectionMatrix, ComponentSystem pointLights)
+        public void render(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Matrix4 viewMatrix, Matrix4 projectionMatrix, ComponentSystem pointLights)
         {
             renderAmbientOcclusion(renderer, gBuffer, projectionMatrix);
             renderer.getNextFrameBuffer().blitDepthBufferFrom(gBuffer);
             renderer.getLastFrameBuffer().blitDepthBufferFrom(gBuffer);
-            renderGlobalLight(renderer, gBuffer, sunPosition, viewMatrix);
+            renderGlobalLight(renderer, gBuffer, sunEntity, viewMatrix);
             renderPointLights(gBuffer, pointLights, viewMatrix, projectionMatrix);
         }
     }

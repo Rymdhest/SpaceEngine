@@ -2,6 +2,8 @@
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
 using OpenTK.Mathematics;
+using SpaceEngine.Entity_Component_System;
+using SpaceEngine.Entity_Component_System.Components;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -46,24 +48,34 @@ namespace SpaceEngine.RenderEngine
             bloomFilterFBO = new FrameBuffer(bloomFrameBufferSettings);
         }
 
-        public void doPostProcessing(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Vector3 sunPosition, Vector3 viewPosition, Matrix4 viewMatrix)
+        public void doPostProcessing(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Vector3 viewPosition, Matrix4 viewMatrix)
         {
-            applySky(renderer, gBuffer, sunPosition, viewPosition, viewMatrix);
             applyFXAA(renderer);
             applyBloom(renderer, gBuffer);
+            applySky(renderer, gBuffer, sunEntity, viewPosition, viewMatrix);
+            
         }
 
-        private void applySky(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Vector3 sunPosition, Vector3 viewPosition, Matrix4 viewMatrix)
+        private void applySky(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Vector3 viewPosition, Matrix4 viewMatrix)
         {
             //renderer.getNextFrameBuffer().blitDepthBufferFrom(gBuffer);
             //renderer.getLastFrameBuffer().blitDepthBufferFrom(gBuffer);
 
-            skyShader.bind();
+            Sun sun = sunEntity.getComponent<Sun>();
 
-            skyShader.loadUniformVector3f("sunPositionWorld", sunPosition);
+            skyShader.bind();
             skyShader.loadUniformVector3f("viewPositionWorld", viewPosition);
             skyShader.loadUniformMatrix4f("viewMatrix", viewMatrix);
             skyShader.loadUniformVector2f("screenResolution", WindowHandler.resolution);
+            //Vector4 sunDirectionViewSpace = new Vector4(sunDirection.X, sunDirection.Y, sunDirection.Z, 1.0f) * Matrix4.Transpose(Matrix4.Invert(viewMatrix));
+            skyShader.loadUniformVector3f("sunDirectionWorldSpace", sun.getDirection());
+
+            skyShader.loadUniformVector3f("skyColorGround", sun.getSkyColorGround());
+            skyShader.loadUniformVector3f("skyColorSpace", sun.getSkyColorSpace());
+            skyShader.loadUniformVector3f("sunColorGlare", sun.getSunScatterColor());
+            skyShader.loadUniformVector3f("sunColor", sun.getFullSunColor());
+            skyShader.loadUniformFloat("sunSetFactor", sun.getSunsetFactor());
+
 
             renderer.getLastFrameBuffer().bind();
 
@@ -90,7 +102,8 @@ namespace SpaceEngine.RenderEngine
             bloomFilterFBO.bind();
             bloomFilterShader.bind();
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(0));
+            GL.BindTexture(TextureTarget.Texture2D, renderer.getNextOutputTexture());
+            //GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(0));
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(2));
             renderer.render();
