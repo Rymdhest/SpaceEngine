@@ -34,7 +34,7 @@ namespace SpaceEngine.Entity_Component_System.Components
 
             Entity box = new Entity();
             box.addComponent(new Transformation());
-            box.addComponent(glLoader.loadToVAO(MeshGenerator.generateBox(new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(0.5f, 0.5f, 0.5f))));
+            box.addComponent(new Model( glLoader.loadToVAO(MeshGenerator.generateBox(new Vector3(-0.5f), new Vector3(0.5f))), MasterRenderer.Pipeline.FLAT_SHADING));
 
             Entity sun = new Entity();
             sun.addComponent(new Sun());
@@ -58,14 +58,35 @@ namespace SpaceEngine.Entity_Component_System.Components
                 sphere.addComponent(new Transformation(center+ forward*1.5f, new Vector3(0f, 0f, 0f), MathF.Sqrt(power)));
                 RawModel rawModel = MeshGenerator.generateIcosahedron(new Vector3(1.0f), color * MathF.Sqrt(power), MasterRenderer.Pipeline.POST_GEOMETRY);
                 rawModel.setBloom(3f);
-                sphere.addComponent(glLoader.loadToVAO(rawModel));
+                sphere.addComponent( new Model( glLoader.loadToVAO(rawModel), MasterRenderer.Pipeline.POST_GEOMETRY));
                 sphere.addComponent(new PointLight(color * power, new Vector3(0.1f, 0f, 1.5f)));
                 sphere.addComponent(new Momentum(forward * 50f));
                 sphere.addComponent(new TerrainCollider());
                 sphere.addComponent(new Gravity());
                 sphere.addComponent(new HitBox(new Vector3(-MathF.Sqrt(power) / 2f), new Vector3(MathF.Sqrt(power) / 2f)));
             }
+            if (InputHandler.isKeyDown(Keys.B))
+            {
+                for (int i = 0; i<300*delta; i++)
+                {
+                    Vector3 randOffset = MyMath.rng3DMinusPlus();
+                    randOffset = camera.getComponent<Transformation>().createForwardVector(randOffset);
+                    Vector3 forward = camera.getComponent<Transformation>().createForwardVector();
 
+                    Vector3 center = camera.getComponent<Transformation>().position;
+                    Vector3 color = new Vector3(MyMath.rng(), MyMath.rng(), MyMath.rng());
+                    Entity sphere = new Entity();
+                    float power = (MyMath.rng() * 5f + 1) * 0.5f;
+                    sphere.addComponent(new Transformation(center + forward*1.5f+randOffset*1f, new Vector3(0f, 0f, 0f), MathF.Sqrt(power)));
+                    sphere.addComponent(new PointLight(color * power, new Vector3(0.1f, 0f, 1.5f)));
+                    sphere.addComponent(new GlowEffect(color, MathF.Sqrt(power)));
+                    sphere.addComponent(new Momentum(forward * 50f+randOffset*10f));
+                    sphere.addComponent(new TerrainCollider());
+                    sphere.addComponent(new Gravity());
+                    sphere.addComponent(new HitBox(new Vector3(-MathF.Sqrt(power) / 2f), new Vector3(MathF.Sqrt(power) / 2f)));
+                }
+
+            }
 
             postGeometrySystem.getMembers().Sort((v1, v2) => (v2.owner.getComponent<Transformation>().position - camera.getComponent<Transformation>().position).LengthSquared.CompareTo((v1.owner.getComponent<Transformation>().position - camera.getComponent<Transformation>().position).LengthSquared));
 
@@ -85,14 +106,14 @@ namespace SpaceEngine.Entity_Component_System.Components
                 this.sculpture.cleanUp();
                 sculpture = new Entity();
                 sculpture.addComponent(new Transformation(new Vector3(-15f, -15, 0), new Vector3(0)));
-                sculpture.addComponent(glLoader.loadToVAO(ModelGenerator.generateTree()));
+                sculpture.addComponent(new Model( glLoader.loadToVAO(ModelGenerator.generateTree()), MasterRenderer.Pipeline.FLAT_SHADING));
                 sculpture.addComponent(new TerrainCollider());
 
                 for (int i = 0; i<100; i++)
                 {
                     Entity sculpture = new Entity();
                     sculpture.addComponent(new Transformation(new Vector3(MyMath.rngMinusPlus(), -100f, MyMath.rngMinusPlus())*1000f, new Vector3(0)));
-                    sculpture.addComponent(glLoader.loadToVAO(ModelGenerator.generateTree()));
+                    sculpture.addComponent(new Model(glLoader.loadToVAO(ModelGenerator.generateTree()), MasterRenderer.Pipeline.FLAT_SHADING));
                     sculpture.addComponent(new TerrainCollider());
                 }
             }

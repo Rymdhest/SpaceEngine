@@ -1,26 +1,23 @@
 ﻿
 
-using OpenTK.Graphics.OpenGL;
 using SpaceEngine.Entity_Component_System;
 using SpaceEngine.Entity_Component_System.Components;
-using System.Transactions;
+using SpaceEngine.Modelling;
 
 namespace SpaceEngine.RenderEngine
 {
     internal class Model : Component
     {
-        private int vaoID;
-        private int[] VBOS;
-        private int vertexCount;
+
+        private glModel model;
         private MasterRenderer.Pipeline pipeline;
+        private bool cleanGLModel;
 
-        public Model(int vaoID, int[] VBOS, int vertexCount, MasterRenderer.Pipeline pipeline)
+        public Model(glModel model, MasterRenderer.Pipeline pipeline, bool cleanGLModel = true)
         {
-            this.vaoID = vaoID;
-            this.VBOS = VBOS;
-            this.vertexCount = vertexCount;
+            this.model = model;
             this.pipeline = pipeline;
-
+            this.cleanGLModel = cleanGLModel;
             if (pipeline == MasterRenderer.Pipeline.FLAT_SHADING)
             {
                 EntityManager.flatShadingSystem.addMember(this);
@@ -29,15 +26,13 @@ namespace SpaceEngine.RenderEngine
             {
                 EntityManager.smoothShadingSystem.addMember(this);
             }
-            else if (pipeline == MasterRenderer.Pipeline.POST_GEOMETRY)
-            {
-                EntityManager.postGeometrySystem.addMember(this);
-            }
+
+            this.cleanGLModel = cleanGLModel;
         }
 
-        public int getVAOID()
+        public glModel getModel()
         {
-            return vaoID;
+            return model;
         }
 
         public MasterRenderer.Pipeline getPipeline()
@@ -45,19 +40,16 @@ namespace SpaceEngine.RenderEngine
             return pipeline;
         }
 
-        public int getVertexCount()
-        {
-            return vertexCount;
-        }
+
 
         public override void cleanUp()
         {
             base.cleanUp();
-            GL.DeleteVertexArray(vaoID);
-            for (int i = 0; i<VBOS.Length; i++)
+            if (cleanGLModel)
             {
-                GL.DeleteBuffer(VBOS[i]);
+                model.cleanUp();
             }
+            
         }
     }
 }

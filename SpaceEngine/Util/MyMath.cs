@@ -42,6 +42,14 @@ namespace SpaceEngine.Util
         {
             return createTransformationMatrix(transformation.position, transformation.rotation, transformation.scale);
         }
+        public static Matrix4 createTransformationMatrix(Vector3 position, float scale)
+        {
+
+            Matrix4 matrix = Matrix4.Identity;
+            matrix = matrix * Matrix4.CreateScale(scale);
+            matrix = matrix * Matrix4.CreateTranslation(position);
+            return matrix;
+        }
         public static Matrix4 createTransformationMatrix(Vector3 position, Vector3 rotation, float scale)
         {
 

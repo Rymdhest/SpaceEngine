@@ -3,6 +3,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using SpaceEngine.Entity_Component_System;
 using SpaceEngine.Entity_Component_System.Components;
+using SpaceEngine.Modelling;
 using SpaceEngine.Shaders;
 using SpaceEngine.Util;
 
@@ -160,11 +161,12 @@ namespace SpaceEngine.RenderEngine
             pointLightShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
             pointLightShader.loadUniformFloat("gScreenSizeX", WindowHandler.resolution.X);
             pointLightShader.loadUniformFloat("gScreenSizeY", WindowHandler.resolution.Y);
-
+            glModel model = ModelGenerator.unitSphere;
+            GL.BindVertexArray(model.getVAOID());
+            GL.EnableVertexAttribArray(0);
             foreach (PointLight pointLight in pointLights.getMembers())
             {
-                Matrix4 transformationMatrix = MyMath.createTransformationMatrix(pointLight.owner.getComponent<Transformation>());
-                Model model = pointLight.lightVolumeModel;
+                Matrix4 transformationMatrix = MyMath.createTransformationMatrix(pointLight.owner.getComponent<Transformation>().position, pointLight.lightVolumeRadius);
                 pointLightShader.loadUniformMatrix4f("TransformationMatrix", transformationMatrix);
                 pointLightShader.loadUniformVector3f("attenuation", pointLight.attenuation);
                 pointLightShader.loadUniformVector3f("lightColor", pointLight.color);
@@ -172,8 +174,7 @@ namespace SpaceEngine.RenderEngine
                 Vector3 lightPositiobn = pointLight.owner.getComponent<Transformation>().position;
                 Vector4 lightPositionViewSpace = new Vector4(lightPositiobn.X, lightPositiobn.Y, lightPositiobn.Z, 1.0f) * viewMatrix;
                 pointLightShader.loadUniformVector3f("lightPositionViewSpace", lightPositionViewSpace.Xyz);
-                GL.BindVertexArray(model.getVAOID());
-                GL.EnableVertexAttribArray(0);
+
 
                 GL.DrawElements(PrimitiveType.Triangles, model.getVertexCount(), DrawElementsType.UnsignedInt, 0);
 

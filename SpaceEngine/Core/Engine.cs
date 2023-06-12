@@ -79,6 +79,7 @@ namespace SpaceEngine.Core
 
         private void render()
         {
+            windowHandler.render();
             Matrix4 viewMatrix = MyMath.createViewMatrix(entityManager.camera.getComponent<Transformation>());
             Vector3 cameraPos = entityManager.camera.getComponent<Transformation>().position;
             masterRenderer.render(viewMatrix, cameraPos, entityManager.sun, EntityManager.pointLightSystem); 

@@ -1,6 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
-
+using SpaceEngine.Modelling;
 namespace SpaceEngine.RenderEngine
 {
     internal class ScreenQuadRenderer
@@ -8,11 +8,11 @@ namespace SpaceEngine.RenderEngine
         private FrameBuffer buffer1;
         private FrameBuffer buffer2;
         private bool toggle;
-        Model quadModel;
+        glModel quadModel;
         public ScreenQuadRenderer() {
             float[] positions = { -1, 1, -1, -1, 1, -1, 1, 1 };
             int[] indices = { 0, 1, 2, 3, 0, 2 };
-            quadModel = glLoader.loadToVAO(positions, indices, 2, MasterRenderer.Pipeline.OTHER);
+            quadModel = glLoader.loadToVAO(positions, indices, 2);
 
             FrameBufferSettings frameBufferSettings= new FrameBufferSettings(WindowHandler.resolution);
             frameBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment0));

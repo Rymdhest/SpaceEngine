@@ -1,9 +1,11 @@
 ﻿using OpenTK.Mathematics;
+using SpaceEngine.RenderEngine;
 
 namespace SpaceEngine.Modelling
 {
     internal class ModelGenerator
     {
+        public static glModel unitSphere = glLoader.loadToVAO(MeshGenerator.generateIcosahedron(new Vector3(1), new Vector3(0), MasterRenderer.Pipeline.OTHER));
         public static RawModel generateTree()
         {
 

@@ -2,6 +2,7 @@
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using SpaceEngine.Entity_Component_System.Components;
 using System.Diagnostics;
 namespace SpaceEngine.RenderEngine
 {
@@ -11,10 +12,13 @@ namespace SpaceEngine.RenderEngine
         public static GameWindow? gameWindow = null;
 
         private Stopwatch frameStopWatch = new Stopwatch();
-        private Stopwatch secondStopWatch = new Stopwatch();
+        private Stopwatch secondStopWatchUpdate = new Stopwatch();
+        private Stopwatch secondStopWatchRender = new Stopwatch();
         private float delta = 0f;
-        private int framesLastSecond = 0;
-        private int framesCurrentSecond = 0;
+        private int framesLastSecondUpdate = 0;
+        private int framesLastSecondRender = 0;
+        private int framesCurrentSecondUpate = 0;
+        private int framesCurrentSecondRender = 0;
         public static Vector2i resolution;
 
         public WindowHandler(Vector2i resolution)
@@ -34,7 +38,8 @@ namespace SpaceEngine.RenderEngine
 
             gameWindow = new GameWindow(gws, nws);
 
-            secondStopWatch.Start();
+            secondStopWatchUpdate.Start();
+            secondStopWatchRender.Start();
             frameStopWatch.Start();
         }
         public static GameWindow getWindow()
@@ -46,18 +51,26 @@ namespace SpaceEngine.RenderEngine
             this.delta = (float)frameStopWatch.Elapsed.TotalSeconds;
             frameStopWatch.Restart();
 
-
-            if (secondStopWatch.Elapsed.TotalMilliseconds >= 1000.0)
+            if (secondStopWatchUpdate.Elapsed.TotalMilliseconds >= 1000.0)
             {
-                framesLastSecond = framesCurrentSecond;
-                framesCurrentSecond = 0;
-                gameWindow.Title = title + " " + framesLastSecond + " FPS";
-                secondStopWatch.Restart();
+                framesLastSecondUpdate = framesCurrentSecondUpate;
+                framesCurrentSecondUpate = 0;
+                gameWindow.Title = title + " " + framesLastSecondUpdate + " FPS Update : "+ framesLastSecondRender+" FPS Render : "+EntityManager.entities.Count+" Entities";
+                secondStopWatchUpdate.Restart();
 
             }
+            framesCurrentSecondUpate++;
+        }
+        public void render()
+        {
+            if (secondStopWatchRender.Elapsed.TotalMilliseconds >= 1000.0)
+            {
+                framesLastSecondRender = framesCurrentSecondRender;
+                framesCurrentSecondRender = 0;
+                secondStopWatchRender.Restart();
 
-            framesCurrentSecond++;
-            
+            }
+            framesCurrentSecondRender++;
         }
         public void onResize(ResizeEventArgs eventArgs)
         {

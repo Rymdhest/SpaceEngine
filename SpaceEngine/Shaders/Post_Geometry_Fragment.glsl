@@ -1,8 +1,5 @@
 #version 330
 
-in vec3 fragColor;
-in vec3 fragNormal;
-in vec3 fragMaterials;
 in vec4 positionViewSpace_pass;
 in vec4 clipSpacePosition;
 //layout (location = 0) out vec4 gDiffuse;
@@ -10,6 +7,7 @@ in vec4 clipSpacePosition;
 //layout (location = 2) out vec4 gPosition;
 uniform vec2 screenResolution;
 uniform float scale;
+uniform vec3 color;
 //layout (location = 0) out vec4 out_Color;
 out vec4 out_Color;
 
@@ -40,7 +38,7 @@ void main() {
 	float distance = length(uv-lightCenterUV);
 	distance = smoothstep(radius, 0.0f, distance);
 
-	vec3 col = vec3(distance)*fragColor*2f;
+	vec3 col = vec3(distance)*color*2f;
 	//out_Color = vec4(lightCenterUV-uv, 0f, 1.0f);
 	out_Color = vec4(col, 1.0f);
 }

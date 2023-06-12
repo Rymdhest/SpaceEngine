@@ -5,6 +5,7 @@ using SpaceEngine.Util;
 using OpenTK.Graphics.OpenGL;
 using SpaceEngine.Shaders;
 using OpenTK.Windowing.Common;
+using SpaceEngine.Modelling;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -47,16 +48,17 @@ namespace SpaceEngine.RenderEngine
             flatShader.bind();
             foreach (Model model in flatShadeEntities.getMembers())
             {
+                glModel glModel = model.getModel();
                 Matrix4 transformationMatrix = MyMath.createTransformationMatrix(model.owner.getComponent<Transformation>());
                 Matrix4 modelViewMatrix = transformationMatrix * viewMatrix;
                 smoothShader.loadUniformMatrix4f("modelViewMatrix", modelViewMatrix);
                 smoothShader.loadUniformMatrix4f("modelViewProjectionMatrix", modelViewMatrix * projectionMatrix);
-                GL.BindVertexArray(model.getVAOID());
+                GL.BindVertexArray(glModel.getVAOID());
                 GL.EnableVertexAttribArray(0);
                 GL.EnableVertexAttribArray(1);
                 GL.EnableVertexAttribArray(2);
 
-                GL.DrawElements(PrimitiveType.Triangles, model.getVertexCount(), DrawElementsType.UnsignedInt, 0);
+                GL.DrawElements(PrimitiveType.Triangles, glModel.getVertexCount(), DrawElementsType.UnsignedInt, 0);
 
             }
 
@@ -67,18 +69,19 @@ namespace SpaceEngine.RenderEngine
             smoothShader.bind();
             foreach (Model model in smoothShadeEntities.getMembers())
             {
+                glModel glModel = model.getModel();
                 Matrix4 transformationMatrix = MyMath.createTransformationMatrix(model.owner.getComponent<Transformation>());
                 Matrix4 modelViewMatrix = transformationMatrix * viewMatrix;
                 smoothShader.loadUniformMatrix4f("modelViewMatrix", modelViewMatrix);
                 smoothShader.loadUniformMatrix4f("modelViewProjectionMatrix", modelViewMatrix*projectionMatrix);
                 smoothShader.loadUniformMatrix4f("normalModelViewMatrix", Matrix4.Transpose(Matrix4.Invert(modelViewMatrix)));
-                GL.BindVertexArray(model.getVAOID());
+                GL.BindVertexArray(glModel.getVAOID());
                 GL.EnableVertexAttribArray(0);
                 GL.EnableVertexAttribArray(1);
                 GL.EnableVertexAttribArray(2);
                 GL.EnableVertexAttribArray(3);
 
-                GL.DrawElements(PrimitiveType.Triangles, model.getVertexCount(), DrawElementsType.UnsignedInt, 0);
+                GL.DrawElements(PrimitiveType.Triangles, glModel.getVertexCount(), DrawElementsType.UnsignedInt, 0);
 
             }
             smoothShader.unBind();

@@ -4,6 +4,7 @@ using SpaceEngine.Entity_Component_System.Components;
 using SpaceEngine.Shaders;
 using SpaceEngine.Util;
 using OpenTK.Graphics.OpenGL;
+using SpaceEngine.Modelling;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -17,25 +18,30 @@ namespace SpaceEngine.RenderEngine
             //postGeometryShader = new ShaderProgram("Post_Geometry_Vertex", "Post_Geometry_Fragment");
             prepareFrame();
             postGeometryShader.bind();
-            foreach (Model model in postGeometrySystem.getMembers())
+
+            glModel glModel = ModelGenerator.unitSphere;
+            GL.BindVertexArray(glModel.getVAOID());
+            GL.EnableVertexAttribArray(0);
+            postGeometryShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
+            postGeometryShader.loadUniformVector2f("screenResolution", WindowHandler.resolution);
+            foreach (GlowEffect glowEffect in postGeometrySystem.getMembers())
             {
-                Matrix4 transformationMatrix = MyMath.createTransformationMatrix(model.owner.getComponent<Transformation>());
+                Matrix4 transformationMatrix = MyMath.createTransformationMatrix(glowEffect.owner.getComponent<Transformation>().position, glowEffect.glowRadius);
                 Matrix4 modelViewMatrix = transformationMatrix * viewMatrix;
-                postGeometryShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
                 postGeometryShader.loadUniformMatrix4f("modelViewMatrix", modelViewMatrix);
                 postGeometryShader.loadUniformMatrix4f("modelViewProjectionMatrix", modelViewMatrix * projectionMatrix);
-                Vector3 pos = model.owner.getComponent<Transformation>().position;
+                Vector3 pos = glowEffect.owner.getComponent<Transformation>().position;
                 postGeometryShader.loadUniformVector4f("modelWorldPosition", (new Vector4(pos.X, pos.Y, pos.Z, 1.0f)* viewMatrix* projectionMatrix));
-                postGeometryShader.loadUniformVector2f("screenResolution", WindowHandler.resolution);
-                postGeometryShader.loadUniformFloat("scale", model.owner.getComponent<Transformation>().scale);
+                
+                postGeometryShader.loadUniformVector3f("color", glowEffect.color);
+                postGeometryShader.loadUniformFloat("scale", glowEffect.owner.getComponent<Transformation>().scale);
                 //postGeometryShader.loadUniformMatrix4f("normalModelViewMatrix", Matrix4.Transpose(Matrix4.Invert(modelViewMatrix)));
-                GL.BindVertexArray(model.getVAOID());
-                GL.EnableVertexAttribArray(0);
-                GL.EnableVertexAttribArray(1);
-                GL.EnableVertexAttribArray(2);
+
+                //GL.EnableVertexAttribArray(1);
+                //GL.EnableVertexAttribArray(2);
                 //GL.EnableVertexAttribArray(3);
 
-                GL.DrawElements(PrimitiveType.Triangles, model.getVertexCount(), DrawElementsType.UnsignedInt, 0);
+                GL.DrawElements(PrimitiveType.Triangles, glModel.getVertexCount(), DrawElementsType.UnsignedInt, 0);
 
             }
             postGeometryShader.unBind();

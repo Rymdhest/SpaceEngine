@@ -39,7 +39,11 @@ namespace SpaceEngine.Entity_Component_System.Components
         }
         public Vector3 createForwardVector()
         {
-            Vector4 moveVector = new Vector4(0f, 0f, -1f, 1.0f);
+            return createForwardVector(new Vector3(0f, 0f, -1f));
+        }
+            public Vector3 createForwardVector(Vector3 forward)
+        {
+            Vector4 moveVector = new Vector4(forward.X, forward.Y, forward.Z, 1.0f);
             moveVector = MyMath.createRotationMatrix(rotation) * moveVector;
             moveVector.Normalize();
             return moveVector.Xyz;
