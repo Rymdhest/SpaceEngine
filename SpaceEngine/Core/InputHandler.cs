@@ -10,24 +10,11 @@ namespace SpaceEngine.Core
         private static List<Keys> clickedKeys = new List<Keys>();
 
 
-        private static Vector2 mouseDelta = new Vector2();
         public InputHandler() {
         }
         public void update(float delta)
         {
             clickedKeys.Clear();
-            mouseDelta.X = 0f;
-            mouseDelta.Y = 0f;
-        }
-
-        public static Vector2 getMoouseDelta()
-        {
-            return mouseDelta;
-        }
-
-        public void MouseMove(MouseMoveEventArgs eventArgs)
-        {
-            mouseDelta += eventArgs.Delta;
         }
 
         public void keyDown(KeyboardKeyEventArgs eventArgs)

@@ -23,8 +23,9 @@ namespace SpaceEngine.Entity_Component_System.Components
             if (WindowHandler.gameWindow.IsMouseButtonDown(MouseButton.Left))
             {
                 WindowHandler.setMouseGrabbed(true);
-                transformation.addRotation(new Vector3(0f, mouseTurnAmount * InputHandler.getMoouseDelta().X, 0f));
-                transformation.addRotation(new Vector3(mouseTurnAmount * InputHandler.getMoouseDelta().Y, 0, 0f));
+                ;
+                transformation.addRotation(new Vector3(0f, mouseTurnAmount * WindowHandler.gameWindow.MouseState.Delta.X, 0f));
+                transformation.addRotation(new Vector3(mouseTurnAmount * WindowHandler.gameWindow.MouseState.Delta.Y, 0, 0f));
                 if (InputHandler.isKeyDown(Keys.A))
                 {
                     transformation.move(new Vector3(-moveAmount, 0f, 0f));

@@ -14,15 +14,17 @@ namespace SpaceEngine.RenderEngine
         private ShaderProgram flatShader = new ShaderProgram("Flat_Shade_Vertex", "Flat_Shade_Fragment", "Flat_Shade_Geometry");
         private ShaderProgram smoothShader = new ShaderProgram("Smooth_Shade_Vertex", "Smooth_Shade_Fragment");
         public FrameBuffer gBuffer;
-
+        private GrassRenderer grassRenderer;
         public GeometryPassRenderer()
         {
+            grassRenderer = new GrassRenderer();
             FrameBufferSettings gBufferSettings = new FrameBufferSettings(WindowHandler.resolution);
             DrawBufferSettings gPosition = new DrawBufferSettings(FramebufferAttachment.ColorAttachment0);
             gPosition.formatInternal = PixelInternalFormat.Rgba16f;
             gBufferSettings.drawBuffers.Add(gPosition);
             gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment1));
             gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment2));
+            
 
             DepthAttachmentSettings depthSettings = new DepthAttachmentSettings();
             depthSettings.isTexture = true;
@@ -40,7 +42,7 @@ namespace SpaceEngine.RenderEngine
             GL.ClearColor(0.0f, 0.0f, 0.0f, 0.2f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         }
-        public void render(ComponentSystem flatShadeEntities, ComponentSystem smoothShadeEntities, Matrix4 viewMatrix, Matrix4 projectionMatrix)
+        public void render(ComponentSystem flatShadeEntities, ComponentSystem smoothShadeEntities, Matrix4 viewMatrix, Matrix4 projectionMatrix, TerrainManager terrainManager, Vector3 cameraPosition)
         {
 
             prepareFrame(viewMatrix, projectionMatrix);
@@ -90,6 +92,7 @@ namespace SpaceEngine.RenderEngine
             //GL.BindBuffer(BufferTarget.ArrayBuffer, model.getIndexBuffer());
             //GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             finishFrame();
+            grassRenderer.render(viewMatrix, projectionMatrix, terrainManager, cameraPosition);
         }
         public void onResize(ResizeEventArgs eventArgs)
         {

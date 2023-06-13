@@ -4,7 +4,7 @@ using SpaceEngine.RenderEngine;
 using SpaceEngine.Util;
 using Noise;
 using SpaceEngine.Entity_Component_System;
-
+using OpenTK.Graphics.OpenGL;
 namespace SpaceEngine.Modelling
 {
     internal class TerrainChunk : Component
@@ -14,6 +14,7 @@ namespace SpaceEngine.Modelling
         private Vector2 positionChunkGlobalWorld;
         private int resolution;
         private float worldSize;
+        private int normalHeightMap = -1;
         private static OpenSimplexNoise noise = new OpenSimplexNoise(4499954);
         public TerrainChunk(Vector2 position, float WorldSize, int resolution)
         {
@@ -29,6 +30,38 @@ namespace SpaceEngine.Modelling
                     heightsLocalGridSpace[x,z] = noiseFunction(position.X+x* spaceBetweenVertices, position.Y+z* spaceBetweenVertices);
                 }
             }
+        }
+        public void generateTextureMaps()
+        {
+            int res = resolution;
+            var pixels = new float[4 * res * res];
+            for (int z = 0; z < res; z++)
+            {
+                for (int x = 0; x < res; x++)
+                {   
+                    int i = z* res + x;
+                    Vector3 normal = calculateVertexNormal(x, z);
+                    pixels[i * 4 + 0] = normal.X;
+                    pixels[i * 4 + 1] = normal.Y;
+                    pixels[i * 4 + 2] = normal.Z;
+                    pixels[i * 4 + 3] = heightsLocalGridSpace[x,z];
+                }
+            }
+            normalHeightMap = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, normalHeightMap);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, res, res, 0, PixelFormat.Rgba, PixelType.Float, pixels);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)TextureWrapMode.ClampToEdge);
+        }
+        public int getNormalHeightMap()
+        {
+            return normalHeightMap;
+        }
+        public float getWorldSize()
+        {
+            return worldSize;
         }
         public Vector3 getNormalFlatAt(Vector2 position)
         {

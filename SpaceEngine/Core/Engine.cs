@@ -49,12 +49,6 @@ namespace SpaceEngine.Core
                 windowHandler.onResize(eventArgs);
                 masterRenderer.onResize(eventArgs);
             };
-            WindowHandler.getWindow().MouseMove += delegate (MouseMoveEventArgs eventArgs)
-            {
-                inputHandler.MouseMove(eventArgs);
-            };
-
-
         }
 
         public void run()
@@ -82,7 +76,7 @@ namespace SpaceEngine.Core
             windowHandler.render();
             Matrix4 viewMatrix = MyMath.createViewMatrix(entityManager.camera.getComponent<Transformation>());
             Vector3 cameraPos = entityManager.camera.getComponent<Transformation>().position;
-            masterRenderer.render(viewMatrix, cameraPos, entityManager.sun, EntityManager.pointLightSystem); 
+            masterRenderer.render(viewMatrix, cameraPos, entityManager.sun, EntityManager.pointLightSystem, EntityManager.terrainManager); 
         }
     }
 }

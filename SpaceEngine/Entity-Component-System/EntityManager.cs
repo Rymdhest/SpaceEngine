@@ -28,9 +28,9 @@ namespace SpaceEngine.Entity_Component_System.Components
             camera.addComponent(new Transformation(new Vector3(-31f, 13f, -1f)+center, new Vector3(0.5f, MathF.PI/2f+ MathF.PI / 4f, 0f)));;
             camera.addComponent(new InputMove());
             camera.addComponent(new Momentum());
-            //camera.addComponent(new Gravity());
+            camera.addComponent(new Gravity());
             camera.addComponent(new TerrainCollider());
-            camera.addComponent(new HitBox(new Vector3(-1, -1, -1), new Vector3(1)));
+            camera.addComponent(new HitBox(new Vector3(-2), new Vector3(2)));
 
             Entity box = new Entity();
             box.addComponent(new Transformation());

@@ -47,6 +47,19 @@ namespace SpaceEngine.Modelling
             }
             
         }
+
+        public TerrainChunk getTerarinChunkAt(Vector2 position)
+        {
+            List<Entity> chunks = chunkEntities.Where(kv => kv.Key.Xy == fromWorldToChunkSpace(position)).Select(kv => kv.Value).ToList();
+            if ( chunks.Count > 0)
+            {
+                return chunks[0].getComponent<TerrainChunk>();
+            }
+            else
+            {
+                return null;
+            }
+        }
         public Vector3 getNormalFlatAt(Vector2 position)
         {
             List<Entity> chunks = chunkEntities.Where(kv => kv.Key.Xy == fromWorldToChunkSpace(position)).Select(kv => kv.Value).ToList();
@@ -172,7 +185,9 @@ namespace SpaceEngine.Modelling
                         if (!chunkEntities.ContainsKey(data.Key))
                         {
                             Entity terrainChunkEnity = new Entity();
-                            terrainChunkEnity.addComponent(data.Value.component);
+                            TerrainChunk terrainChunk = data.Value.component;
+                            terrainChunk.generateTextureMaps();
+                            terrainChunkEnity.addComponent(terrainChunk);
                             terrainChunkEnity.addComponent(new Model( glLoader.loadToVAO(data.Value.rawModel), MasterRenderer.Pipeline.FLAT_SHADING));
                             terrainChunkEnity.addComponent(new Transformation(data.Value.worldPosition, new Vector3(0f, 0f, 0f), 1.0f));
                             //Console.WriteLine("adding " + data.Key.ToString());

@@ -53,7 +53,17 @@ namespace SpaceEngine.RenderEngine
             unbindVAO();
             return new glModel(vaoID, VBOS, indices.Length);
         }
+        public static glModel loadToVAO(float[] positions, float[] normals, int[] indices)
+        {
+            int vaoID = createVAO();
+            int[] VBOS = new int[3];
+            VBOS[2] = bindIndicesBuffer(indices);
 
+            VBOS[0] = storeDataInAttributeList(0, 3, positions);
+            VBOS[1] = storeDataInAttributeList(1, 3, normals);
+            unbindVAO();
+            return new glModel(vaoID, VBOS, indices.Length);
+        }
         public static glModel loadToVAO(float[] positions, int[] indices, int dimensions)
         {
             int vaoID = createVAO();

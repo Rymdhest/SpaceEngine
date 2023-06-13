@@ -6,6 +6,7 @@ using OpenTK.Windowing.Common;
 using SpaceEngine.Entity_Component_System;
 using SpaceEngine.Core;
 using SpaceEngine.Entity_Component_System.Components;
+using SpaceEngine.Modelling;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -63,10 +64,10 @@ namespace SpaceEngine.RenderEngine
             WindowHandler.getWindow().SwapBuffers();
         }
    
-        public void render(Matrix4 viewMatrix, Vector3 viewPosition, Entity sunEntity, ComponentSystem pointLights)
+        public void render(Matrix4 viewMatrix, Vector3 viewPosition, Entity sunEntity, ComponentSystem pointLights, TerrainManager terrainManager)
         {
             prepareFrame();
-            geometryPassRenderer.render(EntityManager.flatShadingSystem, EntityManager.smoothShadingSystem, viewMatrix, projectionMatrix);
+            geometryPassRenderer.render(EntityManager.flatShadingSystem, EntityManager.smoothShadingSystem, viewMatrix, projectionMatrix, terrainManager, viewPosition);
             deferredLightPassRenderer.render(screenQuadRenderer, geometryPassRenderer.gBuffer, sunEntity, viewMatrix,projectionMatrix, pointLights);
             postProcessingRenderer.doPostProcessing(screenQuadRenderer, geometryPassRenderer.gBuffer, sunEntity, viewPosition, viewMatrix);
             postGeometryRenderer.render(EntityManager.postGeometrySystem, viewMatrix, projectionMatrix);

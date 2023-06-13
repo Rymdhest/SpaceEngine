@@ -44,7 +44,7 @@ void main(void){
 
 	vec3 diffuse = max(dot(sunDirectionViewSpace, normal), 0f)*albedo*sunColor;
 
-	vec3 lighting = max(diffuse + specular, totalAmbient);
+	vec3 lighting = max((diffuse + specular)*ambientOcclusion, totalAmbient);
 	lighting = applyFog(lighting, -position.z, -viewDir, sunDirectionViewSpace);
 
 	out_Colour =  vec4(lighting, 1.0f);
