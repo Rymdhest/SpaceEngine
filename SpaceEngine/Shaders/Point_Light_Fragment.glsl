@@ -5,6 +5,7 @@ layout (location = 0) out vec4 out_Colour;
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
+
 uniform vec3 lightPositionViewSpace;
 uniform vec3 lightColor;
 uniform vec3 attenuation;

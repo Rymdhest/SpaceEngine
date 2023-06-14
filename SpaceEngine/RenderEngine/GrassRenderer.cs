@@ -39,11 +39,11 @@ namespace SpaceEngine.RenderEngine
         {
 
             grassBlade.cleanUp();
-            grassShader = new ShaderProgram("Grass_Vertex", "Grass_Fragment");
+            //grassShader.cleanUp();
+            //grassShader = new ShaderProgram("Grass_Vertex", "Grass_Fragment");
 
-            grassBlade.cleanUp();
-            float width = 0.05f;
-            float height = 0.5f;
+            float width = 0.03f;
+            float height = 0.9f;
 
             float[] positions = {
             -width, 0f, 0f,
@@ -65,7 +65,7 @@ namespace SpaceEngine.RenderEngine
             4, 5, 6};
 
             grassBlade = glLoader.loadToVAO(positions, indices, 3);
-            
+            //grassBlade = glLoader.loadToVAO(ModelGenerator.generateTree());
             GL.Disable(EnableCap.CullFace);
 
 
@@ -94,7 +94,7 @@ namespace SpaceEngine.RenderEngine
 
         private void renderGrassOnChunk(TerrainChunk chunk, Matrix4 viewMatrix, Matrix4 projectionMatrix)
         {
-            int bladesPerRow = 1000;
+            int bladesPerRow = 600;
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, chunk.getNormalHeightMap());
             Matrix4 transformationMatrix = MyMath.createTransformationMatrix(chunk.owner.getComponent<Transformation>());

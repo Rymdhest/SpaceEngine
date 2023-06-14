@@ -6,6 +6,7 @@ layout (location = 0) out vec4 out_Colour;
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
+uniform sampler2DShadow shadowMap;
 
 uniform vec3 sunDirectionViewSpace;
 uniform vec3 sunColor;
@@ -13,6 +14,20 @@ uniform vec3 sunScatterColor;
 uniform vec3 fogColor;
 uniform float ambient;
 uniform float fogDensity;
+
+uniform mat4 sunSpaceMatrix;
+uniform vec2 shadowMapResolution;
+
+
+float calcShadow(vec3 positionWorldSpace) {
+	vec4 positionSunSpace = (vec4(positionWorldSpace, 1.0))*sunSpaceMatrix;
+	float shadowDepth = textureProj(shadowMap, positionSunSpace);
+	float sunFactor = 1f;
+	if (shadowDepth < positionSunSpace.z) {
+		sunFactor = 0.0f;
+	}
+	return sunFactor;
+}
 
 vec3 applyFog( in vec3  rgb,      // original color of the pixel
                in float distance, // camera to point distance
@@ -31,6 +46,10 @@ void main(void){
 	vec3 position = texture(gPosition, textureCoords).xyz;
 	vec3 normal = texture(gNormal, textureCoords).xyz;
 	vec3 albedo = texture(gAlbedo, textureCoords).rgb;
+
+
+	float sunFactor = calcShadow(position);
+
 	float ambientOcclusion = texture(gAlbedo, textureCoords).a;
 	float specularStrength = texture(gNormal, textureCoords).a;
 
@@ -44,8 +63,10 @@ void main(void){
 
 	vec3 diffuse = max(dot(sunDirectionViewSpace, normal), 0f)*albedo*sunColor;
 
-	vec3 lighting = max((diffuse + specular)*ambientOcclusion, totalAmbient);
+	vec3 lighting = max((diffuse + specular)*ambientOcclusion*sunFactor, totalAmbient);
 	lighting = applyFog(lighting, -position.z, -viewDir, sunDirectionViewSpace);
 
 	out_Colour =  vec4(lighting, 1.0f);
+	//out_Colour =  vec4(positionSunSpace.xyz, 1.0f);
+	//out_Colour =  vec4(vec3(shadowDepth), 1.0f);
 }

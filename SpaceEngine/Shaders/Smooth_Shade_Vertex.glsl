@@ -14,7 +14,6 @@ uniform mat4 modelViewProjectionMatrix;
 uniform mat4 normalModelViewMatrix;
 
 void main() {
-	
 	gl_Position =  vec4(position, 1.0)*modelViewProjectionMatrix;
 	positionViewSpace_pass =  (vec4(position, 1.0)*modelViewMatrix).xyz;
 	fragColor = color;

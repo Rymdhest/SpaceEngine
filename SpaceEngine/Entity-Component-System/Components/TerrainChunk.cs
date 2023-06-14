@@ -93,6 +93,13 @@ namespace SpaceEngine.Modelling
 
             return normal;
         }
+
+        public override void cleanUp()
+        {
+            base.cleanUp();
+            if (normalHeightMap != -1)
+            GL.DeleteTexture(normalHeightMap);
+        }
             public float getPolygonHeightAt(Vector2 position)
         {
             float height;

@@ -20,7 +20,7 @@ namespace SpaceEngine.RenderEngine
             grassRenderer = new GrassRenderer();
             FrameBufferSettings gBufferSettings = new FrameBufferSettings(WindowHandler.resolution);
             DrawBufferSettings gPosition = new DrawBufferSettings(FramebufferAttachment.ColorAttachment0);
-            gPosition.formatInternal = PixelInternalFormat.Rgba16f;
+            gPosition.formatInternal = PixelInternalFormat.Rgba32f;
             gBufferSettings.drawBuffers.Add(gPosition);
             gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment1));
             gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment2));
@@ -92,7 +92,7 @@ namespace SpaceEngine.RenderEngine
             //GL.BindBuffer(BufferTarget.ArrayBuffer, model.getIndexBuffer());
             //GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             finishFrame();
-            grassRenderer.render(viewMatrix, projectionMatrix, terrainManager, cameraPosition);
+            //grassRenderer.render(viewMatrix, projectionMatrix, terrainManager, cameraPosition);
         }
         public void onResize(ResizeEventArgs eventArgs)
         {

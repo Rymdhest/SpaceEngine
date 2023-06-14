@@ -28,7 +28,13 @@ namespace SpaceEngine.RenderEngine
                 renderAttachments[i] = createRenderAttachment(settings.drawBuffers[i], settings.resolution);
                 buffers[i] = (DrawBuffersEnum)settings.drawBuffers[i].colorAttachment;
             }
-            GL.DrawBuffers(buffers.Length, buffers);
+            if (buffers.Length == 0)
+            {
+                GL.DrawBuffer(DrawBufferMode.None);
+            } else
+            {
+                GL.DrawBuffers(buffers.Length, buffers);
+            }
 
             if (settings.depthAttachmentSettings != null)
             {
@@ -94,19 +100,24 @@ namespace SpaceEngine.RenderEngine
             {
                 attachment = GL.GenTexture();
                 GL.BindTexture(TextureTarget.Texture2D, attachment);
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent24, resolution.X, resolution.Y, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent32, resolution.X, resolution.Y, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)TextureMagFilter.Linear);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)TextureMinFilter.Linear);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)TextureWrapMode.ClampToBorder);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)TextureWrapMode.ClampToBorder);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode , (float)TextureCompareMode.None);
+
+
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (float)TextureCompareMode.CompareRefToTexture);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (float)DepthFunction.Lequal);
+
                 GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, attachment, 0);
 
             } else
             {
                 attachment = GL.GenRenderbuffer();
                 GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, attachment);
-                GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent24, resolution.X, resolution.Y);
+                GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent32, resolution.X, resolution.Y);
                 GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, attachment);
 
             }

@@ -29,7 +29,7 @@ float hash11(float t) {
     return x;
 }
 vec2 hash12(float t) {
-    float x = fract(sin(t*343476.65)*4361.5);
+    float x = fract(sin(t*346.65)*4361.5);
     float y = fract(sin(t*5435.1*x)*645.3);
     return vec2(x,y);
 }
@@ -71,17 +71,17 @@ mat3 rotZMatrix(float a) {
 }
 void main() {
 	vec3 pos = position;
-	pos.y *=  1f+(hash11(gl_InstanceID+3)*2f-1)*0.8f;
+	pos.y *=  1f+(hash11(gl_InstanceID+3)*2f-1)*0.4f;
 	tipFactor = position.y/bladeHeight;
 	float bendX = (hash11(gl_InstanceID+542)-0.5f)+sin(time+gl_InstanceID)*0.1f;
-	float bendZ = (hash11(gl_InstanceID+123)-0.5f)*2.5f;
+	float bendZ = (hash11(gl_InstanceID+123)-0.5f)*0.5f;
 	grassColor = (0.75+hash13(gl_InstanceID+123)*0.5f)*color;
 	mat3 localRotMatrix = rotZMatrix(tipFactor*bendZ)*rotXMatrix(tipFactor*bendX)*rotYMatrix(hash11(gl_InstanceID)*PI);
+	//localRotMatrix = rotYMatrix(hash11(gl_InstanceID)*PI);
 	pos = pos*localRotMatrix;
 	float spacing = (patchSizeWorld)/(bladesPerRow);
 
 	vec2 localOffset = hash12(gl_InstanceID)*spacing;
-	//localOffset = vec2(0);
 	vec3 localPosition = vec3(localOffset.x, 0, localOffset.y);
 
 	vec3 offset = vec3((floor(gl_InstanceID/(bladesPerRow))), 0, mod(float(gl_InstanceID),bladesPerRow))*spacing;
@@ -90,6 +90,7 @@ void main() {
 
 	vec4 textureData = texture(normalHeightMap, (vec2(offset.x*(0.9925)+1, offset.z*(0.9925)+1))/patchSizeWorld);
 	localPosition.y = textureData.a;
+
 	pos += localPosition;
 	baseNormalWorldSpace = textureData.xyz;
 

@@ -28,12 +28,11 @@ namespace SpaceEngine.Entity_Component_System.Components
             camera.addComponent(new Transformation(new Vector3(-31f, 13f, -1f)+center, new Vector3(0.5f, MathF.PI/2f+ MathF.PI / 4f, 0f)));;
             camera.addComponent(new InputMove());
             camera.addComponent(new Momentum());
-            camera.addComponent(new Gravity());
             camera.addComponent(new TerrainCollider());
             camera.addComponent(new HitBox(new Vector3(-2), new Vector3(2)));
 
             Entity box = new Entity();
-            box.addComponent(new Transformation());
+            box.addComponent(new Transformation(new Vector3(0, 15, 0), new Vector3(0)));
             box.addComponent(new Model( glLoader.loadToVAO(MeshGenerator.generateBox(new Vector3(-0.5f), new Vector3(0.5f))), MasterRenderer.Pipeline.FLAT_SHADING));
 
             Entity sun = new Entity();
@@ -41,6 +40,9 @@ namespace SpaceEngine.Entity_Component_System.Components
             this.sun = sun;
 
 
+            sculpture.addComponent(new Transformation(new Vector3(-15f, -15, 0), new Vector3(0)));
+            sculpture.addComponent(new Model(glLoader.loadToVAO(ModelGenerator.generateTree()), MasterRenderer.Pipeline.FLAT_SHADING));
+            sculpture.addComponent(new TerrainCollider());
         }
         public void loadTerrain()
         {

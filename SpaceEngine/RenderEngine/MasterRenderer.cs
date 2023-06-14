@@ -15,14 +15,15 @@ namespace SpaceEngine.RenderEngine
         public enum Pipeline {FLAT_SHADING, SMOOTH_SHADING, POST_GEOMETRY, OTHER};
         public static ShaderProgram simpleShader = new ShaderProgram("Simple_Vertex", "Simple_Fragment");
         private Matrix4 projectionMatrix;
-        private float fieldOfView;
-        private float near = 0.1f;
-        private float far = 1000f;
+        public static float fieldOfView;
+        public static float near = 0.1f;
+        public static float far = 1000f;
         private ScreenQuadRenderer screenQuadRenderer;
         private GeometryPassRenderer geometryPassRenderer;
         private DeferredLightPassRenderer deferredLightPassRenderer;
         private PostProcessingRenderer postProcessingRenderer;
         private PostGeometryRenderer postGeometryRenderer;
+        private ShadowRenderer shadowRenderer;
         public MasterRenderer() {
             fieldOfView = MathF.PI/2f;
 
@@ -31,6 +32,7 @@ namespace SpaceEngine.RenderEngine
             deferredLightPassRenderer= new DeferredLightPassRenderer();
             postProcessingRenderer= new PostProcessingRenderer();
             postGeometryRenderer = new PostGeometryRenderer();
+            shadowRenderer = new ShadowRenderer();
             updateProjectionMatrix();
         }
         private void updateProjectionMatrix()
@@ -64,17 +66,19 @@ namespace SpaceEngine.RenderEngine
             WindowHandler.getWindow().SwapBuffers();
         }
    
-        public void render(Matrix4 viewMatrix, Vector3 viewPosition, Entity sunEntity, ComponentSystem pointLights, TerrainManager terrainManager)
+        public void render(Matrix4 viewMatrix, Entity camera, Entity sunEntity, ComponentSystem pointLights, TerrainManager terrainManager)
         {
             prepareFrame();
-            geometryPassRenderer.render(EntityManager.flatShadingSystem, EntityManager.smoothShadingSystem, viewMatrix, projectionMatrix, terrainManager, viewPosition);
-            deferredLightPassRenderer.render(screenQuadRenderer, geometryPassRenderer.gBuffer, sunEntity, viewMatrix,projectionMatrix, pointLights);
-            postProcessingRenderer.doPostProcessing(screenQuadRenderer, geometryPassRenderer.gBuffer, sunEntity, viewPosition, viewMatrix);
+           
+            geometryPassRenderer.render(EntityManager.flatShadingSystem, EntityManager.smoothShadingSystem, viewMatrix, projectionMatrix, terrainManager, camera.getComponent<Transformation>().position);
+            shadowRenderer.render(EntityManager.flatShadingSystem, EntityManager.smoothShadingSystem, terrainManager, sunEntity.getComponent<Sun>().getDirection(), camera, viewMatrix, projectionMatrix);
+            deferredLightPassRenderer.render(screenQuadRenderer, geometryPassRenderer.gBuffer, sunEntity, viewMatrix,projectionMatrix, pointLights, shadowRenderer);
+            postProcessingRenderer.doPostProcessing(screenQuadRenderer, geometryPassRenderer.gBuffer, sunEntity, camera.getComponent<Transformation>().position, viewMatrix);
             postGeometryRenderer.render(EntityManager.postGeometrySystem, viewMatrix, projectionMatrix);
             simpleShader.bind();
             simpleShader.loadUniformInt("blitTexture", 0);
             screenQuadRenderer.renderTextureToScreen(screenQuadRenderer.getLastOutputTexture());
-            //screenQuadRenderer.renderTextureToScreen(geometryPassRenderer.gBuffer.getRenderAttachment(2));
+            //screenQuadRenderer.renderTextureToScreen(shadowRenderer.getDepthTexture());
             simpleShader.unBind();
             finishFrame();
         }
