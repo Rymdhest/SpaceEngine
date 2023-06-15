@@ -107,10 +107,13 @@ namespace SpaceEngine.RenderEngine
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)TextureWrapMode.ClampToBorder);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode , (float)TextureCompareMode.None);
 
+                if (depthSettings.isShadowDepthTexture)
+                {
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (float)TextureCompareMode.CompareRefToTexture);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (float)DepthFunction.Lequal);
+                }
 
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (float)TextureCompareMode.CompareRefToTexture);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (float)DepthFunction.Lequal);
-
+                
                 GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, attachment, 0);
 
             } else

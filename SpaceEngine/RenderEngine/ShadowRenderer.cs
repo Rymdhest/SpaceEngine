@@ -10,102 +10,100 @@ namespace SpaceEngine.RenderEngine
 {
     internal class ShadowRenderer
     {
-        private FrameBuffer shadowFrameBuffer;
         private ShaderProgram shadowShader = new ShaderProgram("Shadow_Vertex", "Shadow_Fragment");
-        private ShadowBox shadowBox;
-        public static float shadowDistance = 500f;
-        public Vector2i shadowMapResolution = new Vector2i(512, 512);
         public Matrix4 lightViewMatrix;
-        public Matrix4 lightProjectionMatrix;
+        private List<ShadowCascade> cascades = new List<ShadowCascade>();
 
         public ShadowRenderer()
         {
-            FrameBufferSettings settings = new FrameBufferSettings(shadowMapResolution);
-            DepthAttachmentSettings depthAttachmentSettings = new DepthAttachmentSettings();
-            depthAttachmentSettings.isTexture = true;
-            settings.depthAttachmentSettings = depthAttachmentSettings;
-            shadowFrameBuffer = new FrameBuffer(settings);
             lightViewMatrix = Matrix4.Identity;
-            shadowBox = new ShadowBox(lightViewMatrix);
+
+            cascades.Add(new ShadowCascade(new Vector2i(1024, 1024), 100));
+            cascades.Add(new ShadowCascade(new Vector2i(1024, 1024), 200));
+            cascades.Add(new ShadowCascade(new Vector2i(1024, 1024), 600));
+            cascades.Add(new ShadowCascade(new Vector2i(1024, 1024), 2400));
+
         }
 
         public void render(ComponentSystem flatShadeEntities, ComponentSystem smoothShadeEntities, TerrainManager terrainManager, Vector3 lightDirection, Entity camera, Matrix4 viewTest, Matrix4 projTest)
         {
 
+            //Console.WriteLine(lightViewMatrix.ToString());
             //shadowBox.update(camera);
             //updateLightViewMatrix(-lightDirection, shadowBox.getCenter());
             //updateOrthoProjectionMatrix(shadowBox.getSize());
 
-            updateOrthoProjectionMatrix(new Vector3(40, 40, 60));
-            updateLightViewMatrix(-lightDirection, new Vector3(-15f, 0f, 0f));
+            //updateOrthoProjectionMatrix(new Vector3(160, 160, 160));
 
-            shadowFrameBuffer.bind();
+            updateLightViewMatrix(-lightDirection, camera.getComponent<Transformation>().position);
+
+            //shadowFrameBuffer.bind();
             GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
+
+
             GL.Disable(EnableCap.Blend);
             GL.Enable(EnableCap.PolygonOffsetFill);
             GL.PolygonOffset(8f, 1f);
-            //GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-
-
             shadowShader.bind();
-            foreach (Model model in flatShadeEntities.getMembers())
+
+            foreach (ShadowCascade cascade in cascades)
             {
-                glModel glModel = model.getModel();
-                Matrix4 transformationMatrix = MyMath.createTransformationMatrix(model.owner.getComponent<Transformation>());
-                shadowShader.loadUniformMatrix4f("modelViewProjectionMatrix", transformationMatrix * lightViewMatrix * lightProjectionMatrix);
-                GL.BindVertexArray(glModel.getVAOID());
-                GL.EnableVertexAttribArray(0);
+                cascade.bindFrameBuffer();
+                GL.Clear(ClearBufferMask.DepthBufferBit);
+                foreach (Model model in flatShadeEntities.getMembers())
+                {
+                    glModel glModel = model.getModel();
+                    Matrix4 transformationMatrix = MyMath.createTransformationMatrix(model.owner.getComponent<Transformation>());
+                    shadowShader.loadUniformMatrix4f("modelViewProjectionMatrix", transformationMatrix * lightViewMatrix * cascade.getProjectionMatrix());
+                    GL.BindVertexArray(glModel.getVAOID());
+                    GL.EnableVertexAttribArray(0);
 
-                GL.DrawElements(PrimitiveType.Triangles, glModel.getVertexCount(), DrawElementsType.UnsignedInt, 0);
+                    GL.DrawElements(PrimitiveType.Triangles, glModel.getVertexCount(), DrawElementsType.UnsignedInt, 0);
 
+                }
             }
+
+
 
             GL.Disable(EnableCap.PolygonOffsetFill);
             GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
             shadowShader.unBind();
+        }
+
+        public List<ShadowCascade> getShadowCascades()
+        {
+            return cascades;
+        }
+
+        public Matrix4 getLightViewMatrix()
+        {
+            return lightViewMatrix;
+        }
+
+        public int getNumberOfCascades()
+        {
+            return cascades.Count;
         }
 
         private Matrix4 updateLightViewMatrix(Vector3 direction, Vector3 center)
         {
             direction.Normalize();
             center *= -1f;
-            //lightViewMatrix =  Matrix4.Identity;
-            lightViewMatrix.M11 = 1f;
-            lightViewMatrix.M12 = 0f;
-            lightViewMatrix.M13 = 0f;
-            lightViewMatrix.M14 = 0f;
+            lightViewMatrix =  Matrix4.Identity;
 
-            lightViewMatrix.M21 = 0f;
-            lightViewMatrix.M22 = 1f;
-            lightViewMatrix.M23 = 0f;
-            lightViewMatrix.M24 = 0f;
+            float rotX = MathF.Acos((direction.Xz).Length);
+            float rotY = MathF.Atan(direction.X / direction.Z);
+            rotY = direction.Z > 0 ? rotY - MathF.PI : rotY;
 
-            lightViewMatrix.M31 = 0f;
-            lightViewMatrix.M32 = 0f;
-            lightViewMatrix.M33 = 1f;
-            lightViewMatrix.M34 = 0f;
-
-            lightViewMatrix.M41 = 0f;
-            lightViewMatrix.M42 = 0f;
-            lightViewMatrix.M43 = 0f;
-            lightViewMatrix.M44 = 1f;
-
-            float pitch = MathF.Acos((direction.Xz).Length);
-            lightViewMatrix *= Matrix4.CreateRotationX(pitch);
-
-            float yaw = MathF.Atan(direction.X / direction.Z);
-
-            yaw = direction.Z > 0 ? yaw - MathF.PI : yaw;
-
-            lightViewMatrix *= Matrix4.CreateTranslation(center);
-            lightViewMatrix *= Matrix4.CreateRotationY(-yaw);
+            lightViewMatrix *= Matrix4.CreateTranslation(new Vector3(center.X, center.Y, center.Z));
+            lightViewMatrix *= Matrix4.CreateRotationX(rotX);
+            lightViewMatrix *= Matrix4.CreateRotationY(-rotY);
             return lightViewMatrix;
         }
-
+        /*
         private void updateOrthoProjectionMatrix(Vector3 size)
         {
             lightProjectionMatrix = Matrix4.Identity;
@@ -117,10 +115,8 @@ namespace SpaceEngine.RenderEngine
             //lightProjectionMatrix = Matrix4.CreateOrthographic(100, 100, 0, 100);
 
         }
-        public int getDepthTexture()
-        {
-            return shadowFrameBuffer.getDepthAttachment();
-        }
+        */
+
 
     }
 }

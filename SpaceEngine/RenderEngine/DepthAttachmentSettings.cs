@@ -9,6 +9,7 @@ namespace SpaceEngine.RenderEngine
     internal class DepthAttachmentSettings
     {
         public Boolean isTexture = false;
+        public Boolean isShadowDepthTexture = false;
         public DepthAttachmentSettings() {
         }
     }

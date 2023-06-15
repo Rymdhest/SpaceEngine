@@ -6,7 +6,7 @@ namespace SpaceEngine.RenderEngine
 {
     internal class ShadowBox
     {
-        private float OFFSET = 20;
+        private float OFFSET = 0;
         private static Vector4 UP = new Vector4(0, 1, 0, 0);
         private static Vector4 FORWARD = new Vector4(0, 0, -1, 0);
 
@@ -21,7 +21,7 @@ namespace SpaceEngine.RenderEngine
 
         public ShadowBox(Matrix4 lightViewMatrix)
         {
-
+            /*
             min = new Vector3(11);
             max = new Vector3(55);
 
@@ -30,8 +30,9 @@ namespace SpaceEngine.RenderEngine
 
             calculateWidthsAndHeights();
             this.lightViewMatrix = lightViewMatrix;
+            */
         }
-
+        /*
         public void update(Entity Camera)
         {
             calculateWidthsAndHeights();
@@ -92,6 +93,7 @@ namespace SpaceEngine.RenderEngine
             }
             max.Z += OFFSET;
         }
+        */
         private Vector4[] calculateFrustumVertices(Matrix4 rotation, Vector3 forwardVector,
         Vector3 centerNear, Vector3 centerFar)
         {
@@ -135,8 +137,9 @@ namespace SpaceEngine.RenderEngine
             float z = (min.Z + max.Z) / 2f;
             Vector4 cen = new Vector4(x, y, z, 1);
             Matrix4 invertedLight = Matrix4.Invert(lightViewMatrix);
-            return (invertedLight * cen).Xyz;
+            return (cen * invertedLight).Xyz;
         }
+        /*
         public void calculateWidthsAndHeights()
         {
             float aspectRatio = WindowHandler.resolution.X/ (float)WindowHandler.resolution.Y;
@@ -145,5 +148,6 @@ namespace SpaceEngine.RenderEngine
             far.Y = far.X / aspectRatio;
             near.Y = near.X / aspectRatio;
         }
+        */
     }
 }

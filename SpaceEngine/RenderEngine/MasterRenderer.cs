@@ -25,7 +25,7 @@ namespace SpaceEngine.RenderEngine
         private PostGeometryRenderer postGeometryRenderer;
         private ShadowRenderer shadowRenderer;
         public MasterRenderer() {
-            fieldOfView = MathF.PI/2f;
+            fieldOfView = MathF.PI/2.5f;
 
             screenQuadRenderer = new ScreenQuadRenderer();
             geometryPassRenderer = new GeometryPassRenderer();

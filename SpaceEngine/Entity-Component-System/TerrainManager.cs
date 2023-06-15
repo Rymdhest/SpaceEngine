@@ -148,7 +148,7 @@ namespace SpaceEngine.Modelling
             Vector2i viewPosChunkSpace = fromWorldToChunkSpace(viewPosition.Xz);
 
             int viewDistanceChunkSpace =(int) (viewDistanceWorld / chunkSizeWorld);
-            int maxDetail = 128;
+            int maxDetail = 64;
             int minDetail = 4;
             for (int z = -viewDistanceChunkSpace; z<= viewDistanceChunkSpace; z++)
             {

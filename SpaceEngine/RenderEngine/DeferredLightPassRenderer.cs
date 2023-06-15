@@ -26,7 +26,7 @@ namespace SpaceEngine.RenderEngine
             globalLightShader.loadUniformInt("gAlbedo", 0);
             globalLightShader.loadUniformInt("gNormal", 1);
             globalLightShader.loadUniformInt("gPosition", 2);
-            globalLightShader.loadUniformInt("shadowMap", 3);
+
             globalLightShader.unBind();
 
             pointLightShader.bind();
@@ -114,6 +114,15 @@ namespace SpaceEngine.RenderEngine
 
             private void renderGlobalLight(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Matrix4 viewMatrix, ShadowRenderer shadowRenderer)
         {
+            /*
+            globalLightShader.cleanUp();
+            globalLightShader = new ShaderProgram("Simple_Vertex", "Global_Light_Fragment");
+            globalLightShader.bind();
+            globalLightShader.loadUniformInt("gAlbedo", 0);
+            globalLightShader.loadUniformInt("gNormal", 1);
+            globalLightShader.loadUniformInt("gPosition", 2);
+            globalLightShader.unBind();
+            */
             Sun sun = sunEntity.getComponent<Sun>();
 
             globalLightShader.bind();
@@ -124,8 +133,24 @@ namespace SpaceEngine.RenderEngine
             GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(1));
             GL.ActiveTexture(TextureUnit.Texture2);
             GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(2));
-            GL.ActiveTexture(TextureUnit.Texture3);
-            GL.BindTexture(TextureTarget.Texture2D, shadowRenderer.getDepthTexture());
+
+            for (int i = 0 ; i < shadowRenderer.getNumberOfCascades(); i++)
+            {
+
+                ShadowCascade cascade = shadowRenderer.getShadowCascades()[i];
+                globalLightShader.loadUniformInt("shadowMaps["+i+"]", 3+i);
+
+                globalLightShader.loadUniformFloat("cascadeProjectionSizes[" + i + "]", cascade.getProjectionSize());
+                GL.ActiveTexture(TextureUnit.Texture3+i);
+                GL.BindTexture(TextureTarget.Texture2D, cascade.getDepthTexture());
+                globalLightShader.loadUniformVector2f("shadowMapResolutions["+i+"]", cascade.getResolution());
+
+
+                Matrix4 shadowMatrix = Matrix4.Invert(viewMatrix) * shadowRenderer.getLightViewMatrix() * cascade.getProjectionMatrix();
+                globalLightShader.loadUniformMatrix4f("sunSpaceMatrices["+i+"]", shadowMatrix);
+            }
+
+
             Vector3 sunDirection = sunEntity.getComponent<Sun>().getDirection();
             Vector4 sunDirectionViewSpace = new Vector4(sunDirection.X, sunDirection.Y, sunDirection.Z, 1.0f)* Matrix4.Transpose(Matrix4.Invert(viewMatrix));
             globalLightShader.loadUniformVector3f("sunDirectionViewSpace", sunDirectionViewSpace.Xyz);
@@ -133,16 +158,17 @@ namespace SpaceEngine.RenderEngine
             globalLightShader.loadUniformVector3f("sunColor", sun.getSunColor());
             globalLightShader.loadUniformVector3f("sunScatterColor", sun.getSunScatterColor());
             globalLightShader.loadUniformVector3f("fogColor", sun.getFogColor());
-            globalLightShader.loadUniformFloat("ambient", sun.getAmbient());
+            globalLightShader.loadUniformFloat("ambient", sun.getAmbient()); 
             globalLightShader.loadUniformFloat("fogDensity", sun.getFogDensity());
-            Matrix4 shadowMatrix = Matrix4.Invert(viewMatrix) * shadowRenderer.lightViewMatrix * shadowRenderer.lightProjectionMatrix;
+            globalLightShader.loadUniformInt("numberOfCascades", shadowRenderer.getNumberOfCascades());
             //Matrix4 shadowMatrix =  shadowRenderer.lightProjectionMatrix * shadowRenderer.lightViewMatrix* Matrix4.Invert(viewMatrix);
 
             Matrix4 textureOffsetMatrix = Matrix4.Identity;
             textureOffsetMatrix *= Matrix4.CreateScale(new Vector3(0.5f));
             textureOffsetMatrix *= Matrix4.CreateTranslation(new Vector3(0.5f));
 
-            globalLightShader.loadUniformMatrix4f("sunSpaceMatrix",  shadowMatrix * textureOffsetMatrix);
+            globalLightShader.loadUniformVector2f("resolution", WindowHandler.resolution);
+
             renderer.renderToNextFrameBuffer();
 
             globalLightShader.unBind();

@@ -1,6 +1,7 @@
 ﻿
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using System.Collections.Generic;
 using System.Xml.Linq;
 
 namespace SpaceEngine.Shaders
@@ -221,6 +222,14 @@ namespace SpaceEngine.Shaders
             GL.DeleteShader(fragmentShaderID);
             GL.DeleteShader(geometryShaderID);
             GL.DeleteProgram(programID);
+        }
+        public void printAllUniforms()
+        {
+            foreach (KeyValuePair<string, int> kvp in uniforms)
+            {
+                //textBox3.Text += ("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
+                Console.WriteLine("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
+            }
         }
     }
 }

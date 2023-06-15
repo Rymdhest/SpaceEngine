@@ -51,7 +51,7 @@ namespace SpaceEngine.RenderEngine
         public void doPostProcessing(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Vector3 viewPosition, Matrix4 viewMatrix)
         {
             applySky(renderer, gBuffer, sunEntity, viewPosition, viewMatrix);
-            applyBloom(renderer, gBuffer);
+            //applyBloom(renderer, gBuffer);
             applyFXAA(renderer);
 
         }
