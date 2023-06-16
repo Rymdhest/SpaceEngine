@@ -81,7 +81,7 @@ namespace SpaceEngine.RenderEngine
             {
                 for (int z = -1; z <= 1; z++)
                 {
-                    TerrainChunk chunk = terrainManager.getTerarinChunkAt(cameraPosition.Xz+new Vector2(x*200f, z*200f));
+                    TerrainChunk chunk = terrainManager.getTerarinChunkAt(cameraPosition.Xz+new Vector2(x*300f, z*300f));
                     if (chunk == null) return;
                     renderGrassOnChunk(chunk, viewMatrix, projectionMatrix);
                 }
@@ -94,7 +94,7 @@ namespace SpaceEngine.RenderEngine
 
         private void renderGrassOnChunk(TerrainChunk chunk, Matrix4 viewMatrix, Matrix4 projectionMatrix)
         {
-            int bladesPerRow = 600;
+            int bladesPerRow = 200;
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, chunk.getNormalHeightMap());
             Matrix4 transformationMatrix = MyMath.createTransformationMatrix(chunk.owner.getComponent<Transformation>());
@@ -103,7 +103,7 @@ namespace SpaceEngine.RenderEngine
             grassShader.loadUniformMatrix4f("modelViewMatrix", modelViewMatrix);
             grassShader.loadUniformMatrix4f("modelViewProjectionMatrix", modelViewMatrix * projectionMatrix);
             grassShader.loadUniformMatrix4f("normalModelViewMatrix", Matrix4.Transpose(Matrix4.Invert(modelViewMatrix)));
-            grassShader.loadUniformFloat("patchSizeWorld", 200f);
+            grassShader.loadUniformFloat("patchSizeWorld", 300f);
             grassShader.loadUniformFloat("bladesPerRow", bladesPerRow);
 
             GL.DrawElementsInstanced(PrimitiveType.Triangles, grassBlade.getVertexCount(), DrawElementsType.UnsignedInt, IntPtr.Zero, bladesPerRow * bladesPerRow);

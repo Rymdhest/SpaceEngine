@@ -7,6 +7,7 @@ using SpaceEngine.Entity_Component_System;
 using SpaceEngine.Core;
 using SpaceEngine.Entity_Component_System.Components;
 using SpaceEngine.Modelling;
+using System.Diagnostics;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -69,17 +70,29 @@ namespace SpaceEngine.RenderEngine
         public void render(Matrix4 viewMatrix, Entity camera, Entity sunEntity, ComponentSystem pointLights, TerrainManager terrainManager)
         {
             prepareFrame();
-           
+
+
+            //GL.Finish();
+            //Stopwatch stopwatch = Stopwatch.StartNew();
+
             geometryPassRenderer.render(EntityManager.flatShadingSystem, EntityManager.smoothShadingSystem, viewMatrix, projectionMatrix, terrainManager, camera.getComponent<Transformation>().position);
+            //GL.Finish();
+            //Console.WriteLine(stopwatch.ElapsedMilliseconds);
+
             shadowRenderer.render(EntityManager.flatShadingSystem, EntityManager.smoothShadingSystem, terrainManager, sunEntity.getComponent<Sun>().getDirection(), camera, viewMatrix, projectionMatrix);
+
             deferredLightPassRenderer.render(screenQuadRenderer, geometryPassRenderer.gBuffer, sunEntity, viewMatrix,projectionMatrix, pointLights, shadowRenderer);
-            postProcessingRenderer.doPostProcessing(screenQuadRenderer, geometryPassRenderer.gBuffer, sunEntity, camera.getComponent<Transformation>().position, viewMatrix);
+            postProcessingRenderer.doPostProcessing(screenQuadRenderer, geometryPassRenderer.gBuffer, sunEntity, camera.getComponent<Transformation>().position, viewMatrix, projectionMatrix);
             postGeometryRenderer.render(EntityManager.postGeometrySystem, viewMatrix, projectionMatrix);
             simpleShader.bind();
             simpleShader.loadUniformInt("blitTexture", 0);
             screenQuadRenderer.renderTextureToScreen(screenQuadRenderer.getLastOutputTexture());
             //screenQuadRenderer.renderTextureToScreen(shadowRenderer.getDepthTexture());
             simpleShader.unBind();
+
+
+
+
             finishFrame();
         }
         public void update(float delta)

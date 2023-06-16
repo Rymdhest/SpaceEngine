@@ -20,9 +20,13 @@ namespace SpaceEngine.RenderEngine
             grassRenderer = new GrassRenderer();
             FrameBufferSettings gBufferSettings = new FrameBufferSettings(WindowHandler.resolution);
             DrawBufferSettings gPosition = new DrawBufferSettings(FramebufferAttachment.ColorAttachment0);
-            gPosition.formatInternal = PixelInternalFormat.Rgba32f;
+            gPosition.formatInternal = PixelInternalFormat.Rgba16f;
             gBufferSettings.drawBuffers.Add(gPosition);
-            gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment1));
+
+            DrawBufferSettings gAlbedo = new DrawBufferSettings(FramebufferAttachment.ColorAttachment1);
+            gAlbedo.formatInternal = PixelInternalFormat.Rgba16f;
+            gAlbedo.pixelType = PixelType.Float;
+            gBufferSettings.drawBuffers.Add(gAlbedo);
             gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment2));
             
 
@@ -67,7 +71,7 @@ namespace SpaceEngine.RenderEngine
             flatShader.unBind();
             
 
-
+            
             smoothShader.bind();
             foreach (Model model in smoothShadeEntities.getMembers())
             {
@@ -87,12 +91,12 @@ namespace SpaceEngine.RenderEngine
 
             }
             smoothShader.unBind();
-
+            
 
             //GL.BindBuffer(BufferTarget.ArrayBuffer, model.getIndexBuffer());
             //GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             finishFrame();
-            //grassRenderer.render(viewMatrix, projectionMatrix, terrainManager, cameraPosition);
+            grassRenderer.render(viewMatrix, projectionMatrix, terrainManager, cameraPosition);
         }
         public void onResize(ResizeEventArgs eventArgs)
         {

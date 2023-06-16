@@ -76,7 +76,7 @@ namespace SpaceEngine.Entity_Component_System.Components
                     Vector3 forward = camera.getComponent<Transformation>().createForwardVector();
 
                     Vector3 center = camera.getComponent<Transformation>().position;
-                    Vector3 color = new Vector3(MyMath.rng(), MyMath.rng(), MyMath.rng());
+                    Vector3 color = new Vector3(MyMath.rng(), MyMath.rng(), MyMath.rng())*10;
                     Entity sphere = new Entity();
                     float power = (MyMath.rng() * 5f + 1) * 0.5f;
                     sphere.addComponent(new Transformation(center + forward*1.5f+randOffset*1f, new Vector3(0f, 0f, 0f), MathF.Sqrt(power)));

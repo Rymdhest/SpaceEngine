@@ -30,6 +30,11 @@ namespace SpaceEngine.RenderEngine
             GL.BindTexture(TextureTarget.Texture2D, texture);
             render();
         }
+        public void renderToScreen()
+        {
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            render();
+        }
         public void renderTextureToScreen(int texture)
         {
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -63,6 +68,7 @@ namespace SpaceEngine.RenderEngine
             render();
             stepToggle();
         }
+
         public void renderTextureToNextFrameBuffer(int texture)
         {
             getNextFrameBuffer().bind();

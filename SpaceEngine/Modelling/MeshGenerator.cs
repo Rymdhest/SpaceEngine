@@ -72,7 +72,9 @@ namespace SpaceEngine.Modelling
                         3,7,4, 0,3,4,  //left
                         6,5,7, 7,5,4};  //bot
 
-            return new RawModel(positions, colours, indices);
+            RawModel rawModel = new RawModel(positions, colours, indices, MasterRenderer.Pipeline.FLAT_SHADING);
+            rawModel.setBloom(1f);
+            return rawModel;
         }
 
         public static RawModel generateIcosahedron(Vector3 scale, Vector3 color, MasterRenderer.Pipeline pipeline)

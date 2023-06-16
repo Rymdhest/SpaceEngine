@@ -11,8 +11,8 @@ namespace SpaceEngine.Modelling
     internal class TerrainManager
     {
         public Dictionary<Vector3i, Entity> chunkEntities = new Dictionary<Vector3i, Entity>();
-        private static float chunkSizeWorld = 200f;
-        private static float viewDistanceWorld = 4000;
+        private static float chunkSizeWorld = 100f;
+        private static float viewDistanceWorld = 1000;
         private static Object threadLock = new object();
         private static Queue<Vector3i> buildQueue = new Queue<Vector3i>();
         private static bool working = false;
@@ -141,8 +141,8 @@ namespace SpaceEngine.Modelling
 
         public void update(Vector3 viewPosition)
         {
-            TerrainManager.chunkSizeWorld = 200f;
-            TerrainManager.viewDistanceWorld = 5000;
+            TerrainManager.chunkSizeWorld = 300f;
+            TerrainManager.viewDistanceWorld = 3000;
 
             List<Vector3i> desiresChunkSpacePositions = new List<Vector3i>();
             Vector2i viewPosChunkSpace = fromWorldToChunkSpace(viewPosition.Xz);

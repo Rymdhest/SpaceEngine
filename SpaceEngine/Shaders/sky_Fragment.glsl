@@ -12,7 +12,7 @@ uniform vec3 sunDirectionWorldSpace;
 uniform vec2 screenResolution;
 uniform mat4 viewMatrix;
 uniform float sunSetFactor;
-
+uniform mat4 projectionMatrix;
 void main(void){
 
 
@@ -24,7 +24,7 @@ void main(void){
 	vec3 skyColor = mix(skyColorSpace,skyColorGround , viewheightFactor*sunSetFactor);
 
 	vec3 viewDir = normalize((viewMatrix*vec4(uv, -1f, 1.0f)).xyz);
-	
+
 	vec3 upNormalViewSpace = normalize((vec4(0, 1f, 0.0f, 1f)).xyz);
 
 

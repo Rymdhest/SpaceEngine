@@ -158,6 +158,7 @@ namespace SpaceEngine.RenderEngine
             globalLightShader.loadUniformVector3f("sunColor", sun.getSunColor());
             globalLightShader.loadUniformVector3f("sunScatterColor", sun.getSunScatterColor());
             globalLightShader.loadUniformVector3f("fogColor", sun.getFogColor());
+            globalLightShader.loadUniformVector3f("skyColor", sun.getSkyColorGround());
             globalLightShader.loadUniformFloat("ambient", sun.getAmbient()); 
             globalLightShader.loadUniformFloat("fogDensity", sun.getFogDensity());
             globalLightShader.loadUniformInt("numberOfCascades", shadowRenderer.getNumberOfCascades());

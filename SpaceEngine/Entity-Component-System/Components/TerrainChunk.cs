@@ -162,7 +162,7 @@ namespace SpaceEngine.Modelling
                     positions[vertexPointer * 3 + 2] = positionLocalWorld.Z;
 
                     float specularity;
-                    float bloom = 0.05f;
+                    float bloom = 0.0f;
                     Vector3 normal = calculateVertexNormal(x, z);
                     if (pipeline == MasterRenderer.Pipeline.SMOOTH_SHADING)
                     {
@@ -193,7 +193,6 @@ namespace SpaceEngine.Modelling
                     {
                         color = waterColor;
                         specularity = 1.0f;
-                        bloom = 0.2f;
                     }
                     colors[vertexPointer * 3] = color.X;
                     colors[vertexPointer * 3 + 1] = color.Y;

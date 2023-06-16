@@ -16,6 +16,7 @@ namespace SpaceEngine.RenderEngine
         private ShaderProgram bloomFilterShader = new ShaderProgram("Simple_Vertex", "bloom_Filter_Fragment");
         private ShaderProgram combineShader = new ShaderProgram("Simple_Vertex", "Combine_Fragment");
         private ShaderProgram skyShader = new ShaderProgram("Simple_Vertex", "sky_Fragment");
+        private ShaderProgram HDRMapShader = new ShaderProgram("Simple_Vertex", "HDR_Mapper_Fragment");
         private FrameBuffer vBlurFBO;
         private FrameBuffer hBlurFBO;
         private FrameBuffer bloomFilterFBO;
@@ -27,6 +28,10 @@ namespace SpaceEngine.RenderEngine
             FXAAShader.loadUniformInt("l_tex", 0);
             FXAAShader.unBind();
 
+            HDRMapShader.bind();
+            HDRMapShader.loadUniformInt("HDRcolorTexture", 0);
+            HDRMapShader.unBind();
+
             bloomFilterShader.bind();
             bloomFilterShader.loadUniformInt("gDiffuse", 0);
             bloomFilterShader.loadUniformInt("gPosition", 1);
@@ -37,7 +42,7 @@ namespace SpaceEngine.RenderEngine
             combineShader.loadUniformInt("texture1", 1);
             combineShader.unBind();
 
-            FrameBufferSettings frameBufferSettings = new FrameBufferSettings(WindowHandler.resolution/4);
+            FrameBufferSettings frameBufferSettings = new FrameBufferSettings(WindowHandler.resolution/8);
             frameBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment0));
 
             vBlurFBO = new FrameBuffer(frameBufferSettings);
@@ -48,24 +53,29 @@ namespace SpaceEngine.RenderEngine
             bloomFilterFBO = new FrameBuffer(bloomFrameBufferSettings);
         }
 
-        public void doPostProcessing(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Vector3 viewPosition, Matrix4 viewMatrix)
+        public void doPostProcessing(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Vector3 viewPosition, Matrix4 viewMatrix, Matrix4 projectionMatrix)
         {
-            applySky(renderer, gBuffer, sunEntity, viewPosition, viewMatrix);
-            //applyBloom(renderer, gBuffer);
+            applySky(renderer, gBuffer, sunEntity, viewPosition, viewMatrix, projectionMatrix);
+            applyBloom(renderer, gBuffer);
             applyFXAA(renderer);
-
+            HDRMap(renderer);
         }
 
-        private void applySky(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Vector3 viewPosition, Matrix4 viewMatrix)
+        private void applySky(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Vector3 viewPosition, Matrix4 viewMatrix, Matrix4 projectionMatrix)
         {
             //renderer.getNextFrameBuffer().blitDepthBufferFrom(gBuffer);
             //renderer.getLastFrameBuffer().blitDepthBufferFrom(gBuffer);
-
+            /*
+            skyShader.cleanUp();
+            skyShader = new ShaderProgram("Simple_Vertex", "sky_Fragment");
+            */
             Sun sun = sunEntity.getComponent<Sun>();
 
             skyShader.bind();
             skyShader.loadUniformVector3f("viewPositionWorld", viewPosition);
             skyShader.loadUniformMatrix4f("viewMatrix", viewMatrix);
+            skyShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
+            
             skyShader.loadUniformVector2f("screenResolution", WindowHandler.resolution);
             //Vector4 sunDirectionViewSpace = new Vector4(sunDirection.X, sunDirection.Y, sunDirection.Z, 1.0f) * Matrix4.Transpose(Matrix4.Invert(viewMatrix));
             skyShader.loadUniformVector3f("sunDirectionWorldSpace", sun.getDirection());
@@ -90,6 +100,17 @@ namespace SpaceEngine.RenderEngine
             GL.DepthFunc(DepthFunction.Less);
         } 
 
+        private void HDRMap(ScreenQuadRenderer renderer)
+        {
+            /*
+            HDRMapShader.cleanUp();
+            HDRMapShader = new ShaderProgram("Simple_Vertex", "HDR_Mapper_Fragment");
+            */
+            HDRMapShader.bind();
+            renderer.renderTextureToNextFrameBuffer(renderer.getLastOutputTexture());
+            HDRMapShader.unBind();
+        }
+
         private void applyFXAA(ScreenQuadRenderer renderer)
         {
             FXAAShader.bind();
@@ -107,6 +128,7 @@ namespace SpaceEngine.RenderEngine
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(2));
             renderer.render();
+            //renderer.renderToScreen();
             bloomFilterShader.unBind();
             bloomFilterFBO.unbind();
 
@@ -134,6 +156,7 @@ namespace SpaceEngine.RenderEngine
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, renderer.getLastOutputTexture());
             renderer.renderToNextFrameBuffer();
+            
             combineShader.unBind();
 
             //MasterRenderer.simpleShader.bind();
@@ -143,8 +166,8 @@ namespace SpaceEngine.RenderEngine
         }
         public void onResize(ResizeEventArgs eventArgs)
         {
-            vBlurFBO.resize(WindowHandler.resolution/4);
-            hBlurFBO.resize(WindowHandler.resolution / 4);
+            vBlurFBO.resize(WindowHandler.resolution/8);
+            hBlurFBO.resize(WindowHandler.resolution / 8);
             bloomFilterFBO.resize(WindowHandler.resolution);
         }
     }

@@ -9,16 +9,16 @@ namespace SpaceEngine.Entity_Component_System.Components
     {
         private Vector3 normalizedDirection = new Vector3(0f, 1f, 0f);
 
-        private Vector3 sunColor = new Vector3(1f, 1f, 1f);
+        private Vector3 sunColor = new Vector3(1f, 1f, 1f)* sunIntensity;
+        private static float sunIntensity = 10f;
+        private Vector3 sunScatterColor = new Vector3(1.0f, 0.9f, 0.7f)* sunIntensity;
+        private Vector3 fogColor = new Vector3(0.5f, 0.6f, 0.7f) * sunIntensity;
 
-        private Vector3 sunScatterColor = new Vector3(1.0f, 0.9f, 0.7f);
-        private Vector3 fogColor = new Vector3(0.5f, 0.6f, 0.7f);
-
-        private Vector3 skyColorSunset = new Vector3(0.95f, 0.35f, 0f);
-        private Vector3 skyColorDay = new Vector3(0.27f, 0.71f, 0.96f);
+        private Vector3 skyColorSunset = new Vector3(0.95f, 0.35f, 0f) * sunIntensity;
+        private Vector3 skyColorDay = new Vector3(0.27f, 0.71f, 0.96f) * sunIntensity;
         private Vector3 skyColorSpace = new Vector3(0.01f, 0.02f, 0.06f);
-        private float ambient = 0.25f;
-        private float fogDensity = 0.001f;
+        private float ambient = 1.0f;
+        private float fogDensity = 0.002f;
 
         public float time = 0f;
         private float sunsetFactor = 0;

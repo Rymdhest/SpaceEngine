@@ -8,9 +8,11 @@ namespace SpaceEngine.RenderEngine
         private Matrix4 cascadeProjectionMatrix;
         private FrameBuffer cascadeFrameBuffer;
         private float projectionSize;
-        public ShadowCascade(Vector2i resolution, float projectionSize)
+        private float polygonOffset;
+        public ShadowCascade(Vector2i resolution, float projectionSize, float polygonOffset = 7f)
         {
             this.projectionSize = projectionSize;
+            this.polygonOffset = polygonOffset;
             FrameBufferSettings settings = new FrameBufferSettings(resolution);
             DepthAttachmentSettings depthAttachmentSettings = new DepthAttachmentSettings();
             depthAttachmentSettings.isTexture = true;
@@ -19,6 +21,11 @@ namespace SpaceEngine.RenderEngine
             cascadeFrameBuffer = new FrameBuffer(settings);
 
             cascadeProjectionMatrix = Matrix4.CreateOrthographic(projectionSize, projectionSize, -projectionSize, projectionSize);
+        }
+
+        public float getPolygonOffset()
+        {
+            return polygonOffset;
         }
 
         public Vector2i getResolution()

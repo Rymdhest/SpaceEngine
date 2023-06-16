@@ -18,41 +18,43 @@ namespace SpaceEngine.RenderEngine
         {
             lightViewMatrix = Matrix4.Identity;
 
-            cascades.Add(new ShadowCascade(new Vector2i(1024, 1024), 100));
-            cascades.Add(new ShadowCascade(new Vector2i(1024, 1024), 200));
-            cascades.Add(new ShadowCascade(new Vector2i(1024, 1024), 600));
-            cascades.Add(new ShadowCascade(new Vector2i(1024, 1024), 2400));
+            int multi = 2;
+            cascades.Add(new ShadowCascade(new Vector2i(1024, 1024)* multi, 100));
+            cascades.Add(new ShadowCascade(new Vector2i(1024, 1024)* multi, 200));
+            cascades.Add(new ShadowCascade(new Vector2i(1024, 1024)* multi, 600));
+            cascades.Add(new ShadowCascade(new Vector2i(1024, 1024) * multi, 2400));
 
         }
 
         public void render(ComponentSystem flatShadeEntities, ComponentSystem smoothShadeEntities, TerrainManager terrainManager, Vector3 lightDirection, Entity camera, Matrix4 viewTest, Matrix4 projTest)
         {
-
-            //Console.WriteLine(lightViewMatrix.ToString());
-            //shadowBox.update(camera);
-            //updateLightViewMatrix(-lightDirection, shadowBox.getCenter());
-            //updateOrthoProjectionMatrix(shadowBox.getSize());
-
-            //updateOrthoProjectionMatrix(new Vector3(160, 160, 160));
-
             updateLightViewMatrix(-lightDirection, camera.getComponent<Transformation>().position);
 
-            //shadowFrameBuffer.bind();
             GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
-
-
             GL.Disable(EnableCap.Blend);
             GL.Enable(EnableCap.PolygonOffsetFill);
-            GL.PolygonOffset(8f, 1f);
+            
             shadowShader.bind();
 
             foreach (ShadowCascade cascade in cascades)
             {
                 cascade.bindFrameBuffer();
                 GL.Clear(ClearBufferMask.DepthBufferBit);
+                GL.PolygonOffset(cascade.getPolygonOffset(), 1f);
                 foreach (Model model in flatShadeEntities.getMembers())
+                {
+                    glModel glModel = model.getModel();
+                    Matrix4 transformationMatrix = MyMath.createTransformationMatrix(model.owner.getComponent<Transformation>());
+                    shadowShader.loadUniformMatrix4f("modelViewProjectionMatrix", transformationMatrix * lightViewMatrix * cascade.getProjectionMatrix());
+                    GL.BindVertexArray(glModel.getVAOID());
+                    GL.EnableVertexAttribArray(0);
+
+                    GL.DrawElements(PrimitiveType.Triangles, glModel.getVertexCount(), DrawElementsType.UnsignedInt, 0);
+
+                }
+                foreach (Model model in smoothShadeEntities.getMembers())
                 {
                     glModel glModel = model.getModel();
                     Matrix4 transformationMatrix = MyMath.createTransformationMatrix(model.owner.getComponent<Transformation>());
@@ -95,28 +97,16 @@ namespace SpaceEngine.RenderEngine
             lightViewMatrix =  Matrix4.Identity;
 
             float rotX = MathF.Acos((direction.Xz).Length);
-            float rotY = MathF.Atan(direction.X / direction.Z);
-            rotY = direction.Z > 0 ? rotY - MathF.PI : rotY;
+
+            //float rotY = MathF.Atan(direction.X / direction.Z);
+            //rotY = direction.Z > 0 ? rotY - MathF.PI : rotY;
+
+            float rotY = MathF.Atan2(direction.X, direction.Z)+MathF.PI;
 
             lightViewMatrix *= Matrix4.CreateTranslation(new Vector3(center.X, center.Y, center.Z));
-            lightViewMatrix *= Matrix4.CreateRotationX(rotX);
             lightViewMatrix *= Matrix4.CreateRotationY(-rotY);
+            lightViewMatrix *= Matrix4.CreateRotationX(rotX);
             return lightViewMatrix;
         }
-        /*
-        private void updateOrthoProjectionMatrix(Vector3 size)
-        {
-            lightProjectionMatrix = Matrix4.Identity;
-            lightProjectionMatrix.M11 = 2f / size.X;
-            lightProjectionMatrix.M22 = 2f / size.Y;
-            lightProjectionMatrix.M33 = -2f / size.Z;
-            lightProjectionMatrix.M44 = 1;
-            //lightProjectionMatrix = Matrix4.CreateOrthographic(size.X, size.Y, 0, -size.Z);
-            //lightProjectionMatrix = Matrix4.CreateOrthographic(100, 100, 0, 100);
-
-        }
-        */
-
-
     }
 }

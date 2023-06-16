@@ -13,6 +13,7 @@ uniform int numberOfCascades;
 
 uniform vec3 sunDirectionViewSpace;
 uniform vec3 sunColor;
+uniform vec3 skyColor;
 uniform vec3 sunScatterColor;
 uniform vec3 fogColor;
 uniform float ambient;
@@ -77,7 +78,7 @@ void main(void){
 	float ambientOcclusion = texture(gAlbedo, textureCoords).a;
 	float specularStrength = texture(gNormal, textureCoords).a;
 
-	vec3 totalAmbient = vec3(ambient*ambientOcclusion*albedo);
+	vec3 totalAmbient = vec3(ambient*ambientOcclusion*albedo*skyColor);
 
 	vec3 viewDir = normalize(-position);
 
@@ -87,7 +88,7 @@ void main(void){
 
 	vec3 diffuse = max(dot(sunDirectionViewSpace, normal), 0f)*albedo*sunColor;
 
-	vec3 lighting = max((diffuse + specular)*ambientOcclusion*sunFactor, totalAmbient);
+	vec3 lighting =(diffuse + specular)*ambientOcclusion*sunFactor + totalAmbient;
 	lighting = applyFog(lighting, -position.z, -viewDir);
 
 	out_Colour =  vec4(lighting, 1.0f);
