@@ -7,6 +7,9 @@ namespace SpaceEngine.RenderEngine
         public PixelFormat formatExternal = PixelFormat.Rgba;
         public PixelType pixelType = PixelType.UnsignedByte;
         public FramebufferAttachment colorAttachment;
+        public TextureMinFilter minFilterType = TextureMinFilter.Linear;
+        public TextureMagFilter magFilterType = TextureMagFilter.Linear;
+        public TextureWrapMode wrapMode = TextureWrapMode.ClampToEdge;
         public DrawBufferSettings(FramebufferAttachment colorAttachment) {
             this.colorAttachment = colorAttachment;
         }

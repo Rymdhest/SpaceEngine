@@ -12,8 +12,8 @@ namespace SpaceEngine.Modelling
             Vector3 trunkColor = new Vector3 (0.55f, 0.39f, 0.18f);
             Vector3 leafColor = new Vector3(0.49f, 0.54f, 0.24f);
 
-            float trunkRadius = 0.4f;
-            float trunkHeight = 4.4f;
+            float trunkRadius = 0.6f;
+            float trunkHeight = 6.4f;
             Vector3 leafRadius = new Vector3(2f, 3.5f, 2f);
 
 
@@ -21,10 +21,10 @@ namespace SpaceEngine.Modelling
             RawModel model = new RawModel();
 
             List<Vector3> trunkLayers = new List<Vector3>() { 
-            new Vector3(trunkRadius, 0f, trunkRadius),
-            new Vector3(trunkRadius, trunkHeight*0.33f, trunkRadius),
-            new Vector3(trunkRadius, trunkHeight*0.66f, trunkRadius),
-            new Vector3(trunkRadius, trunkHeight, trunkRadius)};
+            new Vector3(trunkRadius, 0f, trunkRadius*2f),
+            new Vector3(trunkRadius, trunkHeight*0.33f, trunkRadius*0.9f),
+            new Vector3(trunkRadius, trunkHeight*0.66f, trunkRadius*0.8f),
+            new Vector3(trunkRadius, trunkHeight, trunkRadius*0.7f)};
 
             RawModel trunk = MeshGenerator.generateCylinder(trunkLayers, 7, trunkColor);
 

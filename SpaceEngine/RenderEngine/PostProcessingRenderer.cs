@@ -11,15 +11,15 @@ namespace SpaceEngine.RenderEngine
     {
 
         private ShaderProgram FXAAShader = new ShaderProgram("Simple_Vertex", "FXAA_Fragment");
-        private ShaderProgram verticalBlurShader = new ShaderProgram("blur_Vertical_Vertex", "blur_Fragment");
-        private ShaderProgram horizontalBlurShader = new ShaderProgram("blur_Horizontal_Vertex", "blur_Fragment");
-        private ShaderProgram bloomFilterShader = new ShaderProgram("Simple_Vertex", "bloom_Filter_Fragment");
+
         private ShaderProgram combineShader = new ShaderProgram("Simple_Vertex", "Combine_Fragment");
         private ShaderProgram skyShader = new ShaderProgram("Simple_Vertex", "sky_Fragment");
         private ShaderProgram HDRMapShader = new ShaderProgram("Simple_Vertex", "HDR_Mapper_Fragment");
         private FrameBuffer vBlurFBO;
         private FrameBuffer hBlurFBO;
         private FrameBuffer bloomFilterFBO;
+
+        private BloomRenderer bloomRenderer;
 
         public PostProcessingRenderer()
         {
@@ -32,10 +32,6 @@ namespace SpaceEngine.RenderEngine
             HDRMapShader.loadUniformInt("HDRcolorTexture", 0);
             HDRMapShader.unBind();
 
-            bloomFilterShader.bind();
-            bloomFilterShader.loadUniformInt("gDiffuse", 0);
-            bloomFilterShader.loadUniformInt("gPosition", 1);
-            bloomFilterShader.unBind();
 
             combineShader.bind();
             combineShader.loadUniformInt("texture0", 0);
@@ -51,12 +47,14 @@ namespace SpaceEngine.RenderEngine
             FrameBufferSettings bloomFrameBufferSettings = new FrameBufferSettings(WindowHandler.resolution);
             bloomFrameBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment0));
             bloomFilterFBO = new FrameBuffer(bloomFrameBufferSettings);
+
+            bloomRenderer = new BloomRenderer();
         }
 
         public void doPostProcessing(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Vector3 viewPosition, Matrix4 viewMatrix, Matrix4 projectionMatrix)
         {
             applySky(renderer, gBuffer, sunEntity, viewPosition, viewMatrix, projectionMatrix);
-            applyBloom(renderer, gBuffer);
+            bloomRenderer.applyBloom(renderer, gBuffer);
             applyFXAA(renderer);
             HDRMap(renderer);
         }
@@ -102,10 +100,10 @@ namespace SpaceEngine.RenderEngine
 
         private void HDRMap(ScreenQuadRenderer renderer)
         {
-            /*
+            
             HDRMapShader.cleanUp();
             HDRMapShader = new ShaderProgram("Simple_Vertex", "HDR_Mapper_Fragment");
-            */
+            
             HDRMapShader.bind();
             renderer.renderTextureToNextFrameBuffer(renderer.getLastOutputTexture());
             HDRMapShader.unBind();
@@ -120,35 +118,9 @@ namespace SpaceEngine.RenderEngine
         }
         private void applyBloom(ScreenQuadRenderer renderer, FrameBuffer gBuffer)
         {
-            bloomFilterFBO.bind();
-            bloomFilterShader.bind();
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, renderer.getLastOutputTexture());
-            //GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(0));
-            GL.ActiveTexture(TextureUnit.Texture1);
-            GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(2));
-            renderer.render();
-            //renderer.renderToScreen();
-            bloomFilterShader.unBind();
-            bloomFilterFBO.unbind();
 
-            verticalBlurShader.bind();
-            vBlurFBO.bind();
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, bloomFilterFBO.getRenderAttachment(0));
-            verticalBlurShader.loadUniformFloat("targetHeight", vBlurFBO.getResolution().Y);
-            renderer.render();
-            vBlurFBO.unbind();
-            verticalBlurShader.unBind();
 
-            horizontalBlurShader.bind();
-            hBlurFBO.bind();
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, vBlurFBO.getRenderAttachment(0));
-            horizontalBlurShader.loadUniformFloat("targetWidth", hBlurFBO.getResolution().X);
-            renderer.render();
-            hBlurFBO.unbind();
-            horizontalBlurShader.unBind();
+
 
             combineShader.bind();
             GL.ActiveTexture(TextureUnit.Texture0);

@@ -103,7 +103,7 @@ namespace SpaceEngine.Modelling
                 }
                 Vector3 worldPosition = new Vector3(desiredChunk.X, 0f, desiredChunk.Y) * chunkSizeWorld;
                 TerrainChunk chunk = new TerrainChunk(worldPosition.Xz, chunkSizeWorld, desiredChunk.Z + 1);
-                RawModel rawModel = chunk.generateRawModel(MasterRenderer.Pipeline.FLAT_SHADING);
+                RawModel rawModel = chunk.generateRawModel(MasterRenderer.Pipeline.SMOOTH_SHADING);
                 ChunkConstructionData data = new ChunkConstructionData();
                 data.component = chunk;
                 data.rawModel = rawModel;
@@ -188,7 +188,7 @@ namespace SpaceEngine.Modelling
                             TerrainChunk terrainChunk = data.Value.component;
                             terrainChunk.generateTextureMaps();
                             terrainChunkEnity.addComponent(terrainChunk);
-                            terrainChunkEnity.addComponent(new Model( glLoader.loadToVAO(data.Value.rawModel), MasterRenderer.Pipeline.FLAT_SHADING));
+                            terrainChunkEnity.addComponent(new Model( glLoader.loadToVAO(data.Value.rawModel), MasterRenderer.Pipeline.SMOOTH_SHADING));
                             terrainChunkEnity.addComponent(new Transformation(data.Value.worldPosition, new Vector3(0f, 0f, 0f), 1.0f));
                             //Console.WriteLine("adding " + data.Key.ToString());
                             chunkEntities.Add(data.Key, terrainChunkEnity);

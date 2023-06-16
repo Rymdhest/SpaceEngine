@@ -61,8 +61,8 @@ namespace SpaceEngine.Modelling
             for (int i = 0; i < colours.Length; i += 3)
             {
                 colours[i] = 1.0f;
-                colours[i + 1] = 0.0f;
-                colours[i + 2] = 0.0f;
+                colours[i + 1] = 0.2f;
+                colours[i + 2] = 0.2f;
             }
 
             int[] indices = {0,1,3, 3,1,2, //top
@@ -73,7 +73,7 @@ namespace SpaceEngine.Modelling
                         6,5,7, 7,5,4};  //bot
 
             RawModel rawModel = new RawModel(positions, colours, indices, MasterRenderer.Pipeline.FLAT_SHADING);
-            rawModel.setBloom(1f);
+            rawModel.setBloom(15f);
             return rawModel;
         }
 

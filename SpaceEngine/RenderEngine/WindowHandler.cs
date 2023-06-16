@@ -1,9 +1,11 @@
 ﻿
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
 using SpaceEngine.Entity_Component_System.Components;
 using System.Diagnostics;
+using OpenTK.Input;
 namespace SpaceEngine.RenderEngine
 {
     internal class WindowHandler

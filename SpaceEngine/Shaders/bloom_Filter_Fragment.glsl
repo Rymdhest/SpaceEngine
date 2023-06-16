@@ -5,7 +5,7 @@ layout (location = 0) out vec4 out_Colour;
 
 uniform sampler2D gDiffuse;
 uniform sampler2D gPosition;
-float bloomDampener = 25.5;
+float bloomDampener = 2.5;
 void main(void){
 
 	vec3 diffuse = texture(gDiffuse, textureCoords).rgb;

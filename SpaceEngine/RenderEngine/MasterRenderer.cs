@@ -87,7 +87,6 @@ namespace SpaceEngine.RenderEngine
             simpleShader.bind();
             simpleShader.loadUniformInt("blitTexture", 0);
             screenQuadRenderer.renderTextureToScreen(screenQuadRenderer.getLastOutputTexture());
-            //screenQuadRenderer.renderTextureToScreen(shadowRenderer.getDepthTexture());
             simpleShader.unBind();
 
 

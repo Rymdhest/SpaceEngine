@@ -77,6 +77,7 @@ void main(void){
 
 	float ambientOcclusion = texture(gAlbedo, textureCoords).a;
 	float specularStrength = texture(gNormal, textureCoords).a;
+	float emission = texture(gPosition, textureCoords).a;
 
 	vec3 totalAmbient = vec3(ambient*ambientOcclusion*albedo*skyColor);
 
@@ -89,6 +90,7 @@ void main(void){
 	vec3 diffuse = max(dot(sunDirectionViewSpace, normal), 0f)*albedo*sunColor;
 
 	vec3 lighting =(diffuse + specular)*ambientOcclusion*sunFactor + totalAmbient;
+	lighting = mix(lighting, albedo , clamp(emission, 0, 1));
 	lighting = applyFog(lighting, -position.z, -viewDir);
 
 	out_Colour =  vec4(lighting, 1.0f);

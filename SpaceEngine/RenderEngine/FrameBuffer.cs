@@ -47,7 +47,7 @@ namespace SpaceEngine.RenderEngine
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, frameBufferID);
             GL.DrawBuffer(DrawBufferMode.Back);
-            GL.BlitFramebuffer(0, 0, settings.resolution.X, settings.resolution.Y, 0, 0, WindowHandler.resolution.X, WindowHandler.resolution.Y, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest);
+            GL.BlitFramebuffer(0, 0, settings.resolution.X, settings.resolution.Y, 0, 0, WindowHandler.resolution.X, WindowHandler.resolution.Y, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Linear);
             unbind();
         }
 
@@ -86,10 +86,10 @@ namespace SpaceEngine.RenderEngine
             int attachment = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, attachment);
             GL.TexImage2D(TextureTarget.Texture2D, 0, renderSettings.formatInternal, resolution.X, resolution.Y, 0, renderSettings.formatExternal, renderSettings.pixelType, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)TextureMagFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)TextureWrapMode.ClampToEdge);    
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (float)renderSettings.magFilterType);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)renderSettings.minFilterType);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)renderSettings.wrapMode);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)renderSettings.wrapMode);    
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, renderSettings.colorAttachment, TextureTarget.Texture2D, attachment, 0);
             return attachment;
         }
@@ -105,12 +105,14 @@ namespace SpaceEngine.RenderEngine
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (float)TextureMinFilter.Linear);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)TextureWrapMode.ClampToBorder);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)TextureWrapMode.ClampToBorder);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode , (float)TextureCompareMode.None);
 
                 if (depthSettings.isShadowDepthTexture)
                 {
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (float)TextureCompareMode.CompareRefToTexture);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (float)DepthFunction.Lequal);
+                } else
+                {
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (float)TextureCompareMode.None);
                 }
 
                 

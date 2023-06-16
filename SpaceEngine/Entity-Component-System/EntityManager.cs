@@ -4,6 +4,7 @@ using OpenTK.Mathematics;
 using SpaceEngine.Core;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using SpaceEngine.Util;
+using System.Drawing;
 
 namespace SpaceEngine.Entity_Component_System.Components
 {
@@ -34,6 +35,7 @@ namespace SpaceEngine.Entity_Component_System.Components
             Entity box = new Entity();
             box.addComponent(new Transformation(new Vector3(0, 15, 0), new Vector3(0)));
             box.addComponent(new Model( glLoader.loadToVAO(MeshGenerator.generateBox(new Vector3(-0.5f), new Vector3(0.5f))), MasterRenderer.Pipeline.FLAT_SHADING));
+            box.addComponent(new PointLight(new Vector3(1f, 0.2f, 0.2f)*10f, new Vector3(0.1f, 0f, 1.5f)));
 
             Entity sun = new Entity();
             sun.addComponent(new Sun());
@@ -114,9 +116,10 @@ namespace SpaceEngine.Entity_Component_System.Components
                 for (int i = 0; i<100; i++)
                 {
                     Entity sculpture = new Entity();
-                    sculpture.addComponent(new Transformation(new Vector3(MyMath.rngMinusPlus(), -100f, MyMath.rngMinusPlus())*1000f, new Vector3(0)));
+                    Vector3 position = MyMath.rng3DMinusPlus() * 1000;
+                    position.Y = terrainManager.getNoiseHeightAt(position.Xz)-1.0f;
+                    sculpture.addComponent(new Transformation(position, new Vector3(0, MyMath.rng()*MathF.PI*2f,0), 1+MyMath.rng()));
                     sculpture.addComponent(new Model(glLoader.loadToVAO(ModelGenerator.generateTree()), MasterRenderer.Pipeline.FLAT_SHADING));
-                    sculpture.addComponent(new TerrainCollider());
                 }
             }
             //camera.updateComponents(delta);
