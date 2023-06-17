@@ -116,10 +116,10 @@ namespace SpaceEngine.Entity_Component_System.Components
                 for (int i = 0; i<100; i++)
                 {
                     Entity sculpture = new Entity();
-                    Vector3 position = MyMath.rng3DMinusPlus() * 1000;
+                    Vector3 position = MyMath.rng3DMinusPlus() * 200;
                     position.Y = terrainManager.getNoiseHeightAt(position.Xz)-1.0f;
-                    sculpture.addComponent(new Transformation(position, new Vector3(0, MyMath.rng()*MathF.PI*2f,0), 1+MyMath.rng()));
-                    sculpture.addComponent(new Model(glLoader.loadToVAO(ModelGenerator.generateTree()), MasterRenderer.Pipeline.FLAT_SHADING));
+                    sculpture.addComponent(new Transformation(position, new Vector3(0, MyMath.rng()*MathF.PI*2f,0), 0.8f+MyMath.rng()*0.4f));
+                    sculpture.addComponent(new Model(ModelGenerator.tree, MasterRenderer.Pipeline.FLAT_SHADING));
                 }
             }
             //camera.updateComponents(delta);

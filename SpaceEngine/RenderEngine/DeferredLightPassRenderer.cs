@@ -6,6 +6,7 @@ using SpaceEngine.Entity_Component_System.Components;
 using SpaceEngine.Modelling;
 using SpaceEngine.Shaders;
 using SpaceEngine.Util;
+using System.Diagnostics;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -81,9 +82,9 @@ namespace SpaceEngine.RenderEngine
             ambientOcclusionShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
             ambientOcclusionShader.loadUniformVector3fArray("samples", kernelSamples);
 
-            ambientOcclusionShader.loadUniformFloat("radius", 0.48f);
-            ambientOcclusionShader.loadUniformFloat("strength", 6.5f);
-            ambientOcclusionShader.loadUniformFloat("bias", 0.25f);
+            ambientOcclusionShader.loadUniformFloat("radius", 1.5f);
+            ambientOcclusionShader.loadUniformFloat("strength", 1.0f);
+            ambientOcclusionShader.loadUniformFloat("bias", 0.005f);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, noiseTexture);
@@ -110,6 +111,7 @@ namespace SpaceEngine.RenderEngine
             GL.ColorMask(1,true, true, true, true);
             GL.ColorMask(2,true, true, true, true);
             ambientOcclusionBlurShader.unBind();
+
         }
 
             private void renderGlobalLight(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Matrix4 viewMatrix, ShadowRenderer shadowRenderer)
@@ -223,7 +225,12 @@ namespace SpaceEngine.RenderEngine
         }
         public void render(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Matrix4 viewMatrix, Matrix4 projectionMatrix, ComponentSystem pointLights, ShadowRenderer shadowRenderer)
         {
+            //GL.Finish();
+            //Stopwatch stopwatch = Stopwatch.StartNew();
             renderAmbientOcclusion(renderer, gBuffer, projectionMatrix);
+            //GL.Finish();
+            //Console.WriteLine(stopwatch.Elapsed.TotalMilliseconds);
+
             renderer.getNextFrameBuffer().blitDepthBufferFrom(gBuffer);
             renderer.getLastFrameBuffer().blitDepthBufferFrom(gBuffer);
             renderGlobalLight(renderer, gBuffer, sunEntity, viewMatrix, shadowRenderer);

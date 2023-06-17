@@ -95,5 +95,5 @@ void main(void){
 
 	out_Colour =  vec4(lighting, 1.0f);
 	//out_Colour =  vec4(positionSunSpace.xyz, 1.0f);
-	//out_Colour =  vec4(vec3(length(-position)/100f), 1.0f);
+	//out_Colour =  vec4(vec3(ambientOcclusion), 1.0f);
 }

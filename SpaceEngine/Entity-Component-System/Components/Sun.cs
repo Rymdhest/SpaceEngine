@@ -25,7 +25,7 @@ namespace SpaceEngine.Entity_Component_System.Components
 
         public override void update(float delta)
         {
-
+            ambient = 0.65f;
             sunsetFactor = (1f - MyMath.clamp01(MathF.Pow(1f - normalizedDirection.Y - 0.2f, 1)));
             if (InputHandler.isKeyDown(Keys.KeyPadAdd))
             {
@@ -79,7 +79,7 @@ namespace SpaceEngine.Entity_Component_System.Components
         }
         public Vector3 getFogColor()
         {
-            return MyMath.lerp(getSunsetFactor(),skyColorSpace , fogColor);
+            return MyMath.lerp(getSunsetFactor(),skyColorSpace , skyColorDay);
             
         }
         public Vector3 getDirection()

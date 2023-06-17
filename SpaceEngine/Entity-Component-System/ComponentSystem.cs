@@ -4,7 +4,7 @@ namespace SpaceEngine.Entity_Component_System
     internal class ComponentSystem
     {
         private List<Component> memberComponents = new List<Component>();
-        public Object threadLock = new Object();
+
         public ComponentSystem()
         {
 

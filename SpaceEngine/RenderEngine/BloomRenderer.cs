@@ -9,7 +9,7 @@ namespace SpaceEngine.RenderEngine
         private ShaderProgram downsamplingShader = new ShaderProgram("Simple_Vertex", "Downsampling_Fragment");
         private ShaderProgram upsamplingShader = new ShaderProgram("Simple_Vertex", "Upsampling_Fragment");
         private ShaderProgram bloomFilterShader = new ShaderProgram("Simple_Vertex", "bloom_Filter_Fragment");
-        private static readonly int downSamples = 10;
+        private static readonly int downSamples = 7;
         private FrameBuffer[] sampleFramebuffers = new FrameBuffer[downSamples];
 
         public BloomRenderer()

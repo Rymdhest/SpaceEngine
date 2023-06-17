@@ -20,7 +20,7 @@ vec3 reinhard(vec3 inputColor) {
 	return inputColor / (inputColor + vec3(1.0)) * (inputColor * key);
 }
 vec3 applyExposure(vec3 inputColor) {
-	float exposure =0.15f;
+	float exposure =0.23f;
 	return vec3(1.0) - exp(-inputColor * exposure);
 }
 
@@ -30,20 +30,20 @@ vec3 applyToneMap(vec3 inputColor) {
 }
 
 vec3 applyGamma(vec3 inputColor) {
-	float gamma = 2.2;
+	float gamma = 1.5;
 	return pow(inputColor, vec3(1.0 / gamma));
 }
 
 vec3 applyBrightness(vec3 inputColor) {
-	float brightness = 0.90f;
+	float brightness = 0.9f;
 	return inputColor*vec3(brightness);
 }
 vec3 applyContrast(vec3 inputColor) {
-	float contrast = 1.0f;
+	float contrast = 1f;
     return mix(0.5 + (inputColor - 0.5) * contrast, inputColor, contrast);
 }
 vec3 applySaturation(vec3 inputColor) {
-	float saturation = 1.1f;
+	float saturation = 1.3f;
     float luminance = dot(inputColor, vec3(0.2126, 0.7152, 0.0722));
     vec3 desaturatedColor = vec3(luminance);
     return mix(desaturatedColor, inputColor, saturation);

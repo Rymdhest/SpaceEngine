@@ -29,7 +29,7 @@ void main(void){
 
 
 	float sunAmount = pow(max( dot(viewDir, sunDirectionWorldSpace ), 0.0 ), 256);
-	float sunAmountBigScale = pow(max( dot( viewDir, sunDirectionWorldSpace ), 0.0 ), 4)*0.45f;
+	float sunAmountBigScale = pow(max( dot( viewDir, sunDirectionWorldSpace ), 0.0 ), 8)*0.45f;
 
 	float horizon = max( 0.45f+dot( viewDir.y, -upNormalViewSpace.y ), 0.0 );
 	

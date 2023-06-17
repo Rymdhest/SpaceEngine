@@ -35,8 +35,8 @@ namespace SpaceEngine.RenderEngine
             nws.Size = resolution;
             nws.Location = new Vector2i(100, 100);
 
-            gws.RenderFrequency = 600;
-            gws.UpdateFrequency = 600;
+            gws.RenderFrequency = 60;
+            gws.UpdateFrequency = 60;
 
             gameWindow = new GameWindow(gws, nws);
 

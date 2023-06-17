@@ -4,6 +4,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Mathematics;
 using SpaceEngine.Entity_Component_System;
 using SpaceEngine.Entity_Component_System.Components;
+using System.Diagnostics;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -54,9 +55,14 @@ namespace SpaceEngine.RenderEngine
         public void doPostProcessing(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Vector3 viewPosition, Matrix4 viewMatrix, Matrix4 projectionMatrix)
         {
             applySky(renderer, gBuffer, sunEntity, viewPosition, viewMatrix, projectionMatrix);
+            //GL.Finish();
+            //Stopwatch stopwatch = Stopwatch.StartNew();
             bloomRenderer.applyBloom(renderer, gBuffer);
-            applyFXAA(renderer);
+            //GL.Finish();
+            //Console.WriteLine(stopwatch.Elapsed.TotalMilliseconds);
+           
             HDRMap(renderer);
+            applyFXAA(renderer);
         }
 
         private void applySky(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Vector3 viewPosition, Matrix4 viewMatrix, Matrix4 projectionMatrix)
