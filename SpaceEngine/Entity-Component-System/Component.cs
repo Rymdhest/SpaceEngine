@@ -12,7 +12,8 @@ namespace SpaceEngine.Entity_Component_System
         private List<ComponentSystem> subscribedSystem = new List<ComponentSystem>();
 
         public virtual void initialize()   { }
-        public virtual void cleanUp() {
+        public virtual void cleanUp()
+        {
             for (int i = subscribedSystem.Count - 1 ; i >= 0; i--)
             {
                 subscribedSystem[i].removeMember(this);

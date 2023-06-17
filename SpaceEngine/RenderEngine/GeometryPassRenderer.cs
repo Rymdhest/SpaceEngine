@@ -6,6 +6,8 @@ using OpenTK.Graphics.OpenGL;
 using SpaceEngine.Shaders;
 using OpenTK.Windowing.Common;
 using SpaceEngine.Modelling;
+using SpaceEngine.Entity_Component_System.Systems;
+using System.Reflection;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -46,26 +48,28 @@ namespace SpaceEngine.RenderEngine
             GL.ClearColor(0.0f, 0.0f, 0.0f, 0.2f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         }
-        public void render(ComponentSystem flatShadeEntities, ComponentSystem smoothShadeEntities, Matrix4 viewMatrix, Matrix4 projectionMatrix, TerrainManager terrainManager, Vector3 cameraPosition)
+        public void render(ModelSystem flatShadeEntities, ComponentSystem smoothShadeEntities, Matrix4 viewMatrix, Matrix4 projectionMatrix, TerrainManager terrainManager, Vector3 cameraPosition)
         {
 
             prepareFrame(viewMatrix, projectionMatrix);
-            
             flatShader.bind();
-            foreach (Model model in flatShadeEntities.getMembers())
-            {
-                glModel glModel = model.getModel();
-                Matrix4 transformationMatrix = MyMath.createTransformationMatrix(model.owner.getComponent<Transformation>());
-                Matrix4 modelViewMatrix = transformationMatrix * viewMatrix;
-                smoothShader.loadUniformMatrix4f("modelViewMatrix", modelViewMatrix);
-                smoothShader.loadUniformMatrix4f("modelViewProjectionMatrix", modelViewMatrix * projectionMatrix);
-                GL.BindVertexArray(glModel.getVAOID());
+
+            foreach (KeyValuePair<glModel, List<Entity>> glmodels in flatShadeEntities.getModels()) {
+                glModel glmodel = glmodels.Key;
+
+                GL.BindVertexArray(glmodel.getVAOID());
                 GL.EnableVertexAttribArray(0);
                 GL.EnableVertexAttribArray(1);
                 GL.EnableVertexAttribArray(2);
+                foreach (Entity entity in glmodels.Value)
+                {
+                    Matrix4 transformationMatrix = MyMath.createTransformationMatrix(entity.getComponent<Transformation>());
+                    Matrix4 modelViewMatrix = transformationMatrix * viewMatrix;
+                    smoothShader.loadUniformMatrix4f("modelViewMatrix", modelViewMatrix);
+                    smoothShader.loadUniformMatrix4f("modelViewProjectionMatrix", modelViewMatrix * projectionMatrix);
 
-                GL.DrawElements(PrimitiveType.Triangles, glModel.getVertexCount(), DrawElementsType.UnsignedInt, 0);
-
+                    GL.DrawElements(PrimitiveType.Triangles, glmodel.getVertexCount(), DrawElementsType.UnsignedInt, 0);
+                }
             }
 
             flatShader.unBind();

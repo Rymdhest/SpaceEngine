@@ -5,6 +5,7 @@ using SpaceEngine.Core;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using SpaceEngine.Util;
 using System.Drawing;
+using SpaceEngine.Entity_Component_System.Systems;
 
 namespace SpaceEngine.Entity_Component_System.Components
 {
@@ -12,7 +13,7 @@ namespace SpaceEngine.Entity_Component_System.Components
     {
 
         public static List<Entity> entities = new List<Entity>();
-        public static ComponentSystem flatShadingSystem = new ComponentSystem();
+        public static ModelSystem flatShadingSystem = new ModelSystem();
         public static ComponentSystem smoothShadingSystem = new ComponentSystem();
         public static ComponentSystem postGeometrySystem = new ComponentSystem();
         public static ComponentSystem pointLightSystem = new ComponentSystem();
@@ -107,11 +108,6 @@ namespace SpaceEngine.Entity_Component_System.Components
             } 
             if (InputHandler.isKeyClicked(Keys.H))
             {
-                this.sculpture.cleanUp();
-                sculpture = new Entity();
-                sculpture.addComponent(new Transformation(new Vector3(-15f, -15, 0), new Vector3(0)));
-                sculpture.addComponent(new Model( glLoader.loadToVAO(ModelGenerator.generateTree()), MasterRenderer.Pipeline.FLAT_SHADING));
-                sculpture.addComponent(new TerrainCollider());
 
                 for (int i = 0; i<100; i++)
                 {

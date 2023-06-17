@@ -18,6 +18,13 @@ namespace SpaceEngine.RenderEngine
             this.model = model;
             this.pipeline = pipeline;
             this.cleanGLModel = cleanGLModel;
+
+
+            this.cleanGLModel = cleanGLModel;
+        }
+
+        public override void initialize()
+        {
             if (pipeline == MasterRenderer.Pipeline.FLAT_SHADING)
             {
                 EntityManager.flatShadingSystem.addMember(this);
@@ -26,8 +33,6 @@ namespace SpaceEngine.RenderEngine
             {
                 EntityManager.smoothShadingSystem.addMember(this);
             }
-
-            this.cleanGLModel = cleanGLModel;
         }
 
         public glModel getModel()

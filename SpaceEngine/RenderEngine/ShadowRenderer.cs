@@ -5,6 +5,7 @@ using SpaceEngine.Modelling;
 using SpaceEngine.Shaders;
 using SpaceEngine.Util;
 using OpenTK.Graphics.OpenGL;
+using SpaceEngine.Entity_Component_System.Systems;
 
 namespace SpaceEngine.RenderEngine
 {
@@ -26,7 +27,7 @@ namespace SpaceEngine.RenderEngine
 
         }
 
-        public void render(ComponentSystem flatShadeEntities, ComponentSystem smoothShadeEntities, TerrainManager terrainManager, Vector3 lightDirection, Entity camera, Matrix4 viewTest, Matrix4 projTest)
+        public void render(ModelSystem flatShadeEntities, ComponentSystem smoothShadeEntities, TerrainManager terrainManager, Vector3 lightDirection, Entity camera, Matrix4 viewTest, Matrix4 projTest)
         {
             updateLightViewMatrix(-lightDirection, camera.getComponent<Transformation>().position);
 
@@ -43,17 +44,24 @@ namespace SpaceEngine.RenderEngine
                 cascade.bindFrameBuffer();
                 GL.Clear(ClearBufferMask.DepthBufferBit);
                 GL.PolygonOffset(cascade.getPolygonOffset(), 1f);
-                foreach (Model model in flatShadeEntities.getMembers())
+
+
+                foreach (KeyValuePair<glModel, List<Entity>> glmodels in flatShadeEntities.getModels())
                 {
-                    glModel glModel = model.getModel();
-                    Matrix4 transformationMatrix = MyMath.createTransformationMatrix(model.owner.getComponent<Transformation>());
-                    shadowShader.loadUniformMatrix4f("modelViewProjectionMatrix", transformationMatrix * lightViewMatrix * cascade.getProjectionMatrix());
-                    GL.BindVertexArray(glModel.getVAOID());
+                    glModel glmodel = glmodels.Key;
+                    GL.BindVertexArray(glmodel.getVAOID());
                     GL.EnableVertexAttribArray(0);
+                    foreach (Entity entity in glmodels.Value)
+                    {
+                        Matrix4 transformationMatrix = MyMath.createTransformationMatrix(entity.getComponent<Transformation>());
+                        shadowShader.loadUniformMatrix4f("modelViewProjectionMatrix", transformationMatrix * lightViewMatrix * cascade.getProjectionMatrix());
 
-                    GL.DrawElements(PrimitiveType.Triangles, glModel.getVertexCount(), DrawElementsType.UnsignedInt, 0);
-
+                        GL.DrawElements(PrimitiveType.Triangles, glmodel.getVertexCount(), DrawElementsType.UnsignedInt, 0);
+                    }
                 }
+
+
+
                 foreach (Model model in smoothShadeEntities.getMembers())
                 {
                     glModel glModel = model.getModel();
