@@ -16,7 +16,7 @@ namespace SpaceEngine.RenderEngine
         {
             bloomFilterShader.bind();
             bloomFilterShader.loadUniformInt("gDiffuse", 0);
-            bloomFilterShader.loadUniformInt("gPosition", 1);
+            bloomFilterShader.loadUniformInt("gMaterials", 1);
             bloomFilterShader.unBind();
 
             downsamplingShader.bind();
@@ -55,7 +55,7 @@ namespace SpaceEngine.RenderEngine
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, renderer.getLastOutputTexture());
             GL.ActiveTexture(TextureUnit.Texture1);
-            GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(2));
+            GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(3));
             renderer.render();
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.One);

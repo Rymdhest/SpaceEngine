@@ -7,6 +7,7 @@ layout (location = 0) out vec4 out_Colour;
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedo;
+uniform sampler2D gMaterials;
 
 uniform int numberOfCascades;
 
@@ -76,8 +77,8 @@ void main(void){
 	float sunFactor = 1f-calcShadow(position);
 
 	float ambientOcclusion = texture(gAlbedo, textureCoords).a;
-	float specularStrength = texture(gNormal, textureCoords).a;
-	float emission = texture(gPosition, textureCoords).a;
+	float specularStrength = texture(gMaterials, textureCoords).r;
+	float emission = texture(gMaterials, textureCoords).g;
 
 	vec3 totalAmbient = vec3(ambient*ambientOcclusion*albedo*skyColor);
 
@@ -95,5 +96,5 @@ void main(void){
 
 	out_Colour =  vec4(lighting, 1.0f);
 	//out_Colour =  vec4(positionSunSpace.xyz, 1.0f);
-	//out_Colour =  vec4(vec3(ambientOcclusion), 1.0f);
+	//out_Colour =  vec4(vec3(emission), 1.0f);
 }

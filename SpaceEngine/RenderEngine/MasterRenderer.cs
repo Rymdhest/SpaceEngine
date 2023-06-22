@@ -81,12 +81,15 @@ namespace SpaceEngine.RenderEngine
 
             shadowRenderer.render(EntityManager.flatShadingSystem, EntityManager.smoothShadingSystem, terrainManager, sunEntity.getComponent<Sun>().getDirection(), camera, viewMatrix, projectionMatrix);
 
+         
             deferredLightPassRenderer.render(screenQuadRenderer, geometryPassRenderer.gBuffer, sunEntity, viewMatrix,projectionMatrix, pointLights, shadowRenderer);
-            postProcessingRenderer.doPostProcessing(screenQuadRenderer, geometryPassRenderer.gBuffer, sunEntity, camera.getComponent<Transformation>().position, viewMatrix, projectionMatrix);
             postGeometryRenderer.render(EntityManager.postGeometrySystem, viewMatrix, projectionMatrix);
-            simpleShader.bind();
+
+            postProcessingRenderer.doPostProcessing(screenQuadRenderer, geometryPassRenderer.gBuffer, sunEntity, camera.getComponent<Transformation>().position, viewMatrix, projectionMatrix);
+           simpleShader.bind();
             simpleShader.loadUniformInt("blitTexture", 0);
             screenQuadRenderer.renderTextureToScreen(screenQuadRenderer.getLastOutputTexture());
+            //screenQuadRenderer.renderTextureToScreen(geometryPassRenderer.gBuffer.getRenderAttachment(3));
             simpleShader.unBind();
 
 

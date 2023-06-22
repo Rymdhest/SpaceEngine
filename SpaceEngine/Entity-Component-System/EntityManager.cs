@@ -62,7 +62,7 @@ namespace SpaceEngine.Entity_Component_System.Components
                 float power = (MyMath.rng() * 5f + 1) * 0.5f;
                 sphere.addComponent(new Transformation(center+ forward*1.5f, new Vector3(0f, 0f, 0f), MathF.Sqrt(power)));
                 RawModel rawModel = MeshGenerator.generateIcosahedron(new Vector3(1.0f), color * MathF.Sqrt(power), MasterRenderer.Pipeline.POST_GEOMETRY);
-                rawModel.setBloom(3f);
+                rawModel.setEmission(3f);
                 sphere.addComponent( new Model( glLoader.loadToVAO(rawModel), MasterRenderer.Pipeline.POST_GEOMETRY));
                 sphere.addComponent(new PointLight(color * power, new Vector3(0.1f, 0f, 1.5f)));
                 sphere.addComponent(new Momentum(forward * 50f));

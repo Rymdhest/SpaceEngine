@@ -21,15 +21,25 @@ namespace SpaceEngine.RenderEngine
         {
             grassRenderer = new GrassRenderer();
             FrameBufferSettings gBufferSettings = new FrameBufferSettings(WindowHandler.resolution);
-            DrawBufferSettings gPosition = new DrawBufferSettings(FramebufferAttachment.ColorAttachment0);
+            DrawBufferSettings gAlbedo = new DrawBufferSettings(FramebufferAttachment.ColorAttachment0);
+            gAlbedo.formatInternal = PixelInternalFormat.Rgba16f;
+            gBufferSettings.drawBuffers.Add(gAlbedo);
+
+            DrawBufferSettings gNormal = new DrawBufferSettings(FramebufferAttachment.ColorAttachment1);
+            gNormal.formatInternal = PixelInternalFormat.Rgba16f;
+            gNormal.pixelType = PixelType.Float;
+            gBufferSettings.drawBuffers.Add(gNormal);
+
+            DrawBufferSettings gPosition = new DrawBufferSettings(FramebufferAttachment.ColorAttachment2);
             gPosition.formatInternal = PixelInternalFormat.Rgba16f;
+            gPosition.pixelType = PixelType.Float;
             gBufferSettings.drawBuffers.Add(gPosition);
 
-            DrawBufferSettings gAlbedo = new DrawBufferSettings(FramebufferAttachment.ColorAttachment1);
-            gAlbedo.formatInternal = PixelInternalFormat.Rgba16f;
-            gAlbedo.pixelType = PixelType.Float;
-            gBufferSettings.drawBuffers.Add(gAlbedo);
-            gBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment2));
+            
+            DrawBufferSettings gMaterials = new DrawBufferSettings(FramebufferAttachment.ColorAttachment3);
+            gMaterials.formatInternal = PixelInternalFormat.Rgba16f;
+            gMaterials.pixelType = PixelType.Float;
+            gBufferSettings.drawBuffers.Add(gMaterials);
             
 
             DepthAttachmentSettings depthSettings = new DepthAttachmentSettings();
@@ -100,7 +110,7 @@ namespace SpaceEngine.RenderEngine
             //GL.BindBuffer(BufferTarget.ArrayBuffer, model.getIndexBuffer());
             //GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             finishFrame();
-            grassRenderer.render(viewMatrix, projectionMatrix, terrainManager, cameraPosition);
+            //grassRenderer.render(viewMatrix, projectionMatrix, terrainManager, cameraPosition);
         }
         public void onResize(ResizeEventArgs eventArgs)
         {

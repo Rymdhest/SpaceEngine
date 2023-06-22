@@ -17,7 +17,7 @@ namespace SpaceEngine.Core
 
         public Engine()
         {
-            Vector2i resoltion = new Vector2i(1600, 800);
+            Vector2i resoltion = new Vector2i(1900, 1080);
             windowHandler = new WindowHandler(resoltion);
             masterRenderer = new MasterRenderer();
             entityManager= new EntityManager();

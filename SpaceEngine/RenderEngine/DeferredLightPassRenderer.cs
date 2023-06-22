@@ -21,12 +21,14 @@ namespace SpaceEngine.RenderEngine
         private const int kernelSize = 32;
         private Vector3[] kernelSamples;
         private int noiseTexture;
+        readonly int cascadesTextureIndexStart = 4;
 
         public DeferredLightPassRenderer() {
             globalLightShader.bind();
             globalLightShader.loadUniformInt("gAlbedo", 0);
             globalLightShader.loadUniformInt("gNormal", 1);
             globalLightShader.loadUniformInt("gPosition", 2);
+            globalLightShader.loadUniformInt("gMaterials", 3);
 
             globalLightShader.unBind();
 
@@ -34,6 +36,7 @@ namespace SpaceEngine.RenderEngine
             pointLightShader.loadUniformInt("gAlbedo", 0);
             pointLightShader.loadUniformInt("gNormal", 1);
             pointLightShader.loadUniformInt("gPosition", 2);
+            pointLightShader.loadUniformInt("gMaterials", 3);
             pointLightShader.unBind();
 
             ambientOcclusionBlurShader.bind();
@@ -61,9 +64,9 @@ namespace SpaceEngine.RenderEngine
             var noisePixels = new float[3 * noiseScale * noiseScale];
             for (int i = 0; i < noiseScale * noiseScale; i++)
             {
-                noisePixels[i*3] = MyMath.rngMinusPlus();
-                noisePixels[i*3+1] = MyMath.rngMinusPlus();
-                noisePixels[i*3+2] = 0;
+                noisePixels[i* 3] = MyMath.rngMinusPlus();
+                noisePixels[i* 3 + 1] = MyMath.rngMinusPlus();
+                noisePixels[i* 3 + 2] = 0;
             }
             noiseTexture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, noiseTexture);
@@ -106,10 +109,12 @@ namespace SpaceEngine.RenderEngine
             GL.ColorMask(0, false, false, false, true);
             GL.ColorMask(1, false, false, false, false);
             GL.ColorMask(2, false, false, false, false);
+            GL.ColorMask(3, false, false, false, false);
             renderer.render();  
             GL.ColorMask(0,true, true, true, true);
             GL.ColorMask(1,true, true, true, true);
             GL.ColorMask(2,true, true, true, true);
+            GL.ColorMask(3, true, true, true, true);
             ambientOcclusionBlurShader.unBind();
 
         }
@@ -135,15 +140,17 @@ namespace SpaceEngine.RenderEngine
             GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(1));
             GL.ActiveTexture(TextureUnit.Texture2);
             GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(2));
+            GL.ActiveTexture(TextureUnit.Texture3);
+            GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(3));
 
             for (int i = 0 ; i < shadowRenderer.getNumberOfCascades(); i++)
             {
 
                 ShadowCascade cascade = shadowRenderer.getShadowCascades()[i];
-                globalLightShader.loadUniformInt("shadowMaps["+i+"]", 3+i);
+                globalLightShader.loadUniformInt("shadowMaps["+i+"]", cascadesTextureIndexStart + i);
 
                 globalLightShader.loadUniformFloat("cascadeProjectionSizes[" + i + "]", cascade.getProjectionSize());
-                GL.ActiveTexture(TextureUnit.Texture3+i);
+                GL.ActiveTexture(TextureUnit.Texture4+i);
                 GL.BindTexture(TextureTarget.Texture2D, cascade.getDepthTexture());
                 globalLightShader.loadUniformVector2f("shadowMapResolutions["+i+"]", cascade.getResolution());
 
@@ -196,6 +203,8 @@ namespace SpaceEngine.RenderEngine
             GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(1));
             GL.ActiveTexture(TextureUnit.Texture2);
             GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(2));
+            GL.ActiveTexture(TextureUnit.Texture3);
+            GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(3));
             pointLightShader.loadUniformMatrix4f("viewMatrix", viewMatrix);
             pointLightShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
             pointLightShader.loadUniformFloat("gScreenSizeX", WindowHandler.resolution.X);

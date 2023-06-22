@@ -56,21 +56,27 @@ namespace SpaceEngine.Modelling
 
         }
 
-        public void setSpecularity(float setTo)
+        public void setRoughness(float setTo)
         {
             for (int i = 0; i < materials.Length; i += 3)
             {
                 materials[i] = setTo;
             }
         }
-        public void setBloom(float setTo)
+        public void setEmission(float setTo)
         {
             for (int i = 0; i < materials.Length; i += 3)
             {
                 materials[i+1] = setTo;
             }
         }
-
+        public void setMetalicness(float setTo)
+        {
+            for (int i = 0; i < materials.Length; i += 3)
+            {
+                materials[i + 2] = setTo;
+            }
+        }
         public void flatRandomness(float amount)
         {
             flatRandomness(new Vector3(amount));

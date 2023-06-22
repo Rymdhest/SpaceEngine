@@ -161,8 +161,9 @@ namespace SpaceEngine.Modelling
                     positions[vertexPointer * 3 + 1] = positionLocalWorld.Y;
                     positions[vertexPointer * 3 + 2] = positionLocalWorld.Z;
 
-                    float specularity;
-                    float bloom = 0.0f;
+                    float rougness;
+                    float emission = 0.0f;
+                    float metalicness = 0.0f;
                     Vector3 normal = calculateVertexNormal(x, z);
                     if (pipeline == MasterRenderer.Pipeline.SMOOTH_SHADING)
                     {
@@ -184,7 +185,7 @@ namespace SpaceEngine.Modelling
                     Vector3 rockColor = new Vector3(82 / 255f, 82 / 255f, 82 / 255f);
                     Vector3 waterColor = new Vector3(35 / 255f, 137 / 255f, 218 / 255f);
                     Vector3 color = MyMath.lerp(1f-MyMath.clamp01(normal.Y * normal.Y), groundColor, rockColor);
-                    specularity = MyMath.lerp(1f - MyMath.clamp01(normal.Y), 0f, 1f);
+                    rougness = MyMath.lerp(1f - MyMath.clamp01(normal.Y), 0f, 1f);
                     if (positionLocalWorld.Y <= 1.85f && normal.Y > 0.65f)
                     {
                         color = sandColor;
@@ -192,16 +193,17 @@ namespace SpaceEngine.Modelling
                     if (positionLocalWorld.Y <= 0.0f)
                     {
                         color = waterColor;
-                        specularity = 1.0f;
+                        rougness = 0.1f;
+                        metalicness = 0.7f;
                     }
                     colors[vertexPointer * 3] = color.X;
                     colors[vertexPointer * 3 + 1] = color.Y;
                     colors[vertexPointer * 3 + 2] = color.Z;
 
 
-                    materials[vertexPointer * 3] = specularity;
-                    materials[vertexPointer * 3 + 1] = bloom;
-                    materials[vertexPointer * 3 + 2] = 0f;
+                    materials[vertexPointer * 3] = rougness;
+                    materials[vertexPointer * 3 + 1] = emission;
+                    materials[vertexPointer * 3 + 2] = metalicness;
 
                     vertexPointer++;
                 }
@@ -291,7 +293,7 @@ namespace SpaceEngine.Modelling
 
             value += mountain+0.2f+ dessertHill;
 
-            if (value < 0f) value *= 0.1f;
+            if (value < 0f) value *= 0.06f;
 
             return value;
         }

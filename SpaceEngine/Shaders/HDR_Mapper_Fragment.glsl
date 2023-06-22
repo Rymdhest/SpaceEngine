@@ -20,7 +20,7 @@ vec3 reinhard(vec3 inputColor) {
 	return inputColor / (inputColor + vec3(1.0)) * (inputColor * key);
 }
 vec3 applyExposure(vec3 inputColor) {
-	float exposure =0.23f;
+	float exposure =0.3f;
 	return vec3(1.0) - exp(-inputColor * exposure);
 }
 

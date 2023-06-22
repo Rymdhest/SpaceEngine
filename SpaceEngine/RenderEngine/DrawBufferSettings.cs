@@ -9,7 +9,7 @@ namespace SpaceEngine.RenderEngine
         public FramebufferAttachment colorAttachment;
         public TextureMinFilter minFilterType = TextureMinFilter.Linear;
         public TextureMagFilter magFilterType = TextureMagFilter.Linear;
-        public TextureWrapMode wrapMode = TextureWrapMode.ClampToEdge;
+        public TextureWrapMode wrapMode = TextureWrapMode.ClampToBorder;
         public DrawBufferSettings(FramebufferAttachment colorAttachment) {
             this.colorAttachment = colorAttachment;
         }

@@ -73,7 +73,7 @@ namespace SpaceEngine.Modelling
                         6,5,7, 7,5,4};  //bot
 
             RawModel rawModel = new RawModel(positions, colours, indices, MasterRenderer.Pipeline.FLAT_SHADING);
-            rawModel.setBloom(15f);
+            rawModel.setEmission(15f);
             return rawModel;
         }
 

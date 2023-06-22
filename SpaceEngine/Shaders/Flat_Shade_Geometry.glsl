@@ -11,7 +11,6 @@ out vec3 fragNormal;
 out vec3 fragMaterials;
 out vec3 positionViewSpace_pass;
 
-
 vec3 calculateFaceNormal(vec3 v1, vec3 v2, vec3 v3) {
 		vec3 normal = vec3(0.0, 0.0, 0.0);
 

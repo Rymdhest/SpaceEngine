@@ -16,11 +16,13 @@ namespace SpaceEngine.RenderEngine
         private ShaderProgram combineShader = new ShaderProgram("Simple_Vertex", "Combine_Fragment");
         private ShaderProgram skyShader = new ShaderProgram("Simple_Vertex", "sky_Fragment");
         private ShaderProgram HDRMapShader = new ShaderProgram("Simple_Vertex", "HDR_Mapper_Fragment");
-        private FrameBuffer vBlurFBO;
-        private FrameBuffer hBlurFBO;
+        private ShaderProgram ScreenSpaceReflectionShader = new ShaderProgram("Simple_Vertex", "Screen_Reflection_Fragment");
+        private ShaderProgram combineReflectionShader = new ShaderProgram("Simple_Vertex", "Combine_Reflection_Fragment");
+
         private FrameBuffer bloomFilterFBO;
 
         private BloomRenderer bloomRenderer;
+        private GaussianBlurRenderer gaussianBlurRenderer;
 
         public PostProcessingRenderer()
         {
@@ -39,17 +41,26 @@ namespace SpaceEngine.RenderEngine
             combineShader.loadUniformInt("texture1", 1);
             combineShader.unBind();
 
-            FrameBufferSettings frameBufferSettings = new FrameBufferSettings(WindowHandler.resolution/8);
-            frameBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment0));
+            combineReflectionShader.bind();
+            combineReflectionShader.loadUniformInt("sourceColorTexture", 0);
+            combineReflectionShader.loadUniformInt("reflectionTexture", 1);
+            combineReflectionShader.loadUniformInt("gMaterials", 2);
+            combineReflectionShader.unBind();
 
-            vBlurFBO = new FrameBuffer(frameBufferSettings);
-            hBlurFBO = new FrameBuffer(frameBufferSettings);
+            ScreenSpaceReflectionShader.bind();
+            ScreenSpaceReflectionShader.loadUniformInt("shadedColor", 0);
+            ScreenSpaceReflectionShader.loadUniformInt("gNormal", 1);
+            ScreenSpaceReflectionShader.loadUniformInt("gPosition", 2);
+            ScreenSpaceReflectionShader.loadUniformInt("gMaterials", 3);
+            ScreenSpaceReflectionShader.unBind();
+
 
             FrameBufferSettings bloomFrameBufferSettings = new FrameBufferSettings(WindowHandler.resolution);
             bloomFrameBufferSettings.drawBuffers.Add(new DrawBufferSettings(FramebufferAttachment.ColorAttachment0));
             bloomFilterFBO = new FrameBuffer(bloomFrameBufferSettings);
 
             bloomRenderer = new BloomRenderer();
+            gaussianBlurRenderer = new GaussianBlurRenderer();
         }
 
         public void doPostProcessing(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Vector3 viewPosition, Matrix4 viewMatrix, Matrix4 projectionMatrix)
@@ -58,9 +69,10 @@ namespace SpaceEngine.RenderEngine
             //GL.Finish();
             //Stopwatch stopwatch = Stopwatch.StartNew();
             bloomRenderer.applyBloom(renderer, gBuffer);
+            applyScreenSpaceReflections(renderer, gBuffer, projectionMatrix, sunEntity.getComponent<Sun>());
             //GL.Finish();
             //Console.WriteLine(stopwatch.Elapsed.TotalMilliseconds);
-           
+
             HDRMap(renderer);
             applyFXAA(renderer);
         }
@@ -104,6 +116,48 @@ namespace SpaceEngine.RenderEngine
             GL.DepthFunc(DepthFunction.Less);
         } 
 
+        private void applyScreenSpaceReflections(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Matrix4 projectionMatrix, Sun sun)
+        {
+            ScreenSpaceReflectionShader.cleanUp();
+            ScreenSpaceReflectionShader = new ShaderProgram("Simple_Vertex", "Screen_Reflection_Fragment");
+
+            ScreenSpaceReflectionShader.bind();
+            ScreenSpaceReflectionShader.loadUniformInt("shadedColor", 0);
+            ScreenSpaceReflectionShader.loadUniformInt("gNormal", 1);
+            ScreenSpaceReflectionShader.loadUniformInt("gPosition", 2);
+            ScreenSpaceReflectionShader.loadUniformInt("gMaterials", 3);
+            ScreenSpaceReflectionShader.unBind();
+
+
+
+            ScreenSpaceReflectionShader.bind();
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, renderer.getLastOutputTexture());
+            GL.ActiveTexture(TextureUnit.Texture1);
+            GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(1));
+            GL.ActiveTexture(TextureUnit.Texture2);
+            GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(2));
+            GL.ActiveTexture(TextureUnit.Texture3);
+            GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(3));
+            ScreenSpaceReflectionShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
+            ScreenSpaceReflectionShader.loadUniformVector3f("skyColor", sun.getSkyColorGround());
+            gaussianBlurRenderer.getRootHBlurFBO().bind();
+            renderer.render();
+            ScreenSpaceReflectionShader.unBind();
+
+            gaussianBlurRenderer.renderGaussianBlur(renderer, gaussianBlurRenderer.getRootHBlurFBO().getRenderAttachment(0), 3);
+
+            combineReflectionShader.bind();
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, renderer.getLastOutputTexture());
+            GL.ActiveTexture(TextureUnit.Texture1);
+            GL.BindTexture(TextureTarget.Texture2D, gaussianBlurRenderer.getLastFinishedBlur());
+            GL.ActiveTexture(TextureUnit.Texture2);
+            GL.BindTexture(TextureTarget.Texture2D, gBuffer.getRenderAttachment(3));
+            renderer.renderToNextFrameBuffer();
+        }
+
         private void HDRMap(ScreenQuadRenderer renderer)
         {
             
@@ -122,30 +176,9 @@ namespace SpaceEngine.RenderEngine
             renderer.renderTextureToNextFrameBuffer(renderer.getLastOutputTexture());
             FXAAShader.unBind();
         }
-        private void applyBloom(ScreenQuadRenderer renderer, FrameBuffer gBuffer)
-        {
 
-
-
-
-            combineShader.bind();
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, hBlurFBO.getRenderAttachment(0));
-            GL.ActiveTexture(TextureUnit.Texture1);
-            GL.BindTexture(TextureTarget.Texture2D, renderer.getLastOutputTexture());
-            renderer.renderToNextFrameBuffer();
-            
-            combineShader.unBind();
-
-            //MasterRenderer.simpleShader.bind();
-            //renderer.renderTextureToNextFrameBuffer(hBlurFBO.getRenderAttachment(0));
-            //screenQuadRenderer.renderTextureToScreen(geometryPassRenderer.gBuffer.getRenderAttachment(2));
-            //MasterRenderer.simpleShader.unBind();
-        }
         public void onResize(ResizeEventArgs eventArgs)
         {
-            vBlurFBO.resize(WindowHandler.resolution/8);
-            hBlurFBO.resize(WindowHandler.resolution / 8);
             bloomFilterFBO.resize(WindowHandler.resolution);
         }
     }
