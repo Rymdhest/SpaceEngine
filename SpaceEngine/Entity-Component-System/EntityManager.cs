@@ -46,6 +46,20 @@ namespace SpaceEngine.Entity_Component_System.Components
             sculpture.addComponent(new Transformation(new Vector3(-15f, -15, 0), new Vector3(0)));
             sculpture.addComponent(new Model(glLoader.loadToVAO(ModelGenerator.generateTree()), MasterRenderer.Pipeline.FLAT_SHADING));
             sculpture.addComponent(new TerrainCollider());
+
+            for (int i = 0; i<= 10; i++)
+            {
+                for (int j = 0; j <= 10; j++)
+                {
+                    Entity Sphere = new Entity();
+                    RawModel rawModel = MeshGenerator.generateIcosahedron(new Vector3(1), new Vector3(0.8f, 0.2f, 0.2f), MasterRenderer.Pipeline.SMOOTH_SHADING);
+                    rawModel.setRoughness(0.05f+0.1f * j*0.95f);
+                    rawModel.setMetalicness(0.1f * i);
+                    float spacing = 3f;
+                    Sphere.addComponent(new Transformation(new Vector3(i* spacing-35, j* spacing+5, -40), new Vector3(0), 1f));
+                    Sphere.addComponent(new Model(glLoader.loadToVAO(rawModel), MasterRenderer.Pipeline.SMOOTH_SHADING));
+                }
+            }
         }
         public void loadTerrain()
         {
@@ -79,7 +93,7 @@ namespace SpaceEngine.Entity_Component_System.Components
                     Vector3 forward = camera.getComponent<Transformation>().createForwardVector();
 
                     Vector3 center = camera.getComponent<Transformation>().position;
-                    Vector3 color = new Vector3(MyMath.rng(), MyMath.rng(), MyMath.rng())*10;
+                    Vector3 color = new Vector3(MyMath.rng(), MyMath.rng(), MyMath.rng())*2;
                     Entity sphere = new Entity();
                     float power = (MyMath.rng() * 5f + 1) * 0.5f;
                     sphere.addComponent(new Transformation(center + forward*1.5f+randOffset*1f, new Vector3(0f, 0f, 0f), MathF.Sqrt(power)));

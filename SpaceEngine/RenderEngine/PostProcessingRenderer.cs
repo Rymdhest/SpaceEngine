@@ -146,7 +146,7 @@ namespace SpaceEngine.RenderEngine
             renderer.render();
             ScreenSpaceReflectionShader.unBind();
 
-            gaussianBlurRenderer.renderGaussianBlur(renderer, gaussianBlurRenderer.getRootHBlurFBO().getRenderAttachment(0), 3);
+            gaussianBlurRenderer.renderGaussianBlur(renderer, gaussianBlurRenderer.getRootHBlurFBO().getRenderAttachment(0), 2);
 
             combineReflectionShader.bind();
             GL.ActiveTexture(TextureUnit.Texture0);

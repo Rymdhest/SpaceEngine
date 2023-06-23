@@ -77,7 +77,7 @@ void main(void){
 	float sunFactor = 1f-calcShadow(position);
 
 	float ambientOcclusion = texture(gAlbedo, textureCoords).a;
-	float specularStrength = texture(gMaterials, textureCoords).r;
+	float rougness = texture(gMaterials, textureCoords).r;
 	float emission = texture(gMaterials, textureCoords).g;
 
 	vec3 totalAmbient = vec3(ambient*ambientOcclusion*albedo*skyColor);
@@ -85,8 +85,8 @@ void main(void){
 	vec3 viewDir = normalize(-position);
 
 	vec3 reflectDir = reflect(-sunDirectionViewSpace, normal);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-	vec3 specular = specularStrength * spec * sunColor;  
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 256-255*(rougness));
+	vec3 specular = 0.5f * spec * sunColor;  
 
 	vec3 diffuse = max(dot(sunDirectionViewSpace, normal), 0f)*albedo*sunColor;
 

@@ -161,7 +161,7 @@ namespace SpaceEngine.Modelling
                     positions[vertexPointer * 3 + 1] = positionLocalWorld.Y;
                     positions[vertexPointer * 3 + 2] = positionLocalWorld.Z;
 
-                    float rougness;
+                    float rougness= 0.75f;
                     float emission = 0.0f;
                     float metalicness = 0.0f;
                     Vector3 normal = calculateVertexNormal(x, z);
@@ -185,7 +185,6 @@ namespace SpaceEngine.Modelling
                     Vector3 rockColor = new Vector3(82 / 255f, 82 / 255f, 82 / 255f);
                     Vector3 waterColor = new Vector3(35 / 255f, 137 / 255f, 218 / 255f);
                     Vector3 color = MyMath.lerp(1f-MyMath.clamp01(normal.Y * normal.Y), groundColor, rockColor);
-                    rougness = MyMath.lerp(1f - MyMath.clamp01(normal.Y), 0f, 1f);
                     if (positionLocalWorld.Y <= 1.85f && normal.Y > 0.65f)
                     {
                         color = sandColor;
@@ -193,8 +192,8 @@ namespace SpaceEngine.Modelling
                     if (positionLocalWorld.Y <= 0.0f)
                     {
                         color = waterColor;
-                        rougness = 0.1f;
-                        metalicness = 0.7f;
+                        rougness = 0.35f;
+                        metalicness = 0.2f;
                     }
                     colors[vertexPointer * 3] = color.X;
                     colors[vertexPointer * 3 + 1] = color.Y;

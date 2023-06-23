@@ -34,6 +34,7 @@ namespace SpaceEngine.Modelling
 
             RawModel leaf = MeshGenerator.generateIcosahedron(leafRadius, leafColor, RenderEngine.MasterRenderer.Pipeline.FLAT_SHADING);
             leaf.translate(new Vector3(0, trunkHeight+leafRadius.Y*0.85f, 0));
+            leaf.setRoughness(0.45f);
 
             leaf.flatRandomness(0.3f);
             model.merge(leaf);

@@ -110,7 +110,7 @@ namespace SpaceEngine.RenderEngine
             //GL.BindBuffer(BufferTarget.ArrayBuffer, model.getIndexBuffer());
             //GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
             finishFrame();
-            //grassRenderer.render(viewMatrix, projectionMatrix, terrainManager, cameraPosition);
+            grassRenderer.render(viewMatrix, projectionMatrix, terrainManager, cameraPosition);
         }
         public void onResize(ResizeEventArgs eventArgs)
         {

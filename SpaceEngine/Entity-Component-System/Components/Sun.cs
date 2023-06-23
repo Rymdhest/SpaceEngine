@@ -10,7 +10,7 @@ namespace SpaceEngine.Entity_Component_System.Components
         private Vector3 normalizedDirection = new Vector3(0f, 1f, 0f);
 
         private Vector3 sunColor = new Vector3(0.93f, 0.76f, 0.34f) * sunIntensity;
-        private static float sunIntensity = 3f;
+        private static float sunIntensity = 5f;
         private Vector3 sunScatterColor = new Vector3(1.0f, 0.9f, 0.7f)* sunIntensity;
         private Vector3 fogColor = new Vector3(0.5f, 0.6f, 0.7f) * sunIntensity;
 
@@ -18,14 +18,14 @@ namespace SpaceEngine.Entity_Component_System.Components
         private Vector3 skyColorDay = new Vector3(0.27f, 0.71f, 0.96f);
         private Vector3 skyColorSpace = new Vector3(0.01f, 0.02f, 0.06f);
         private float ambient = 1.0f;
-        private float fogDensity = 0.0015f;
+        private float fogDensity = 0.00045f;
 
         public float time = 0f;
         private float sunsetFactor = 0;
 
         public override void update(float delta)
         {
-            ambient = 0.65f;
+            ambient = 0.35f;
             sunsetFactor = (1f - MyMath.clamp01(MathF.Pow(1f - normalizedDirection.Y - 0.2f, 1)));
             if (InputHandler.isKeyDown(Keys.KeyPadAdd))
             {

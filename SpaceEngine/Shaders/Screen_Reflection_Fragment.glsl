@@ -80,7 +80,7 @@ vec3 SSR(vec3 position, vec3 reflection) {
 void main(){
 	vec3 position = texture(gPosition, textureCoords).xyz;
 	vec3 normal =  texture(gNormal, textureCoords).xyz;
-	float rougness = 0.5f * texture(gMaterials, textureCoords).r;
+	float rougness = 0.2f * texture(gMaterials, textureCoords).r;
 	normal.x += random(textureCoords+1)*rougness;
 	normal.y += random(textureCoords+2)*rougness;
 	normal.z += random(textureCoords+3)*rougness;

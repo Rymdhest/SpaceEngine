@@ -42,8 +42,8 @@ namespace SpaceEngine.RenderEngine
             //grassShader.cleanUp();
             //grassShader = new ShaderProgram("Grass_Vertex", "Grass_Fragment");
 
-            float width = .12f;
-            float height = 0.9f;
+            float width = .04f;
+            float height = 1.1f;
 
             float[] positions = {
             -width, 0f, 0f,
@@ -93,7 +93,7 @@ namespace SpaceEngine.RenderEngine
 
         private void renderGrassOnChunk(TerrainChunk chunk, Matrix4 viewMatrix, Matrix4 projectionMatrix)
         {
-            int bladesPerRow = 100;
+            int bladesPerRow = 200;
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, chunk.getNormalHeightMap());
             Matrix4 transformationMatrix = MyMath.createTransformationMatrix(chunk.owner.getComponent<Transformation>());

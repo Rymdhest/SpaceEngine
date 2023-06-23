@@ -248,7 +248,7 @@ namespace SpaceEngine.Modelling
             }
             else if (pipeline == MasterRenderer.Pipeline.SMOOTH_SHADING)
             {
-                return new RawModel(positions, colours, normals, indices);
+                return new RawModel(positions, colours, normals, indices,  pipeline);
             }
             else
             {

@@ -12,8 +12,8 @@ namespace SpaceEngine.RenderEngine
 {
     internal class DeferredLightPassRenderer
     {
-        private ShaderProgram globalLightShader = new ShaderProgram("Simple_Vertex", "Global_Light_Fragment");
-        private ShaderProgram pointLightShader = new ShaderProgram("Point_Light_Vertex", "Point_Light_Fragment");
+        private ShaderProgram globalLightShader = new ShaderProgram("Simple_Vertex", "Global_Light_FragmentPBR");
+        private ShaderProgram pointLightShader = new ShaderProgram("Point_Light_Vertex", "Point_Light_FragmentPBR");
         private ShaderProgram ambientOcclusionShader = new ShaderProgram("Simple_Vertex", "AmbientOcclusion_Fragment");
         private ShaderProgram ambientOcclusionBlurShader = new ShaderProgram("Simple_Vertex", "AmbientOcclusion_Blur_Fragment");
 
@@ -184,8 +184,9 @@ namespace SpaceEngine.RenderEngine
             globalLightShader.unBind();
 
         }
-        private void renderPointLights(FrameBuffer gBuffer, ComponentSystem pointLights, Matrix4 viewMatrix, Matrix4 projectionMatrix)
+        private void renderPointLights(FrameBuffer gBuffer, ComponentSystem pointLights, Matrix4 viewMatrix, Matrix4 projectionMatrix, Entity sunEntity)
         {
+            Sun sun = sunEntity.getComponent<Sun>();
             pointLightShader.bind();
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
@@ -209,6 +210,8 @@ namespace SpaceEngine.RenderEngine
             pointLightShader.loadUniformMatrix4f("projectionMatrix", projectionMatrix);
             pointLightShader.loadUniformFloat("gScreenSizeX", WindowHandler.resolution.X);
             pointLightShader.loadUniformFloat("gScreenSizeY", WindowHandler.resolution.Y);
+            pointLightShader.loadUniformFloat("fogDensity", sun.getFogDensity());
+            pointLightShader.loadUniformVector3f("fogColor", sun.getFogColor());
             glModel model = ModelGenerator.unitSphere;
             GL.BindVertexArray(model.getVAOID());
             GL.EnableVertexAttribArray(0);
@@ -243,7 +246,7 @@ namespace SpaceEngine.RenderEngine
             renderer.getNextFrameBuffer().blitDepthBufferFrom(gBuffer);
             renderer.getLastFrameBuffer().blitDepthBufferFrom(gBuffer);
             renderGlobalLight(renderer, gBuffer, sunEntity, viewMatrix, shadowRenderer);
-            renderPointLights(gBuffer, pointLights, viewMatrix, projectionMatrix);
+            renderPointLights(gBuffer, pointLights, viewMatrix, projectionMatrix, sunEntity);
         }
     }
 

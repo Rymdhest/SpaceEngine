@@ -20,7 +20,7 @@ vec3 reinhard(vec3 inputColor) {
 	return inputColor / (inputColor + vec3(1.0)) * (inputColor * key);
 }
 vec3 applyExposure(vec3 inputColor) {
-	float exposure =0.3f;
+	float exposure =0.45f;
 	return vec3(1.0) - exp(-inputColor * exposure);
 }
 
@@ -30,7 +30,7 @@ vec3 applyToneMap(vec3 inputColor) {
 }
 
 vec3 applyGamma(vec3 inputColor) {
-	float gamma = 1.5;
+	float gamma = 2.2;
 	return pow(inputColor, vec3(1.0 / gamma));
 }
 
