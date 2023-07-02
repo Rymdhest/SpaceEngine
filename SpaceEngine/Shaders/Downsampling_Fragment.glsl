@@ -82,6 +82,24 @@ void main()
     // We are writing to mip 0, so we need to apply Karis average to each block
     // of 4 samples to prevent fireflies (very bright subpixels, leads to pulsating
     // artifacts).
+
+    /*
+    groups[0] = (a+b+d+e) * (0.125f/4.0f);
+    groups[1] = (b+c+e+f) * (0.125f/4.0f);
+    groups[2] = (d+e+g+h) * (0.125f/4.0f);
+    groups[3] = (e+f+h+i) * (0.125f/4.0f);
+    groups[4] = (j+k+l+m) * (0.5f/4.0f);
+    groups[0] *= KarisAverage(groups[0]);
+    groups[1] *= KarisAverage(groups[1]);
+    groups[2] *= KarisAverage(groups[2]);
+    groups[3] *= KarisAverage(groups[3]);
+    groups[4] *= KarisAverage(groups[4]);
+    downsample = groups[0]+groups[1]+groups[2]+groups[3]+groups[4];
+    */
+
+    //some guys comment on improvement
+    
+    
     groups[0] = (a+b+d+e) / 4.0f;
     groups[1] = (b+c+e+f) / 4.0f;
     groups[2] = (d+e+g+h) / 4.0f;
@@ -93,13 +111,16 @@ void main()
     float kw3 = KarisAverage(groups[3]);
     float kw4 = KarisAverage(groups[4]);
     downsample = (kw0 * groups[0] + kw1* groups[1] + kw2 * groups[2] + kw3* groups[3] + kw4 * groups[4]) / (kw0 + kw1 + kw2 + kw3 + kw4);
+    
     break;
 
     default:
+
     downsample = e*0.125;
     downsample += (a+c+g+i)*0.03125;
     downsample += (b+d+f+h)*0.0625;
     downsample += (j+k+l+m)*0.125;
+    downsample = max(downsample, 0.0001f);
     break;
     }
 }

@@ -19,6 +19,7 @@ namespace SpaceEngine.RenderEngine
         private ShaderProgram ScreenSpaceReflectionShader = new ShaderProgram("Simple_Vertex", "Screen_Reflection_Fragment");
         private ShaderProgram combineReflectionShader = new ShaderProgram("Simple_Vertex", "Combine_Reflection_Fragment");
 
+        private PostGeometryRenderer postGeometryRenderer;
         private FrameBuffer bloomFilterFBO;
 
         private BloomRenderer bloomRenderer;
@@ -61,14 +62,18 @@ namespace SpaceEngine.RenderEngine
 
             bloomRenderer = new BloomRenderer();
             gaussianBlurRenderer = new GaussianBlurRenderer();
+            postGeometryRenderer = new PostGeometryRenderer();
         }
 
         public void doPostProcessing(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Entity sunEntity, Vector3 viewPosition, Matrix4 viewMatrix, Matrix4 projectionMatrix)
         {
             applySky(renderer, gBuffer, sunEntity, viewPosition, viewMatrix, projectionMatrix);
+            postGeometryRenderer.render(EntityManager.postGeometrySystem, viewMatrix, projectionMatrix);
+
+
+            bloomRenderer.applyBloom(renderer, gBuffer);
             //GL.Finish();
             //Stopwatch stopwatch = Stopwatch.StartNew();
-            bloomRenderer.applyBloom(renderer, gBuffer);
             applyScreenSpaceReflections(renderer, gBuffer, projectionMatrix, sunEntity.getComponent<Sun>());
             //GL.Finish();
             //Console.WriteLine(stopwatch.Elapsed.TotalMilliseconds);
@@ -86,6 +91,8 @@ namespace SpaceEngine.RenderEngine
             skyShader = new ShaderProgram("Simple_Vertex", "sky_Fragment");
             */
             Sun sun = sunEntity.getComponent<Sun>();
+
+
 
             skyShader.bind();
             skyShader.loadUniformVector3f("viewPositionWorld", viewPosition);
@@ -109,6 +116,7 @@ namespace SpaceEngine.RenderEngine
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, renderer.getLastOutputTexture());
 
+            //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             renderer.render(depthTest :true, depthMask:false, blend :false, clearColor:false);
             //renderer.stepToggle();
             skyShader.unBind();
@@ -118,6 +126,7 @@ namespace SpaceEngine.RenderEngine
 
         private void applyScreenSpaceReflections(ScreenQuadRenderer renderer, FrameBuffer gBuffer, Matrix4 projectionMatrix, Sun sun)
         {
+            /*
             ScreenSpaceReflectionShader.cleanUp();
             ScreenSpaceReflectionShader = new ShaderProgram("Simple_Vertex", "Screen_Reflection_Fragment");
 
@@ -127,7 +136,7 @@ namespace SpaceEngine.RenderEngine
             ScreenSpaceReflectionShader.loadUniformInt("gPosition", 2);
             ScreenSpaceReflectionShader.loadUniformInt("gMaterials", 3);
             ScreenSpaceReflectionShader.unBind();
-
+            */
 
 
             ScreenSpaceReflectionShader.bind();
@@ -146,7 +155,7 @@ namespace SpaceEngine.RenderEngine
             renderer.render();
             ScreenSpaceReflectionShader.unBind();
 
-            gaussianBlurRenderer.renderGaussianBlur(renderer, gaussianBlurRenderer.getRootHBlurFBO().getRenderAttachment(0), 2);
+            gaussianBlurRenderer.renderGaussianBlur(renderer, gaussianBlurRenderer.getRootHBlurFBO().getRenderAttachment(0), 1);
 
             combineReflectionShader.bind();
             GL.ActiveTexture(TextureUnit.Texture0);

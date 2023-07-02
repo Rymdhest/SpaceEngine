@@ -23,7 +23,6 @@ namespace SpaceEngine.RenderEngine
         private GeometryPassRenderer geometryPassRenderer;
         private DeferredLightPassRenderer deferredLightPassRenderer;
         private PostProcessingRenderer postProcessingRenderer;
-        private PostGeometryRenderer postGeometryRenderer;
         private ShadowRenderer shadowRenderer;
         public MasterRenderer() {
             fieldOfView = MathF.PI/2.5f;
@@ -32,7 +31,6 @@ namespace SpaceEngine.RenderEngine
             geometryPassRenderer = new GeometryPassRenderer();
             deferredLightPassRenderer= new DeferredLightPassRenderer();
             postProcessingRenderer= new PostProcessingRenderer();
-            postGeometryRenderer = new PostGeometryRenderer();
             shadowRenderer = new ShadowRenderer();
             updateProjectionMatrix();
         }
@@ -83,7 +81,6 @@ namespace SpaceEngine.RenderEngine
 
          
             deferredLightPassRenderer.render(screenQuadRenderer, geometryPassRenderer.gBuffer, sunEntity, viewMatrix,projectionMatrix, pointLights, shadowRenderer);
-            postGeometryRenderer.render(EntityManager.postGeometrySystem, viewMatrix, projectionMatrix);
 
             postProcessingRenderer.doPostProcessing(screenQuadRenderer, geometryPassRenderer.gBuffer, sunEntity, camera.getComponent<Transformation>().position, viewMatrix, projectionMatrix);
            simpleShader.bind();

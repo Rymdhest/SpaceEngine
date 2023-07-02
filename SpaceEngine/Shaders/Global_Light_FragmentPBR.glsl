@@ -81,7 +81,7 @@ void main(void){
 	float sunFactor = 1f-calcShadow(position);
 
 	float ambientOcclusion = texture(gAlbedo, textureCoords).a;
-	float roughness = texture(gMaterials, textureCoords).r;
+	float roughness = clamp(texture(gMaterials, textureCoords).r, 0.05f, 1f);
 	float emission = texture(gMaterials, textureCoords).g;
 	float metallic = texture(gMaterials, textureCoords).b;
 
@@ -119,6 +119,8 @@ void main(void){
 
 	//vec3 ambient = vec3(0.03) * albedo * ambientOcclusion;
     vec3 color = totalAmbient + Lo*sunFactor;
+
+	color = mix(color, albedo , clamp(emission, 0, 1));
 
 	color = applyFog(color, -position.z, -viewDir);
 	//color = color / (color + vec3(1.0));

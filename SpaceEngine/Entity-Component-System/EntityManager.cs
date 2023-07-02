@@ -54,6 +54,7 @@ namespace SpaceEngine.Entity_Component_System.Components
                     Entity Sphere = new Entity();
                     RawModel rawModel = MeshGenerator.generateIcosahedron(new Vector3(1), new Vector3(0.8f, 0.2f, 0.2f), MasterRenderer.Pipeline.SMOOTH_SHADING);
                     rawModel.setRoughness(0.05f+0.1f * j*0.95f);
+                    rawModel.setRoughness(0.1f * j);
                     rawModel.setMetalicness(0.1f * i);
                     float spacing = 3f;
                     Sphere.addComponent(new Transformation(new Vector3(i* spacing-35, j* spacing+5, -40), new Vector3(0), 1f));

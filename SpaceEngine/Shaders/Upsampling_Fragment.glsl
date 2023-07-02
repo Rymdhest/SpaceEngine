@@ -7,8 +7,9 @@
 // Remember to use a floating-point texture format (for HDR)!
 // Remember to use edge clamping for this texture!
 uniform sampler2D srcTexture;
+uniform sampler2D originalImage;
 uniform float filterRadius;
-
+uniform int mipLevel;
 uniform vec2 srcResolution;
 in vec2 textureCoords;
 layout (location = 0) out vec3 upsample;
@@ -18,7 +19,6 @@ void main()
     // The filter kernel is applied with a radius, specified in texture
     // coordinates, so that the radius will vary across mip resolutions.
     vec2 srcTexelSize = 1.0 / srcResolution;
-    srcTexelSize *= filterRadius;
     float x = filterRadius;
     float y = filterRadius;
     // Take 9 samples around current texel:
@@ -46,4 +46,10 @@ void main()
     upsample += (b+d+f+h)*2.0;
     upsample += (a+c+g+i);
     upsample *= 1.0 / 16.0;
+
+    if (mipLevel == 1) {
+        vec3 original = texture(originalImage, textureCoords).rgb;
+        upsample = mix(original, upsample, 0.04f);
+    }
+    
 }
