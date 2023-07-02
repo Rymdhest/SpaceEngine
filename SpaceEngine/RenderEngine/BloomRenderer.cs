@@ -25,6 +25,7 @@ namespace SpaceEngine.RenderEngine
 
             upsamplingShader.bind();
             upsamplingShader.loadUniformInt("srcTexture", 0);
+            upsamplingShader.loadUniformInt("originalImage", 1);
             upsamplingShader.unBind();
 
             Vector2i resolution = new Vector2i( WindowHandler.resolution.X, WindowHandler.resolution.Y);
