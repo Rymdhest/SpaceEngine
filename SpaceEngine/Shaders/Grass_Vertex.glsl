@@ -53,25 +53,25 @@ vec3 hash13(float t) {
 }
 mat3 rotXMatrix(float a) {
 	return mat3(
-	1, 0f, 0,
-	0f, cos(a), -sin(a),
-	0f,sin(a),cos(a));
+	1.0f, 0.0f, 0.0f,
+	0.0f, cos(a), -sin(a),
+	0.0f,sin(a),cos(a));
 }
 mat3 rotYMatrix(float a) {
 	return mat3(
-	cos(a), 0f, sin(a),
-	0f, 1f, 0f,
-	-sin(a),0f,cos(a));
+	cos(a), 0.0f, sin(a),
+	0.0f, 1.0f, 0.0f,
+	-sin(a),0.0f,cos(a));
 }
 mat3 rotZMatrix(float a) {
 	return mat3(
 	cos(a), -sin(a), 0,
 	sin(a), cos(a), 0,
-	0f,0,1f);
+	0.0f,0,1.0f);
 }
 void main() {
 	vec3 pos = position;
-	pos.y *=  1f+(hash11(gl_InstanceID+3)*2f-1)*0.4f;
+	pos.y *=  1.0f+(hash11(gl_InstanceID+3.0f)*2.0f-1.0f)*0.4f;
 	tipFactor = position.y/bladeHeight;
 	float bendX = (hash11(gl_InstanceID+542)-0.5f)+sin(time+gl_InstanceID)*0.1f;
 	float bendZ = (hash11(gl_InstanceID+123)-0.5f)*0.5f;

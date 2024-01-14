@@ -86,7 +86,7 @@ void main(void){
 
     float fogAmount = 1.0 - exp( -position.z*fogDensity );
 
-	color *= 1f-clamp(fogAmount, 0, 1);
+	color *= 1.0f-clamp(fogAmount, 0.0f, 1.0f);
 	//color = color / (color + vec3(1.0));
     //color = pow(color, vec3(1.0/2.2));  
 	//lighting = applyFog(lighting, -position.z, -viewDir);

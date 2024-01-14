@@ -20,7 +20,7 @@ void main() {
 	gPosition = vec4(positionViewSpace_pass, fragMaterials.g);
 	*/
 	float near = 0.1f;
-	float far = 1000f;
+	float far = 1000.0f;
 
 	float surfaceDistance = -clipSpacePosition.w;
 	surfaceDistance = 2.0 * near * far / (far + near - (2.0 * surfaceDistance - 1.0) * (far - near));
@@ -38,7 +38,7 @@ void main() {
 	float distance = length(uv-lightCenterUV);
 	distance = smoothstep(radius, 0.0f, distance);
 
-	vec3 col = vec3(distance)*color*2f;
+	vec3 col = vec3(distance)*color*2.0f;
 	//out_Color = vec4(lightCenterUV-uv, 0f, 1.0f);
 	out_Color = vec4(col, 1.0f);
 }

@@ -39,7 +39,7 @@ vec3 applyBrightness(vec3 inputColor) {
 	return inputColor*vec3(brightness);
 }
 vec3 applyContrast(vec3 inputColor) {
-	float contrast = 1f;
+	float contrast = 1.0f;
     return mix(0.5 + (inputColor - 0.5) * contrast, inputColor, contrast);
 }
 vec3 applySaturation(vec3 inputColor) {

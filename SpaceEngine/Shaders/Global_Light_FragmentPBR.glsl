@@ -40,23 +40,23 @@ float calcShadow(vec3 positionViewSpace) {
 	
 	int cascadeToUse = -1;
 	for (int i = 0 ; i< numberOfCascades ; i++) {
-		if (length(positionViewSpace)*2f < cascadeProjectionSizes[i]) {
+		if (length(positionViewSpace)*2.0f < cascadeProjectionSizes[i]) {
 			cascadeToUse = i;
 			break;
 		}
 	}
-	if (cascadeToUse == -1) return 0f;
+	if (cascadeToUse == -1) return 0.0f;
 	//vec2 shadowPixelSize = 1f/shadowMapResolution;
-	vec2 pixelSize = 1f/resolution;
+	vec2 pixelSize = 1.0f/resolution;
 	vec4 positionSunSpace = (vec4(positionViewSpace, 1.0))*sunSpaceMatrices[cascadeToUse];
 	positionSunSpace = positionSunSpace * vec4(0.5) + vec4(0.5);
 
-	float shadowFactor = 0f;
+	float shadowFactor = 0.0f;
 	float totalWeight =0;
 	for (int x = -softLayers ; x <= softLayers ; x++) {
 		for (int y = -softLayers ; y <= softLayers ; y++) {
-			shadowFactor += 1f-texture(shadowMaps[cascadeToUse], positionSunSpace.xyz+vec3(x*pixelSize.x, y*pixelSize.y, 0));
-			totalWeight += 1f;
+			shadowFactor += 1.0f-texture(shadowMaps[cascadeToUse], positionSunSpace.xyz+vec3(x*pixelSize.x, y*pixelSize.y, 0.0));
+			totalWeight += 1.0f;
 		}
 	}
 	
@@ -78,10 +78,10 @@ void main(void){
 	vec3 normal = texture(gNormal, textureCoords).xyz;
 	vec3 albedo = texture(gAlbedo, textureCoords).rgb;
 	
-	float sunFactor = 1f-calcShadow(position);
+	float sunFactor = 1.0f-calcShadow(position);
 
 	float ambientOcclusion = texture(gAlbedo, textureCoords).a;
-	float roughness = clamp(texture(gMaterials, textureCoords).r, 0.05f, 1f);
+	float roughness = clamp(texture(gMaterials, textureCoords).r, 0.05f, 1.0f);
 	float emission = texture(gMaterials, textureCoords).g;
 	float metallic = texture(gMaterials, textureCoords).b;
 

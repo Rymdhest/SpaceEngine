@@ -29,7 +29,7 @@ void main() {
 	}
 	float bloom = 0.1f;
 	float specularity = 0.2f;
-	vec3 color = mix(grassColor,grassColor*0.4f, smoothstep(1f, .0f, tipFactor));
+	vec3 color = mix(grassColor,grassColor*0.4f, smoothstep(1.0f, 0.0f, tipFactor));
 	gDiffuse = vec4(color, 1.0);
 	gNormal = vec4(normalize(normal), specularity);
 	gPosition = vec4(positionViewSpace, bloom);

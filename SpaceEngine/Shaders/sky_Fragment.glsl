@@ -16,16 +16,16 @@ uniform mat4 projectionMatrix;
 void main(void){
 
 
-	vec2 uv = ((textureCoords*2f)-1f);
+	vec2 uv = ((textureCoords*2.0f)-1.0f);
 	uv = (uv*screenResolution)/screenResolution.y;
 
-	float viewheightFactor = clamp(1f-viewPositionWorld.y*0.001f, 0f, 1f);
+	float viewheightFactor = clamp(1.0f-viewPositionWorld.y*0.001f, 0.0f, 1.0f);
 
 	vec3 skyColor = mix(skyColorSpace,skyColorGround , viewheightFactor*sunSetFactor);
 
-	vec3 viewDir = normalize((viewMatrix*vec4(uv, -1f, 1.0f)).xyz);
+	vec3 viewDir = normalize((viewMatrix*vec4(uv, -1.0f, 1.0f)).xyz);
 
-	vec3 upNormalViewSpace = normalize((vec4(0, 1f, 0.0f, 1f)).xyz);
+	vec3 upNormalViewSpace = normalize((vec4(0, 1.0f, 0.0f, 1.0f)).xyz);
 
 
 	float sunAmount = pow(max( dot(viewDir, sunDirectionWorldSpace ), 0.0 ), 256);
@@ -33,7 +33,7 @@ void main(void){
 
 	float horizon = max( 0.45f+dot( viewDir.y, -upNormalViewSpace.y ), 0.0 );
 	
-	skyColor *= 1f-pow(max( dot( viewDir, upNormalViewSpace), 0.0 ), 1)*0.4f; //darkness above
+	skyColor *= 1.0f-pow(max( dot( viewDir, upNormalViewSpace), 0.0 ), 1.0)*0.4f; //darkness above
 	skyColor += horizon*skyColor;
 	skyColor = mix( skyColor, sunColor, sunAmount );
 	skyColor += sunAmountBigScale*sunColorGlare;
